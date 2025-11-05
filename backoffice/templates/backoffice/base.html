@@ -1,0 +1,133 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>{% block title %}Backoffice{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'css/sb-admin-2.min.css' %}">
+  <link rel="icon" type="image/png" href="{% static 'img/logo1.png' %}">
+
+  <style>
+    /* --- ici tu peux copier tout ton CSS de dashboard.html --- */
+    :root{--vert:#1fa64a;--fond-clair:#f4f6fa;--fond-sombre:#121212;--texte-blanc:#fff;--texte-noir:#222;--sidebar-width:240px;--transition:.28s}
+    html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial}
+    body{background:var(--fond-clair);color:var(--texte-noir);transition:background var(--transition),color var(--transition)}
+    body.dark-mode{background:var(--fond-sombre);color:var(--texte-blanc)}
+    /* Sidebar */
+    .sidebar{position:fixed;left:0;top:0;height:100vh;width:var(--sidebar-width);background:var(--vert);color:var(--texte-blanc);display:flex;flex-direction:column;align-items:center;padding:18px 8px;box-sizing:border-box;z-index:1000}
+    .sidebar .logo1{width:210px !important;height:auto !important;margin:50px auto !important;display:block !important;padding:0 10px !important;box-sizing:border-box !important}
+    .sidebar ul{list-style:none;padding:0;margin:12px 0;width:100%}
+    .sidebar li{display:flex;align-items:center;gap:10px;padding:10px 18px;color:inherit;cursor:pointer;border-radius:8px;margin:4px 8px;transition:background var(--transition)}
+    .sidebar li:hover{background:rgba(255,255,255,0.08)}
+    .sidebar li + li{border-top:1px solid rgba(255,255,255,0.25)}
+    .small-label{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    /* Top bar */
+    .top-bar{position:fixed;left:var(--sidebar-width);top:0;right:0;height:60px;background:white;color:var(--texte-noir);display:flex;align-items:center;justify-content:flex-end;padding:0 24px;box-shadow:0 2px 10px rgba(0,0,0,.05);transition:left var(--transition),background var(--transition),color var(--transition);z-index:900}
+    body.dark-mode .top-bar{background:#1e1e1e;color:var(--texte-blanc);box-shadow:0 2px 10px rgba(255,255,255,.1)}
+    .top-bar .btn-dark{background:transparent;border:2px solid var(--vert);color:var(--vert);padding:6px 12px;border-radius:20px;cursor:pointer;margin-right:20px;transition:background var(--transition),color var(--transition)}
+    .top-bar .btn-dark:hover{background:var(--vert);color:white}
+    body.dark-mode .top-bar .btn-dark{border-color:var(--texte-blanc);color:var(--texte-blanc)}
+    body.dark-mode .top-bar .btn-dark:hover{background:var(--texte-blanc);color:var(--vert)}
+    .top-bar .user-badge{display:flex;align-items:center;gap:8px;font-weight:600;color:var(--vert)}
+    .top-bar .user-badge img{width:36px;height:36px;border-radius:50%;border:2px solid var(--vert);object-fit:cover}
+    body.dark-mode .top-bar .user-badge img{border-color:var(--texte-blanc)}
+    body.dark-mode .top-bar .user-badge{color:var(--texte-blanc)}
+    .main{margin-left:var(--sidebar-width);padding:90px 28px 28px;min-height:100vh;box-sizing:border-box}
+    .card{background:var(--texte-blanc);border-radius:10px;padding:26px;box-shadow:0 6px 18px rgba(0,0,0,.06);color:var(--texte-noir);transition:background var(--transition),color var(--transition)}
+    body.dark-mode .card{background:#1e1e1e;color:var(--texte-blanc);box-shadow:0 6px 18px rgba(0,0,0,.3)}
+    .page-title{color:var(--vert);font-size:28px;margin:6px 0 18px}
+    @media(max-width:900px){.sidebar{position:fixed;left:0;top:0;height:100vh}.main{margin-left:var(--sidebar-width)}.top-bar{left:var(--sidebar-width)}}
+    .sidebar a {
+    color: #ffffff;         /* blanc */
+    text-decoration: none;  /* enlever le soulignement */
+}
+.sidebar a:hover {
+    color: rgba(255,255,255,0.8); /* léger effet au hover */
+}
+/* Tableau par défaut */
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+table th, table td {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    color: var(--texte-noir); /* texte clair pour mode clair */
+}
+
+/* Mode sombre */
+body.dark-mode table th,
+body.dark-mode table td {
+    color: var(--texte-blanc); /* texte visible sur fond sombre */
+    border-color: rgba(255,255,255,0.2);
+}
+
+/* Pour le fond des cellules */
+/* Titres des colonnes du tableau en vert */
+table th {
+    background-color: #f4f4f4;      /* fond clair */
+    color: var(--vert);              /* texte vert */
+}
+
+body.dark-mode table th {
+    background-color: #2c2c2c;      /* fond sombre */
+    color: var(--vert);              /* texte vert même en sombre */
+}
+
+
+table td {
+    background-color: #fff;
+}
+body.dark-mode table td {
+    background-color: #1e1e1e;
+}
+
+  </style>
+
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <img src="{% static 'img/logo1.png' %}" alt="Logo1" class="logo1">
+    <ul>
+      <li><span>👥</span><span class="small-label">Utilisateurs --></span></li>
+      <li><span>🧾</span><a class="small-label">Produits --></a></li>
+      <li><span>🌱</span><a href="{% url 'gestion_cultures' %}" class="small-label">Cultures --></a></li>
+      <li><span>🧪</span><span class="small-label">Sols --></span></li>
+      <li><span>🏡</span><span class="small-label">Serres --></span></li>
+      <li><span>☀️</span><span class="small-label">Météo --></span></li>
+    </ul>
+  </aside>
+
+  <!-- Top bar -->
+  <header class="top-bar">
+    <button class="btn-dark" id="darkToggle">🌙 Mode sombre</button>
+    <div class="user-badge">
+      <img src="{% static 'img/undraw_profile.svg' %}" alt="user">
+      <span class="username">Admin</span>
+    </div>
+  </header>
+
+  <!-- Main content -->
+  <main class="main">
+    <h2 class="page-title">{% block page_title %}Bienvenue dans le Dashboard:{% endblock %}</h2>
+    <section>
+      {% block content %}{% endblock %}
+    </section>
+  </main>
+
+  <script>
+    (function(){
+      const darkBtn = document.getElementById('darkToggle');
+      const body = document.body;
+      if(localStorage.getItem('back_dark_mode')==='1'){body.classList.add('dark-mode');darkBtn.textContent='☀️ Mode clair'}
+      darkBtn.addEventListener('click',function(){body.classList.toggle('dark-mode');const dark=body.classList.contains('dark-mode');darkBtn.textContent=dark?'☀️ Mode clair':'🌙 Mode sombre';localStorage.setItem('back_dark_mode',dark?'1':'0')});
+    })();
+  </script>
+
+  {% block extra_scripts %}{% endblock %}
+</body>
+</html>

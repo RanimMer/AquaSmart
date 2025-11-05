@@ -1,0 +1,157 @@
+{% extends 'backoffice/base.html' %}
+
+{% block content %}
+<h2 class="page-title" style="color: black;">Liste des cultures :</h2>
+
+<div style="margin-bottom:20px;">
+  <a href="{% url 'ajouter_culture' %}" class="btn btn-vert">➕ Ajouter une culture</a>
+</div>
+
+<table class="tableau-produits">
+  <thead>
+    <tr>
+      <th>Image</th>
+      <th>Nom</th>
+      <th>Type</th>
+      <th>Surface (m²)</th>
+      <th>Date semis</th>
+      <th>Date recolte prevue</th>
+      <th>Besoin base (L/j)</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for c in cultures %}
+      <tr>
+        <td>
+          {% if c.image %}
+            <img src="{{ c.image.url }}" alt="{{ c.nom }}" width="60" class="img-produit">
+          {% else %} N/A {% endif %}
+        </td>
+        <td>{{ c.nom }}</td>
+        <td>{{ c.get_type_display|default:c.type }}</td>
+        <td>{{ c.surface_m2 }}</td>
+        <td>{{ c.date_semis }}</td>
+        <td>{{ c.date_recolte_prevue }}</td>
+        <td>{{ c.besoin_base_l_j }}</td>
+        <td>
+          <a href="{% url 'modifier_culture' c.pk %}" class="btn btn-edit">✏️ Modifier</a>
+          <a href="{% url 'supprimer_culture' c.pk %}" class="btn btn-delete">🗑️ Supprimer</a>
+        </td>
+      </tr>
+    {% empty %}
+      <tr><td colspan="7">Aucune culture.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<style>
+/* Boutons */
+.btn {
+    padding: 8px 14px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: 0.3s;
+    color: white;
+}
+
+/* Bouton vert principal */
+.btn-vert {
+    background-color: #1fa64a;
+}
+.btn-vert:hover {
+    background-color: #15903c;
+}
+
+/* Modifier et supprimer */
+.btn-edit {
+    background-color: #f0ad4e;
+}
+.btn-edit:hover {
+    background-color: #e59400;
+}
+.btn-delete {
+    background-color: #d9534f;
+}
+.btn-delete:hover {
+    background-color: #c12c2c;
+}
+
+/* Tableau */
+.tableau-produits {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.tableau-produits th, .tableau-produits td {
+    padding: 12px 15px;
+    text-align: left;
+}
+
+.tableau-produits thead {
+    background-color: #1fa64a;
+    color: white;
+}
+
+.tableau-produits tbody tr {
+    background-color: white;
+    transition: 0.3s;
+}
+
+.tableau-produits tbody tr:hover {
+    background-color: #e8f5e9;
+}
+
+/* Images */
+.img-produit {
+    border-radius: 6px;
+    object-fit: cover;
+}
+
+/* Formulaire dans ajouter_produit.html */
+.form-container {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+    max-width: 500px;
+    margin-top: 20px;
+}
+
+.form-container input, .form-container textarea, .form-container select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 12px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+    transition: 0.3s;
+}
+
+.form-container input:focus, .form-container textarea:focus, .form-container select:focus {
+    border-color: #1fa64a;
+    outline: none;
+}
+
+.form-container button {
+    background-color: #1fa64a;
+    border: none;
+    color: white;
+    padding: 10px 16px;
+    font-size: 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.form-container button:hover {
+    background-color: #15903c;
+}
+</style>
+{% endblock %}
+

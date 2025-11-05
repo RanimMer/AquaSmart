@@ -8,6 +8,7 @@
     {% csrf_token %}
     {{ form.as_p }}
     <button type="submit" class="btn-submit">Enregistrer</button>
+    <button class="btn btn-secondary" href="{% url 'gestion_cultures' %}" class="btn-submit">Annuler</button>
   </form>
 </div>
 <style>

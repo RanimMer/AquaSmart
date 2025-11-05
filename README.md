@@ -33,9 +33,9 @@ L’objectif principal est de **réduire le gaspillage d’eau**, optimiser la p
 
 ## 👩‍💻 Technologies Utilisées
 
--Django / Python
--Bootstrap / CSS / HTML / JavaScript
--SQLite 
--API 
+- Django / Python
+- Bootstrap / CSS / HTML / JavaScript
+- SQLite 
+- API 
 
 ---

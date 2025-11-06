@@ -1,0 +1,67 @@
+{% extends 'backoffice/base.html' %}
+
+{% block content %}
+<style>
+    /* Style global de la page */
+    body {
+        background-color: #f9f9f9;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .stat-container {
+        width: 70%;
+        margin: 60px auto;
+        background: white;
+        padding: 40px;
+        border-radius: 20px;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        text-align: center;
+        transition: transform 0.3s ease;
+    }
+
+    .stat-container:hover {
+        transform: scale(1.01);
+    }
+
+    .stat-container h3 {
+        color: #000000;
+        font-size: 26px;
+        margin-bottom: 25px;
+    }
+
+    .stat-container img {
+        width: 80%;
+        max-width: 650px;
+        height: auto;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    /* Bouton vert stylé */
+    .btn-vert {
+        display: inline-block;
+        margin-top: 30px;
+        padding: 12px 30px;
+        background-color: #2e7d32;
+        color: white;
+        font-weight: bold;
+        border-radius: 8px;
+        text-decoration: none;
+        transition: 0.3s;
+        box-shadow: 0 4px 10px rgba(46, 125, 50, 0.3);
+    }
+
+    .btn-vert:hover {
+        background-color: #1b5e20;
+        box-shadow: 0 6px 14px rgba(27, 94, 32, 0.4);
+        transform: translateY(-2px);
+    }
+</style>
+
+<div class="stat-container">
+    <h3>📊 Statistiques des produits par type :</h3>
+    <img src="data:image/png;base64,{{ graph }}" alt="Statistiques produits">
+    <br>
+    <a href="{% url 'gestion_produits' %}" class="btn-vert">⬅ Retour</a>
+</div>
+{% endblock %}

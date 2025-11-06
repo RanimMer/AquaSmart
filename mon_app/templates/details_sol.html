@@ -1,0 +1,35 @@
+{% extends 'index.html' %}
+{% load static %}
+
+{% block content %}
+<section class="container mt-4">
+  <div class="row">
+    <div class="col-md-6">
+      {% if sol.photo_sol %}
+        <img src="{{ sol.photo_sol.url }}" class="img-fluid rounded" alt="Photo sol">
+      {% endif %}
+    </div>
+    <div class="col-md-6">
+      <h2 class="text-success">Analyse #{{ sol.id_analyse }} — {{ sol.pin_surface }}</h2>
+      <ul class="list-unstyled">
+        <li><strong>Date :</strong> {{ sol.date_analyse }}</li>
+        <li><strong>Surface :</strong> {{ sol.surface }} ha</li>
+        <li><strong>Région :</strong> {{ sol.total_region }}</li>
+        <li><strong>pH :</strong> {{ sol.ph }}</li>
+        <li><strong>Azote :</strong> {{ sol.azote }} mg/kg</li>
+        <li><strong>Phosphore :</strong> {{ sol.phosphore }} mg/kg</li>
+        <li><strong>Potassium :</strong> {{ sol.potassium }} mg/kg</li>
+        <li><strong>Qualité :</strong> {{ sol.qualite_sol }}</li>
+      </ul>
+
+      <h5>Composition</h5>
+      <p>{{ sol.bundles_composition }}</p>
+
+      <h5>Recommandations</h5>
+      <p>{{ sol.recommandations|default:"Aucune recommandation." }}</p>
+
+      <a href="{% url 'liste_sols_front' %}" class="btn btn-secondary mt-2">Retour</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

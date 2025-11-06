@@ -34,51 +34,39 @@ class Culture(models.Model):
         null=True, blank=True
     )
 
-    """
-    # Clés étrangères
-    proprietaire = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-        related_name='cultures'
-    )
-
-    station = models.ForeignKey(
-        'stations.Station',
-        on_delete=models.PROTECT,
-        related_name='cultures'
-    )
-
-    serre = models.ForeignKey(
-        'serres.Serre',
-        on_delete=models.SET_NULL,
-        null=True, blank=True,
-        related_name='cultures'
-    )
-    """
-    # Dates automatiques
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    # ------- CONTRÔLE DE SAISIE -------
     def clean(self):
         errors = {}
 
-        if self.surface_m2 <= 0:
+        # Vérifier que surface_m2 n'est pas None avant de comparer
+        if self.surface_m2 is not None and self.surface_m2 <= 0:
             errors['surface_m2'] = "La surface doit être supérieure à 0."
 
-        if self.besoin_base_l_j < 0:
+        # Vérifier que besoin_base_l_j n'est pas None avant de comparer
+        if self.besoin_base_l_j is not None and self.besoin_base_l_j < 0:
             errors['besoin_base_l_j'] = "Le besoin ne peut pas être négatif."
 
-        if self.date_recolte_prevue and self.date_recolte_prevue <= self.date_semis:
+        # Vérifier que les dates ne sont pas None avant de comparer
+        if (self.date_recolte_prevue is not None and 
+            self.date_semis is not None and 
+            self.date_recolte_prevue <= self.date_semis):
             errors['date_recolte_prevue'] = "La date de récolte doit être après la date de semis."
 
         if errors:
             raise ValidationError(errors)
 
-    # ------- GETTER SIMPLE (pas de setter) -------
+    def save(self, *args, **kwargs):
+        # Appeler clean() avant la sauvegarde
+        self.full_clean()
+        super().save(*args, **kwargs)
+
     @property
     def age_jours(self):
-        return (date.today() - self.date_semis).days
+        if self.date_semis:
+            return (date.today() - self.date_semis).days
+        return 0
 
     def __str__(self):
         return f"{self.nom} ({self.get_type_display()})"

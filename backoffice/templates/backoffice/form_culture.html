@@ -4,59 +4,65 @@
 <h2 style="color: black;">{{ action }} Culture</h2>
 
 <div class="form-card">
-  <form method="post" enctype="multipart/form-data">
+  <form method="post" enctype="multipart/form-data" novalidate>
     {% csrf_token %}
-    {{ form.as_p }}
+
+    {% for field in form %}
+      <div class="mb-3">
+        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+        {{ field }}
+        {% if field.errors %}
+          <div class="invalid-feedback d-block">
+            {{ field.errors.0 }}
+          </div>
+        {% endif %}
+        {% if field.help_text %}
+          <small class="form-text text-muted">{{ field.help_text }}</small>
+        {% endif %}
+      </div>
+    {% endfor %}
+
+    {% if form.non_field_errors %}
+      <div class="alert alert-danger">{{ form.non_field_errors.0 }}</div>
+    {% endif %}
+
     <button type="submit" class="btn-submit">Enregistrer</button>
-    <button class="btn btn-secondary" href="{% url 'gestion_cultures' %}" class="btn-submit">Annuler</button>
+    <a href="{% url 'gestion_cultures' %}" class="btn btn-secondary">Annuler</a>
   </form>
 </div>
-<style>
-/* Card autour du formulaire */
-.form-card {
-    background: #ffffff;
-    padding: 30px;
-    border-radius: 12px;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
-    max-width: 500px;
-    margin: 20px auto;
-}
 
-/* Champs du formulaire */
+<style>
+.form-card {
+  background:#fff; padding:30px; border-radius:12px;
+  box-shadow:0 6px 20px rgba(0,0,0,.1); max-width:650px; margin:20px auto;
+}
 .form-card input[type="text"],
 .form-card input[type="number"],
+.form-card input[type="date"],
 .form-card input[type="file"],
-.form-card select,
-.form-card textarea {
-    width: 100%;
-    padding: 10px 15px;
-    margin-bottom: 15px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    font-size: 14px;
+.form-card select, .form-card textarea {
+  width:100%; padding:10px 15px; margin-bottom:15px;
+  border:1px solid #ccc; border-radius:8px; font-size:14px;
 }
+.form-card label { font-weight:600; color:#333; margin-bottom:5px; display:block; }
 
-/* Bouton moderne */
+.is-invalid { border-color:#dc3545 !important; }
+.is-invalid:focus { box-shadow:0 0 0 .25rem rgba(220,53,69,.25) }
+.invalid-feedback { color:#dc3545; margin-top:6px; font-size:.9rem; }
+
 .btn-submit {
-    background-color: #1fa64a; /* vert */
-    color: white;
-    border: none;
-    padding: 10px 25px;
-    font-size: 16px;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background 0.3s;
+  background:#1fa64a; color:#fff; border:none; padding:10px 25px;
+  font-size:16px; border-radius:8px; cursor:pointer; transition:background .3s;
+  margin-right: 10px;
 }
-.btn-submit:hover {
-    background-color: #15963d;
-}
+.btn-submit:hover { background:#15963d; }
 
-/* Labels du formulaire */
-.form-card label {
-    font-weight: 600;
-    margin-bottom: 5px;
-    display: block;
-    color: #333;
+.btn-secondary {
+  background:#6c757d; color:#fff; border:none; padding:10px 25px;
+  font-size:16px; border-radius:8px; cursor:pointer; transition:background .3s;
+  text-decoration: none;
+  display: inline-block;
 }
+.btn-secondary:hover { background:#5a6268; color:#fff; }
 </style>
 {% endblock %}

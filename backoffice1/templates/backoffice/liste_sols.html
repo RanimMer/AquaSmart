@@ -37,8 +37,8 @@
                         {% for sol in sols %}
                         <tr class="agricultural-table-row">
                             <td class="text-center">
-                                <span class="analysis-id">#{{ sol.id_analyse }}</span>
-                            </td>
+    <span class="analysis-id">#{{ forloop.counter }}</span>
+</td>
                             <td>
                                 <div class="parcel-info">
                                     <strong class="d-block">{{ sol.pin_surface }}</strong>
@@ -59,12 +59,12 @@
                                 <div class="npk-indicator">
                                     <small>N:{{ sol.azote|default:"0"|floatformat:1 }}</small>
                                 </div>
-                            </td>
-                            <td class="text-center">
-                                <span class="quality-badge quality-{{ sol.qualite_sol }}">
-                                    {{ sol.qualite_sol|title }}
-                                </span>
-                            </td>
+                            <!-- PAR : -->
+<td class="text-center">
+    <span class="quality-badge quality-moyenne">
+        À calculer
+    </span>
+</td>
                             <td class="text-center">
                                 <span class="date-analysis">{{ sol.date_analyse|date:"d/m/Y" }}</span>
                             </td>

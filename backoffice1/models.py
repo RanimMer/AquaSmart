@@ -23,7 +23,7 @@ class AnalyseSol(models.Model):
         ('moyenne', 'Moyenne'),
         ('mauvaise', 'Mauvaise'),
     ])
-    photo_sol = models.ImageField(upload_to='photos_sols/', blank=True, null=True)
+    
     
     # Paramètres chimiques du sol
     ph = models.DecimalField(max_digits=3, decimal_places=1)
@@ -42,6 +42,14 @@ class AnalyseSol(models.Model):
     
     def __str__(self):
         return f"Analyse {self.id_analyse} - {self.pin_surface}"
+    def get_photo_url(self):
+        """Retourne l'URL complète de la photo du sol"""
+        if self.photo_sol and hasattr(self.photo_sol, 'url'):
+            return self.photo_sol.url
+        return None
+    def get_absolute_url(self):
+        """URL pour accéder au détail de l'analyse"""
+        return reverse('analyse_detail', kwargs={'pk': self.pk})
     
     # Méthodes (pour plus tard)
     def calculer_qualite(self):

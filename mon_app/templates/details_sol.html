@@ -4,11 +4,7 @@
 {% block content %}
 <section class="container mt-4">
   <div class="row">
-    <div class="col-md-6">
-      {% if sol.photo_sol %}
-        <img src="{{ sol.photo_sol.url }}" class="img-fluid rounded" alt="Photo sol">
-      {% endif %}
-    </div>
+    
     <div class="col-md-6">
       <h2 class="text-success">Analyse #{{ sol.id_analyse }} — {{ sol.pin_surface }}</h2>
       <ul class="list-unstyled">

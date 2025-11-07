@@ -1,13 +1,22 @@
 from django.urls import path
-from . import views
+from .views import viewsProduits, viewsCultures
+
 
 urlpatterns = [
-    path('', views.dashboard, name='dashboard'),  # pour le dashboard
-    path('produits/', views.gestion_produits, name='gestion_produits'),
-    path('produits/ajouter/', views.ajouter_produit, name='ajouter_produit'),
-    path('produits/modifier/<int:pk>/', views.modifier_produit, name='modifier_produit'),
-    path('produits/supprimer/<int:pk>/', views.supprimer_produit, name='supprimer_produit'),
-    path('produits/statistiques/', views.statistiques_produits, name='statistiques_produits'),
-    path('produits/export-pdf/', views.export_pdf_produits, name='export_pdf_produits'),
-    path('produits/', views.gestion_produits, name='produits_list'),
+    path('', viewsProduits.dashboard, name='dashboard'),
+    path('', viewsCultures.dashboard, name='dashboard'),  
+    # Produits
+    path('produits/', viewsProduits.gestion_produits, name='gestion_produits'),
+    path('produits/ajouter/', viewsProduits.ajouter_produit, name='ajouter_produit'),
+    path('produits/modifier/<int:pk>/', viewsProduits.modifier_produit, name='modifier_produit'),
+    path('produits/supprimer/<int:pk>/', viewsProduits.supprimer_produit, name='supprimer_produit'),
+    path('produits/statistiques/', viewsProduits.statistiques_produits, name='statistiques_produits'),
+    path('produits/export-pdf/', viewsProduits.export_pdf_produits, name='export_pdf_produits'),
+
+    # Cultures
+    path('cultures/', viewsCultures.gestion_cultures, name='gestion_cultures'),
+    path('cultures/ajouter/', viewsCultures.ajouter_culture, name='ajouter_culture'),
+    path('cultures/modifier/<int:pk>/', viewsCultures.modifier_culture, name='modifier_culture'),
+    path('cultures/supprimer/<int:pk>/', viewsCultures.supprimer_culture, name='supprimer_culture'),
+    path('cultures/<int:culture_id>/utiliser_produit/', viewsCultures.enregistrer_utilisation_produit, name='enregistrer_utilisation_produit'),
 ]

@@ -1,0 +1,33 @@
+{% extends 'backoffice/base.html' %}
+{% block content %}
+<h2>Utiliser un produit pour {{ culture.nom }}</h2>
+
+{% if messages %}
+    <ul>
+    {% for message in messages %}
+        <li {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
+    {% endfor %}
+    </ul>
+{% endif %}
+
+<form method="post">
+    {% csrf_token %}
+    <label for="produit">Produit :</label>
+    <select name="produit" id="produit" required>
+        <option value="">-- Sélectionnez un produit --</option>
+        {% for produit in produits %}
+            <option value="{{ produit.id }}">
+                {{ produit.nom_produit }} (Stock: {{ produit.quantite_stock }} {{ produit.unite_stock }})
+            </option>
+        {% endfor %}
+    </select>
+
+    <label for="quantite_utilisee">Quantité utilisée :</label>
+    <input type="number" name="quantite_utilisee" id="quantite_utilisee" step="0.01" min="0.01" required>
+
+    <button type="submit">Enregistrer</button>
+</form>
+
+return redirect('gestion_cultures')
+
+{% endblock %}

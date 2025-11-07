@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from backoffice.models import Produit 
+from backoffice.models import Produit , Culture 
 
 # Create your views here.
 def index(request):
@@ -22,6 +22,11 @@ def produits(request):
         'query_type': query_type
     }
     return render(request, 'produits.html', context)
+
+def cultures(request):
+    # liste des cultures pour le front
+    items = Culture.objects.all()
+    return render(request, 'cultures.html', {'cultures': items})
 
 def logout_view(request):
     return render(request, 'logout.html')

@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import Produit
-from .forms import ProduitForm
+from ..models import Produit
+from ..forms import ProduitForm
 from django.db.models import Count
 import matplotlib.pyplot as plt
 from io import BytesIO

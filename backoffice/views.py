@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.utils import timezone
 from .models import Plantation
 from .forms import PlantationForm
 
@@ -9,9 +10,19 @@ def plantation_list(request):
     """Afficher toutes les plantations - FRONT OFFICE"""
     plantations = Plantation.objects.all().order_by('-dateDerniereMiseAJour')
     
+    # Vérifier pour chaque plantation si elle a été arrosée aujourd'hui
+    aujourdhui = timezone.now().strftime("%d/%m/%Y")
+    for plantation in plantations:
+        plantation.deja_arrose_aujourdhui = False
+        if plantation.datesIrrigation:
+            dates_list = plantation.datesIrrigation.strip().split('\n')
+            if dates_list and dates_list[-1].strip() == aujourdhui:
+                plantation.deja_arrose_aujourdhui = True
+    
     context = {
         'plantations': plantations,
-        'active_page': 'serre'
+        'active_page': 'serre',
+        'aujourdhui': aujourdhui
     }
     return render(request, 'backoffice/plantation_list.html', context)
 
@@ -20,7 +31,7 @@ def plantation_list(request):
 def plantation_create(request):
     """Créer une nouvelle plantation - BACK OFFICE"""
     if request.method == 'POST':
-        form = PlantationForm(request.POST, request.FILES)  # ← CORRIGÉ ICI
+        form = PlantationForm(request.POST, request.FILES)
         if form.is_valid():
             plantation = form.save()
             messages.success(request, f"✅ Plantation '{plantation.nomCulture}' ajoutée avec succès!")
@@ -43,7 +54,7 @@ def plantation_update(request, idSerre):
     plantation = get_object_or_404(Plantation, idSerre=idSerre)
     
     if request.method == 'POST':
-        form = PlantationForm(request.POST, request.FILES, instance=plantation)  # ← CORRIGÉ ICI
+        form = PlantationForm(request.POST, request.FILES, instance=plantation)
         if form.is_valid():
             form.save()
             messages.success(request, f"✅ Plantation '{plantation.nomCulture}' modifiée avec succès!")
@@ -77,3 +88,28 @@ def plantation_delete(request, idSerre):
         'active_page': 'serre'
     }
     return render(request, 'backoffice/plantation_confirm_delete.html', context)
+
+# ✅ NOUVELLE FONCTION POUR ARROSAGE AUTOMATIQUE
+@login_required
+def confirmer_arrosage(request, idSerre):
+    """Bouton pour confirmer l'arrosage d'aujourd'hui - AUTOMATIQUE"""
+    plantation = get_object_or_404(Plantation, idSerre=idSerre)
+    
+    # Vérifier si déjà arrosé aujourd'hui
+    aujourdhui = timezone.now().strftime("%d/%m/%Y")
+    if plantation.datesIrrigation:
+        dates_list = plantation.datesIrrigation.strip().split('\n')
+        if dates_list and dates_list[-1].strip() == aujourdhui:
+            messages.warning(request, f"⚠️ {plantation.nomCulture} a déjà été arrosée aujourd'hui !")
+            return redirect('plantation_list')
+    
+    # Ajouter automatiquement la date d'aujourd'hui
+    if plantation.datesIrrigation:
+        plantation.datesIrrigation += f"\n{aujourdhui}"
+    else:
+        plantation.datesIrrigation = aujourdhui
+        
+    plantation.save()
+    
+    messages.success(request, f"✅ {plantation.nomCulture} arrosée aujourd'hui ({aujourdhui}) !")
+    return redirect('plantation_list')

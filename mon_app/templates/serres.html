@@ -39,6 +39,11 @@
     .etat-maturite { background: #28a745; }
     .etat-recoltee { background: #343a40; }
     .etat-abimee { background: #dc3545; }
+    .irrigation-badge {
+      padding: 3px 8px; border-radius: 8px; font-size: 11px; font-weight: bold; margin: 2px;
+    }
+    .badge-arrosage { background: #17a2b8; color: white; }
+    .badge-prochain { background: #6f42c1; color: white; }
   </style>
 </head>
 <body>
@@ -156,9 +161,21 @@
               <p><b>Date semis:</b> {{ p.dateSemis|date:"d/m/Y" }}</p>
               <p><b>Date récolte prévue:</b> {{ p.dateRecoltePrevue|date:"d/m/Y" }}</p>
               <p><b>Fréquence arrosage:</b> {{ p.frequenceArrosage|default:"Non spécifiée" }}</p>
-              {% if p.datesIrrigation %}
-              <p><b>Dernières irrigations:</b><br><small style="white-space: pre-line;">{{ p.datesIrrigation }}</small></p>
-              {% endif %}
+              
+              <!-- NOUVEL AFFICHAGE DES IRRIGATIONS - PROFESSIONNEL -->
+              <div class="irrigation-info mt-3">
+                {% if p.derniere_irrigation %}
+                <div class="mb-2">
+                  <span class="irrigation-badge badge-arrosage">💧 Dernier arrosage</span>
+                  <div class="small">{{ p.derniere_irrigation }}</div>
+                </div>
+                {% endif %}
+                
+                <div>
+                  <span class="irrigation-badge badge-prochain">📅 Prochain arrosage</span>
+                  <div class="small">{{ p.prochain_arrosage }}</div>
+                </div>
+              </div>
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>

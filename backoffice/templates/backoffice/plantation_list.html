@@ -24,7 +24,7 @@
     <table class="tableau-produits">
       <thead>
         <tr>
-          <th>Image</th>  <!-- NOUVELLE COLONNE -->
+          <th>Image</th>
           <th>ID</th>
           <th>Serre</th>
           <th>Culture</th>
@@ -33,6 +33,7 @@
           <th>État</th>
           <th>Semis</th>
           <th>Récolte</th>
+          <th>Dernier arrosage</th>
           <th>Actions</th>
         </tr>
       </thead>
@@ -71,12 +72,28 @@
             <td>{{ p.dateSemis|date:"d/m/Y" }}</td>
             <td>{{ p.dateRecoltePrevue|date:"d/m/Y" }}</td>
             <td>
-              <a href="{% url 'plantation_update' p.idSerre %}" class="btn btn-edit">✏️ Modifier</a>
-              <a href="{% url 'plantation_delete' p.idSerre %}" class="btn btn-delete">🗑️ Supprimer</a>
+              {% if p.datesIrrigation %}
+                {% with dernier_arrosage=p.datesIrrigation.strip.split|last %}
+                  <small class="text-success">{{ dernier_arrosage|default:"" }}</small>
+                {% endwith %}
+              {% else %}
+                <span class="text-muted">-</span>
+              {% endif %}
+            </td>
+            <td>
+              <div class="btn-group">
+                <a href="{% url 'plantation_update' p.idSerre %}" class="btn btn-edit">✏️ Modifier</a>
+                <a href="{% url 'plantation_delete' p.idSerre %}" class="btn btn-delete">🗑️ Supprimer</a>
+                {% if p.deja_arrose_aujourdhui %}
+                  <span class="btn btn-arrose-disabled" title="Déjà arrosée aujourd'hui">✅ Arrosé</span>
+                {% else %}
+                  <a href="{% url 'confirmer_arrosage' p.idSerre %}" class="btn btn-arrose" onclick="return confirm('Confirmer l\\'arrosage de {{ p.nomCulture }} aujourd\\'hui ?')">💧 Arrosé</a>
+                {% endif %}
+              </div>
             </td>
           </tr>
         {% empty %}
-          <tr><td colspan="10">Aucune plantation.</td></tr>
+          <tr><td colspan="11">Aucune plantation.</td></tr>
         {% endfor %}
       </tbody>
     </table>
@@ -116,6 +133,34 @@
 }
 .btn-delete:hover {
     background-color: #c12c2c;
+}
+
+/* Bouton arrosage automatique */
+.btn-arrose {
+    background-color: #17a2b8;
+}
+.btn-arrose:hover {
+    background-color: #138496;
+}
+
+/* Bouton arrosage désactivé */
+.btn-arrose-disabled {
+    background-color: #6c757d;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+/* Groupe de boutons */
+.btn-group {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+}
+.btn-group .btn {
+    margin: 2px;
+    flex: 1;
+    min-width: 80px;
+    text-align: center;
 }
 
 /* Tableau */

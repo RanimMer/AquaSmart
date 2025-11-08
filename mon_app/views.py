@@ -24,7 +24,19 @@ from backoffice.models import Plantation
 def serres(request):
     """Vue front-office pour afficher les serres"""
     plantations = Plantation.objects.all().order_by('-dateDerniereMiseAJour')
+    
+    # Ajouter la dernière date d'irrigation pour chaque plantation
+    for plantation in plantations:
+        plantation.derniere_irrigation = ""
+        plantation.prochain_arrosage = "À planifier"  # Par défaut
+        
+        if plantation.datesIrrigation:
+            dates_list = plantation.datesIrrigation.strip().split('\n')
+            if dates_list:
+                plantation.derniere_irrigation = dates_list[-1].strip()
+    
     context = {
-        'plantations': plantations
+        'plantations': plantations,
+        'active_page': 'serres'
     }
     return render(request, 'serres.html', context)

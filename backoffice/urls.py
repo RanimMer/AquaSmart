@@ -1,11 +1,13 @@
 from django.urls import path
 from django.shortcuts import redirect
-from .views import plantation_list, plantation_create, plantation_update, plantation_delete
+from . import views
 
 urlpatterns = [
     path('', lambda request: redirect('plantation_list')),
-    path('plantations/', plantation_list, name='plantation_list'),
-    path('plantations/ajouter/', plantation_create, name='plantation_create'),
-    path('plantations/modifier/<int:idSerre>/', plantation_update, name='plantation_update'),
-    path('plantations/supprimer/<int:idSerre>/', plantation_delete, name='plantation_delete'),
+    path('plantations/', views.plantation_list, name='plantation_list'),
+    path('plantations/ajouter/', views.plantation_create, name='plantation_create'),
+    path('plantations/modifier/<int:idSerre>/', views.plantation_update, name='plantation_update'),
+    path('plantations/supprimer/<int:idSerre>/', views.plantation_delete, name='plantation_delete'),
+    # ✅ NOUVELLE URL POUR ARROSAGE AUTOMATIQUE
+    path('arrosage/confirmer/<int:idSerre>/', views.confirmer_arrosage, name='confirmer_arrosage'),
 ]

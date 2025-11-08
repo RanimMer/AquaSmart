@@ -17,6 +17,10 @@ class PlantationForm(forms.ModelForm):
                 'class': 'form-control',
                 'placeholder': 'Ex: Tous les 2 jours'
             }),
+            'heureArrosage': forms.TimeInput(attrs={  # NOUVEAU
+                'type': 'time', 
+                'class': 'form-control'
+            }),
             'nombrePlantes': forms.NumberInput(attrs={
                 'min': 1,
                 'class': 'form-control'
@@ -33,3 +37,5 @@ class PlantationForm(forms.ModelForm):
         # Personnalisation des help_text
         self.fields['datesIrrigation'].help_text = "Une date par ligne (format: JJ/MM/AAAA)"
         self.fields['frequenceArrosage'].help_text = "Ex: Tous les 2 jours, 2 fois par semaine, etc."
+        self.fields['heureArrosage'].help_text = "Heure fixe pour l'arrosage (ex: 08:00)"  # NOUVEAU
+        

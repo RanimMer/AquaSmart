@@ -1,6 +1,6 @@
 from django.urls import path
-from .views import viewsProduits, viewsCultures, viewsSols
-
+from .views import viewsProduits, viewsCultures, viewsSols, viewsSerres
+from django.shortcuts import redirect
 
 urlpatterns = [
     path('', viewsProduits.dashboard, name='dashboard'),
@@ -24,4 +24,13 @@ urlpatterns = [
     path('sols/ajouter/', viewsSols.ajouter_sol_back, name='ajouter_sol_back'),
     path('sols/modifier/<int:id_analyse>/', viewsSols.modifier_sol_back, name='modifier_sol_back'),
     path('sols/supprimer/<int:id_analyse>/', viewsSols.supprimer_sol_back, name='supprimer_sol_back'),
+    #serre
+    path('', lambda request: redirect('plantation_list')),
+    path('plantations/', viewsSerres.plantation_list, name='plantation_list'),
+    path('plantations/ajouter/', viewsSerres.plantation_create, name='plantation_create'),
+    path('plantations/modifier/<int:idSerre>/', viewsSerres.plantation_update, name='plantation_update'),
+    path('plantations/supprimer/<int:idSerre>/', viewsSerres.plantation_delete, name='plantation_delete'),
+    # ✅ NOUVELLE URL POUR ARROSAGE AUTOMATIQUE
+    path('arrosage/confirmer/<int:idSerre>/', viewsSerres.confirmer_arrosage, name='confirmer_arrosage'),
+
 ]

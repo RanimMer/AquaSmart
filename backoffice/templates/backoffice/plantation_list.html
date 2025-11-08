@@ -1,0 +1,216 @@
+{% extends 'backoffice/base.html' %}
+{% load static %}
+
+{% block title %}Gestion des Serres - Backoffice{% endblock %}
+
+{% block page_title %}
+<div style="text-align:left; margin-bottom:14px;">
+    <span style="font-size:26px; font-weight:600; color:#1fa64a;">Bienvenue dans notre espace :</span><br>
+    <span style="font-size:32px; font-weight:400; color:#000; display:inline-block; margin-top:6px;">
+        Liste de Serres :
+    </span>
+</div>
+{% endblock %}
+
+
+{% block content %}
+<div class="card">
+  <div class="card-body">
+    <div style="margin-bottom:20px;">
+      <a href="{% url 'plantation_create' %}" class="btn btn-vert">➕ Ajouter une plantation</a>
+    </div>
+
+    {% if messages %}
+      {% for message in messages %}
+      <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+      {% endfor %}
+    {% endif %}
+
+    <table class="tableau-produits">
+      <thead>
+        <tr>
+          <th>Image</th>
+          <th>ID</th>
+          <th>Serre</th>
+          <th>Culture</th>
+          <th>Variété</th>
+          <th>Plantes</th>
+          <th>État</th>
+          <th>Semis</th>
+          <th>Récolte</th>
+          <th>Dernier arrosage</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in plantations %}
+          <tr>
+            <td>
+              {% if p.image %}
+                <img src="{{ p.image.url }}" alt="{{ p.nomCulture }}" width="60" height="60" style="object-fit: cover; border-radius: 8px;">
+              {% else %}
+                <div style="width: 60px; height: 60px; background: #f8f9fa; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #6c757d;">
+                  <small>Aucune image</small>
+                </div>
+              {% endif %}
+            </td>
+            <td><strong>#{{ p.idSerre }}</strong></td>
+            <td>{{ p.nomSerre }}</td>
+            <td>{{ p.nomCulture }}</td>
+            <td>{{ p.variete }}</td>
+            <td>{{ p.nombrePlantes }}</td>
+            <td>
+              {% if p.etat == 'Semée' %}
+                <span class="badge bg-secondary">{{ p.etat }}</span>
+              {% elif p.etat == 'Croissance' %}
+                <span class="badge bg-info">{{ p.etat }}</span>
+              {% elif p.etat == 'Floraison' %}
+                <span class="badge bg-warning">{{ p.etat }}</span>
+              {% elif p.etat == 'Maturité' %}
+                <span class="badge bg-success">{{ p.etat }}</span>
+              {% elif p.etat == 'Récoltée' %}
+                <span class="badge bg-dark">{{ p.etat }}</span>
+              {% else %}
+                <span class="badge bg-danger">{{ p.etat }}</span>
+              {% endif %}
+            </td>
+            <td>{{ p.dateSemis|date:"d/m/Y" }}</td>
+            <td>{{ p.dateRecoltePrevue|date:"d/m/Y" }}</td>
+            <td>
+              {% if p.datesIrrigation %}
+                {% with dernier_arrosage=p.datesIrrigation.strip.split|last %}
+                  <small class="text-success">{{ dernier_arrosage|default:"" }}</small>
+                {% endwith %}
+              {% else %}
+                <span class="text-muted">-</span>
+              {% endif %}
+            </td>
+            <td class="actions-cell">
+    <a href="{% url 'plantation_update' p.idSerre %}" class="btn btn-edit">✏️</a>
+    <a href="{% url 'plantation_delete' p.idSerre %}" class="btn btn-delete">🗑️</a>
+    {% if p.deja_arrose_aujourdhui %}
+        <span class="btn btn-arrose-disabled" title="Déjà arrosée aujourd'hui">✅</span>
+    {% else %}
+        <a href="{% url 'confirmer_arrosage' p.idSerre %}" class="btn btn-arrose" onclick="return confirm('Confirmer l\\'arrosage de {{ p.nomCulture }} aujourd\\'hui ?')">💧</a>
+    {% endif %}
+</td>
+
+          </tr>
+        {% empty %}
+          <tr><td colspan="11">Aucune plantation.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<style>
+/* Boutons */
+.btn {
+    padding: 8px 14px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: 0.3s;
+    color: white;
+    display: inline-block;
+    margin: 2px;
+}
+
+/* Bouton vert principal */
+.btn-vert {
+    background-color: #1fa64a;
+}
+.btn-vert:hover {
+    background-color: #15903c;
+}
+
+/* Modifier et supprimer */
+.btn-edit {
+    background-color: #f0ad4e;
+}
+.btn-edit:hover {
+    background-color: #e59400;
+}
+.btn-delete {
+    background-color: #d9534f;
+}
+.btn-delete:hover {
+    background-color: #c12c2c;
+}
+
+/* Bouton arrosage automatique */
+.btn-arrose {
+    background-color: #17a2b8;
+}
+.btn-arrose:hover {
+    background-color: #138496;
+}
+
+/* Bouton arrosage désactivé */
+.btn-arrose-disabled {
+    background-color: #6c757d;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+/* Groupe de boutons */
+.btn-group {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+}
+.btn-group .btn {
+    margin: 2px;
+    flex: 1;
+    min-width: 80px;
+    text-align: center;
+}
+
+/* Tableau */
+.tableau-produits {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.tableau-produits th, .tableau-produits td {
+    padding: 12px 15px;
+    text-align: left;
+}
+
+.tableau-produits thead {
+    background-color: #1fa64a;
+    color: white;
+}
+
+.tableau-produits tbody tr {
+    background-color: white;
+    transition: 0.3s;
+}
+
+.tableau-produits tbody tr:hover {
+    background-color: #e8f5e9;
+}
+
+/* Badges */
+.badge {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: bold;
+}
+.actions-cell {
+  display: flex;
+  gap: 8px; /* espace entre les boutons */
+  align-items: center;
+}
+
+</style>
+{% endblock %}

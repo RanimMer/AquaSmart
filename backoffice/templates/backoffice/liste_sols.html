@@ -1,7 +1,13 @@
 {% extends 'backoffice/base.html' %}
 {% load static %}
-
-{% block title %}Analyses de Sol{% endblock %}
+{% block page_title %}
+<div style="text-align:left; margin-bottom:14px;">
+    <span style="font-size:26px; font-weight:600; color:#1fa64a;">Bienvenue dans notre espace :</span><br>
+    <span style="font-size:32px; font-weight:400; color:#000; display:inline-block; margin-top:6px;">
+        Liste du Sol :
+    </span>
+</div>
+{% endblock %}
 
 {% block content %}
 <div class="container-fluid py-4">
@@ -72,7 +78,7 @@
         ✏️
     </a>
     <a href="{% url 'supprimer_sol_back' sol.id_analyse %}" class="btn btn-delete"
-       onclick="return confirm('Supprimer l\'analyse #{{ sol.id_analyse }} ?')" title="Supprimer">
+    >
         🗑️
     </a>
 </td>

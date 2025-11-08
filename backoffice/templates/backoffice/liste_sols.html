@@ -1,0 +1,493 @@
+{% extends 'backoffice/base.html' %}
+{% load static %}
+
+{% block title %}Analyses de Sol{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Tableau Simplifié -->
+    <div class="card agricultural-table-card">
+        <div class="card-header agricultural-table-header">
+            <div class="d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-table me-2"></i>Analyses de Sol
+                </h5>
+                <a href="{% url 'ajouter_sol_back' %}" class="btn btn-success-agriculture btn-sm">
+                    <i class="fas fa-plus-circle me-1"></i>Nouvelle Analyse
+                </a>
+            </div>
+        </div>
+        
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover agricultural-table mb-0">
+                    <thead class="agricultural-table-head">
+                        <tr>
+                            <th scope="col" class="text-center">#ID</th>
+                            <th scope="col">Référence</th>
+                            <th scope="col" class="text-center">Surface</th>
+                            <th scope="col" class="text-center">pH</th>
+                            <th scope="col" class="text-center">NPK</th>
+                            <th scope="col" class="text-center">Qualité</th>
+                            <th scope="col" class="text-center">Date</th>
+                            <th scope="col" class="text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for sol in sols %}
+                        <tr class="agricultural-table-row">
+                            <td class="text-center">
+    <span class="analysis-id">#{{ forloop.counter }}</span>
+</td>
+                            <td>
+                                <div class="parcel-info">
+                                    <strong class="d-block">{{ sol.pin_surface }}</strong>
+                                    <small class="text-muted">{{ sol.total_region }}</small>
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                <span class="surface-badge">{{ sol.surface }} ha</span>
+                            </td>
+                            <td class="text-center">
+                                <span class="ph-indicator {% if sol.ph < 6.0 %}ph-acidic
+                                    {% elif sol.ph > 7.5 %}ph-alkaline
+                                    {% else %}ph-optimal{% endif %}">
+                                    {{ sol.ph }}
+                                </span>
+                            </td>
+                            <td class="text-center">
+                                <div class="npk-indicator">
+                                    <small>N:{{ sol.azote|default:"0"|floatformat:1 }}</small>
+                                </div>
+                            <!-- PAR : -->
+<td class="text-center">
+    <span class="quality-badge quality-moyenne">
+        À calculer
+    </span>
+</td>
+                            <td class="text-center">
+                                <span class="date-analysis">{{ sol.date_analyse|date:"d/m/Y" }}</span>
+                            <td>
+    <a href="{% url 'modifier_sol_back' sol.id_analyse %}" class="btn btn-edit" title="Modifier">
+        ✏️
+    </a>
+    <a href="{% url 'supprimer_sol_back' sol.id_analyse %}" class="btn btn-delete"
+       onclick="return confirm('Supprimer l\'analyse #{{ sol.id_analyse }} ?')" title="Supprimer">
+        🗑️
+    </a>
+</td>
+
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="8" class="text-center py-5">
+                                <div class="empty-state">
+                                    <i class="fas fa-inbox fa-2x text-muted mb-3"></i>
+                                    <h6 class="text-muted">Aucune analyse enregistrée</h6>
+                                    <a href="{% url 'ajouter_sol_back' %}" class="btn btn-success-agriculture btn-sm mt-2">
+                                        <i class="fas fa-plus-circle me-1"></i>Créer une analyse
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Variables couleurs agriculture - Mode Clair */
+:root {
+    --agriculture-primary: #2d5016;
+    --agriculture-success: #27ae60;
+    --agriculture-warning: #f39c12;
+    --agriculture-danger: #e74c3c;
+    --agriculture-info: #3498db;
+    --agriculture-light: #f8f9fa;
+    --agriculture-dark: #2c3e50;
+    --agriculture-border: #e9ecef;
+    --agriculture-bg: #ffffff;
+    --agriculture-text: #2c3e50;
+    --agriculture-text-muted: #6c757d;
+}
+
+/* Variables couleurs agriculture - Mode Sombre */
+body.dark-mode {
+    --agriculture-primary: #4a7c2a;
+    --agriculture-success: #2ecc71;
+    --agriculture-warning: #f1c40f;
+    --agriculture-danger: #e74c3c;
+    --agriculture-info: #3498db;
+    --agriculture-light: #2c3e50;
+    --agriculture-dark: #ecf0f1;
+    --agriculture-border: #34495e;
+    --agriculture-bg: #1a1f2e;
+    --agriculture-text: #ecf0f1;
+    --agriculture-text-muted: #bdc3c7;
+}
+
+/* Styles de base */
+body {
+    background-color: var(--agriculture-bg);
+    color: var(--agriculture-text);
+    transition: all 0.3s ease;
+}
+
+/* Tableau agricole */
+.agricultural-table-card {
+    border: 1px solid var(--agriculture-border);
+    border-radius: 8px;
+    background: var(--agriculture-bg);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+
+body.dark-mode .agricultural-table-card {
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+
+.agricultural-table-header {
+    background: var(--agriculture-light);
+    border-bottom: 1px solid var(--agriculture-border);
+    padding: 1rem 1.25rem;
+    transition: all 0.3s ease;
+}
+
+body.dark-mode .agricultural-table-header {
+    background: #2c3e50;
+}
+
+.agricultural-table-head {
+    background: var(--agriculture-light);
+    transition: all 0.3s ease;
+}
+
+body.dark-mode .agricultural-table-head {
+    background: #2c3e50;
+}
+
+.agricultural-table-head th {
+    border-bottom: 1px solid var(--agriculture-border);
+    font-weight: 600;
+    color: var(--agriculture-text);
+    padding: 0.75rem 0.5rem;
+    font-size: 0.85rem;
+    white-space: nowrap;
+    transition: all 0.3s ease;
+}
+
+.agricultural-table-row {
+    transition: all 0.2s ease;
+    border-bottom: 1px solid var(--agriculture-border);
+    background: var(--agriculture-bg);
+}
+
+.agricultural-table-row:hover {
+    background: rgba(45, 80, 22, 0.05);
+}
+
+body.dark-mode .agricultural-table-row:hover {
+    background: rgba(74, 124, 42, 0.1);
+}
+
+.agricultural-table-row:last-child {
+    border-bottom: none;
+}
+
+/* Badges et indicateurs */
+.analysis-id {
+    background: var(--agriculture-light);
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-weight: 600;
+    color: var(--agriculture-text);
+    font-size: 0.8rem;
+    transition: all 0.3s ease;
+}
+
+body.dark-mode .analysis-id {
+    background: #34495e;
+}
+
+.surface-badge {
+    background: rgba(52, 152, 219, 0.1);
+    color: #2980b9;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-weight: 500;
+    font-size: 0.8rem;
+    transition: all 0.3s ease;
+}
+
+body.dark-mode .surface-badge {
+    background: rgba(52, 152, 219, 0.2);
+    color: #5dade2;
+}
+
+.ph-indicator {
+    display: inline-block;
+    padding: 0.3rem 0.6rem;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 0.8rem;
+    min-width: 45px;
+    transition: all 0.3s ease;
+}
+
+.ph-acidic { 
+    background: rgba(243, 156, 18, 0.1); 
+    color: #d35400; 
+    border: 1px solid rgba(243, 156, 18, 0.2);
+}
+.ph-optimal { 
+    background: rgba(39, 174, 96, 0.1); 
+    color: #27ae60; 
+    border: 1px solid rgba(39, 174, 96, 0.2);
+}
+.ph-alkaline { 
+    background: rgba(52, 152, 219, 0.1); 
+    color: #2980b9; 
+    border: 1px solid rgba(52, 152, 219, 0.2);
+}
+
+body.dark-mode .ph-acidic { 
+    background: rgba(243, 156, 18, 0.2); 
+    color: #f39c12; 
+    border: 1px solid rgba(243, 156, 18, 0.3);
+}
+body.dark-mode .ph-optimal { 
+    background: rgba(39, 174, 96, 0.2); 
+    color: #2ecc71; 
+    border: 1px solid rgba(39, 174, 96, 0.3);
+}
+body.dark-mode .ph-alkaline { 
+    background: rgba(52, 152, 219, 0.2); 
+    color: #5dade2; 
+    border: 1px solid rgba(52, 152, 219, 0.3);
+}
+
+.npk-indicator {
+    font-size: 0.75rem;
+    color: var(--agriculture-text-muted);
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.quality-badge {
+    padding: 0.3rem 0.6rem;
+    border-radius: 12px;
+    font-weight: 500;
+    font-size: 0.75rem;
+    border: 1px solid;
+    transition: all 0.3s ease;
+}
+
+.quality-excellente { 
+    background: rgba(39, 174, 96, 0.1); 
+    color: #27ae60; 
+    border-color: rgba(39, 174, 96, 0.3);
+}
+.quality-bonne { 
+    background: rgba(52, 152, 219, 0.1); 
+    color: #2980b9; 
+    border-color: rgba(52, 152, 219, 0.3);
+}
+.quality-moyenne { 
+    background: rgba(243, 156, 18, 0.1); 
+    color: #f39c12; 
+    border-color: rgba(243, 156, 18, 0.3);
+}
+.quality-critique { 
+    background: rgba(231, 76, 60, 0.1); 
+    color: #e74c3c; 
+    border-color: rgba(231, 76, 60, 0.3);
+}
+
+body.dark-mode .quality-excellente { 
+    background: rgba(46, 204, 113, 0.2); 
+    color: #2ecc71; 
+    border-color: rgba(46, 204, 113, 0.4);
+}
+body.dark-mode .quality-bonne { 
+    background: rgba(52, 152, 219, 0.2); 
+    color: #5dade2; 
+    border-color: rgba(52, 152, 219, 0.4);
+}
+body.dark-mode .quality-moyenne { 
+    background: rgba(241, 196, 15, 0.2); 
+    color: #f1c40f; 
+    border-color: rgba(241, 196, 15, 0.4);
+}
+body.dark-mode .quality-critique { 
+    background: rgba(231, 76, 60, 0.2); 
+    color: #e74c3c; 
+    border-color: rgba(231, 76, 60, 0.4);
+}
+
+.date-analysis {
+    font-size: 0.8rem;
+    color: var(--agriculture-text-muted);
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.parcel-info strong {
+    color: var(--agriculture-text);
+    transition: all 0.3s ease;
+}
+
+.parcel-info small {
+    color: var(--agriculture-text-muted);
+    transition: all 0.3s ease;
+}
+
+/* Boutons agricoles */
+.btn-success-agriculture {
+    background: var(--agriculture-primary);
+    border: none;
+    color: white;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    transition: all 0.2s ease;
+}
+
+.btn-success-agriculture:hover {
+    background: #3a6720;
+    color: white;
+}
+
+body.dark-mode .btn-success-agriculture {
+    background: #4a7c2a;
+}
+
+body.dark-mode .btn-success-agriculture:hover {
+    background: #5a8c3a;
+}
+
+/* Boutons d'actions - CORRIGÉ pour mode clair */
+.agricultural-actions .btn {
+    border-radius: 4px;
+    margin: 0 1px;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    transition: all 0.3s ease;
+    border: none;
+    color: white;
+}
+
+.agricultural-actions .btn-primary {
+    background: #3498db;
+}
+
+.agricultural-actions .btn-primary:hover {
+    background: #2980b9;
+    transform: translateY(-1px);
+}
+
+.agricultural-actions .btn-danger {
+    background: #e74c3c;
+}
+
+.agricultural-actions .btn-danger:hover {
+    background: #c0392b;
+    transform: translateY(-1px);
+}
+
+/* Adaptation pour mode sombre */
+body.dark-mode .agricultural-actions .btn-primary {
+    background: #3498db;
+}
+
+body.dark-mode .agricultural-actions .btn-primary:hover {
+    background: #2980b9;
+}
+
+body.dark-mode .agricultural-actions .btn-danger {
+    background: #e74c3c;
+}
+
+body.dark-mode .agricultural-actions .btn-danger:hover {
+    background: #c0392b;
+}
+
+/* État vide */
+.empty-state {
+    padding: 2rem 1rem;
+}
+
+.empty-state h6 {
+    font-size: 0.9rem;
+    color: var(--agriculture-text-muted);
+    transition: all 0.3s ease;
+}
+
+.empty-state .fa-inbox {
+    color: var(--agriculture-text-muted);
+    transition: all 0.3s ease;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .container-fluid.py-4 {
+        padding: 1rem !important;
+    }
+    
+    .agricultural-table-header {
+        padding: 0.75rem 1rem;
+    }
+    
+    .agricultural-table-head th {
+        padding: 0.5rem 0.25rem;
+        font-size: 0.8rem;
+    }
+    
+    .agricultural-actions .btn {
+        padding: 0.2rem 0.4rem;
+        margin: 0 1px;
+    }
+    
+    .quality-badge,
+    .ph-indicator,
+    .surface-badge {
+        font-size: 0.7rem;
+        padding: 0.2rem 0.4rem;
+    }
+}
+
+/* Animations douces */
+.agricultural-table-row,
+.btn,
+.card {
+    transition: all 0.3s ease;
+}
+
+/* Tooltips pour mode sombre */
+body.dark-mode .tooltip .tooltip-inner {
+    background: #2c3e50;
+    color: #ecf0f1;
+}
+
+body.dark-mode .tooltip .tooltip-arrow::before {
+    border-top-color: #2c3e50;
+}
+.btn-edit { background-color: #f0ad4e; }
+.btn-edit:hover { background-color: #e59400; }
+.btn-delete { background-color: #d9534f; }
+.btn-delete:hover { background-color: #c12c2c; }
+</style>
+
+<script>
+// Initialisation des tooltips
+document.addEventListener('DOMContentLoaded', function() {
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl)
+    });
+});
+</script>
+{% endblock %}

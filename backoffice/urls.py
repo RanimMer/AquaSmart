@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import viewsProduits, viewsCultures
+from .views import viewsProduits, viewsCultures, viewsSols
 
 
 urlpatterns = [
@@ -19,4 +19,9 @@ urlpatterns = [
     path('cultures/modifier/<int:pk>/', viewsCultures.modifier_culture, name='modifier_culture'),
     path('cultures/supprimer/<int:pk>/', viewsCultures.supprimer_culture, name='supprimer_culture'),
     path('cultures/<int:culture_id>/utiliser_produit/', viewsCultures.enregistrer_utilisation_produit, name='enregistrer_utilisation_produit'),
+    #sol
+    path('sols/', viewsSols.liste_sols_back, name='liste_sols_back'),
+    path('sols/ajouter/', viewsSols.ajouter_sol_back, name='ajouter_sol_back'),
+    path('sols/modifier/<int:id_analyse>/', viewsSols.modifier_sol_back, name='modifier_sol_back'),
+    path('sols/supprimer/<int:id_analyse>/', viewsSols.supprimer_sol_back, name='supprimer_sol_back'),
 ]

@@ -62,10 +62,7 @@
 .btn { padding: 8px 14px; border-radius: 8px; text-decoration: none; font-weight: 500; transition: 0.3s; color: white; }
 .btn-vert { background-color: #1fa64a; }
 .btn-vert:hover { background-color: #15903c; }
-.btn-edit { background-color: #f0ad4e; }
-.btn-edit:hover { background-color: #e59400; }
-.btn-delete { background-color: #d9534f; }
-.btn-delete:hover { background-color: #c12c2c; }
+
 
 .tableau-produits { width: 100%; border-collapse: collapse; margin-top: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); border-radius: 10px; overflow: hidden; }
 .tableau-produits th, .tableau-produits td { padding: 12px 15px; text-align: left; }
@@ -73,6 +70,7 @@
 .tableau-produits tbody tr { background-color: white; transition: 0.3s; }
 .tableau-produits tbody tr:hover { background-color: #e8f5e9; }
 .img-produit { border-radius: 6px; object-fit: cover; }
+/* La cellule Actions doit être un conteneur flex centré */ .actions-cell { display: flex; justify-content: center; /* centre horizontalement */ align-items: center; /* centre verticalement */ gap: 8px; /* espace entre les boutons */ height: 100%; /* s’étend sur toute la hauteur */ } /* Uniformiser les boutons */ .actions-cell .btn { width: 42px; height: 42px; display: flex; justify-content: center; align-items: center; padding: 0; border-radius: 8px; } /* Tes couleurs inchangées */ .btn-edit { background-color: #f0ad4e; } .btn-edit:hover { background-color: #e59400; } .btn-delete { background-color: #d9534f; } .btn-delete:hover { background-color: #c12c2c; }
 </style>
 
 <script>
@@ -132,10 +130,11 @@ window.addEventListener('DOMContentLoaded', () => {
             <td>{{ produit.description }}</td>
             <td>{{ produit.quantite_stock }}</td>
             <td>{{ produit.date_ajout|date:"d M Y" }}</td>
-            <td>
-                <a href="{% url 'modifier_produit' produit.pk %}" class="btn btn-edit">✏️ Modifier</a>
-                <a href="{% url 'supprimer_produit' produit.pk %}" class="btn btn-delete">🗑️ Supprimer</a>
-            </td>
+            <td class="actions-cell">
+    <a href="{% url 'modifier_produit' produit.pk %}" class="btn btn-edit">✏️</a>
+    <a href="{% url 'supprimer_produit' produit.pk %}" class="btn btn-delete">🗑️</a>
+</td>
+
         </tr>
         {% endfor %}
     </tbody>

@@ -35,9 +35,9 @@
         <td>{{ c.date_recolte_prevue }}</td>
         <td>{{ c.besoin_base_l_j }}</td>
         <td>
-          <a href="{% url 'modifier_culture' c.pk %}" class="btn btn-edit">✏️ Modifier</a>
-          <a href="{% url 'supprimer_culture' c.pk %}" class="btn btn-delete">🗑️ Supprimer</a>
-          <a href="{% url 'enregistrer_utilisation_produit' c.pk %}" class="btn btn-info">📋 Besoins</a>
+          <a href="{% url 'modifier_culture' c.pk %}" class="btn btn-edit">✏️</a>
+          <a href="{% url 'supprimer_culture' c.pk %}" class="btn btn-delete">🗑️</a>
+          <a href="{% url 'enregistrer_utilisation_produit' c.pk %}" class="btn btn-info">📋</a>
         </td>
       </tr>
     {% empty %}

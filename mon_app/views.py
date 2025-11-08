@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from backoffice.models import Produit , Culture 
+from backoffice.models import Produit , Culture , AnalyseSol
 
 # Create your views here.
 def index(request):
@@ -27,6 +27,15 @@ def cultures(request):
     # liste des cultures pour le front
     items = Culture.objects.all()
     return render(request, 'cultures.html', {'cultures': items})
+def liste_sols_front(request):
+    sols = AnalyseSol.objects.all().order_by('-date_analyse')
+    return render(request, 'liste_sols.html', {'sols': sols})
+
+# 🔹 Détail d'une analyse
+def details_sol_front(request, id_analyse):
+    sol = get_object_or_404(AnalyseSol, pk=id_analyse)
+    return render(request, 'details_sol.html', {'sol': sol})
+
 
 def logout_view(request):
     return render(request, 'logout.html')

@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from ..models import Culture
 from ..forms import CultureForm
 from django.db import transaction
-from backoffice.models import Produit
+from backoffice.models import Produit, AnalyseSol
 from django.contrib import messages
 from ..models import CultureProduit
 
@@ -17,6 +17,7 @@ def gestion_cultures(request):
     return render(request, 'backoffice/gestion_cultures.html', {'cultures': cultures})
 
 def ajouter_culture(request):
+    sols = AnalyseSol.objects.all()  # ✅ récupère tous les sols
     if request.method == 'POST':
         form = CultureForm(request.POST, request.FILES)
         if form.is_valid():
@@ -24,10 +25,14 @@ def ajouter_culture(request):
             return redirect('gestion_cultures')
     else:
         form = CultureForm()
-    return render(request, 'backoffice/form_culture.html', {'form': form, 'action': 'Ajouter'})
-
+    return render(request, 'backoffice/form_culture.html', {
+        'form': form,
+        'action': 'Ajouter',
+        'sols': sols  # ✅ passage des sols au template
+    })
 def modifier_culture(request, pk):
     culture = get_object_or_404(Culture, pk=pk)
+    sols = AnalyseSol.objects.all()
     if request.method == 'POST':
         form = CultureForm(request.POST, request.FILES, instance=culture)
         if form.is_valid():
@@ -35,7 +40,11 @@ def modifier_culture(request, pk):
             return redirect('gestion_cultures')
     else:
         form = CultureForm(instance=culture)
-    return render(request, 'backoffice/form_culture.html', {'form': form, 'action': 'Modifier'})
+    return render(request, 'backoffice/form_culture.html', {
+        'form': form,
+        'action': 'Modifier',
+        'sols': sols
+    })
 
 def supprimer_culture(request, pk):
     culture = get_object_or_404(Culture, pk=pk)
@@ -74,8 +83,12 @@ def enregistrer_utilisation_produit(request, culture_id):
         # Vérification du stock
         stock_actuel = int(float(produit.quantite_stock.split()[0]))  # "160 sachets" → 160
         if quantite_utilisee > stock_actuel:
-            messages.error(request, f"Quantité insuffisante en stock ({stock_actuel} disponibles).")
+            messages.error(
+            request,
+            f"Quantité insuffisante en stock ({stock_actuel} disponibles).",extra_tags='small-message'  # ✅ tag pour appliquer un style spécifique
+        )
             return redirect('enregistrer_utilisation_produit', culture_id=culture_id)
+
 
         # 🔹 Création de l’association dans CultureProduit
         CultureProduit.objects.create(
@@ -97,4 +110,3 @@ def enregistrer_utilisation_produit(request, culture_id):
         'culture': culture,
         'produits': produits
     })
-

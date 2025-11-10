@@ -1,19 +1,22 @@
 from django import forms
-from .models import Produit ,Culture
+from .models import Produit, Culture, Plantation, AnalyseSol
 from django.core.exceptions import ValidationError
-from .models import Plantation
-
+from backoffice.models import AnalyseSol  # 🔹 modèle du module Sol
 
 class ProduitForm(forms.ModelForm):
     class Meta:
         model = Produit
         fields = '__all__'
-    
+
+
 class CultureForm(forms.ModelForm):
+    
+
     class Meta:
         model = Culture
-        fields = ['nom', 'type', 'surface_m2', 'date_semis', 'date_recolte_prevue', 'besoin_base_l_j', 'image']
+        fields = ['nom', 'sol', 'type', 'surface_m2', 'date_semis', 'date_recolte_prevue', 'besoin_base_l_j', 'image']
         widgets = {
+            'sol': forms.Select(attrs={'class': 'form-control'}),
             'date_semis': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
             'date_recolte_prevue': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
             'nom': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nom de la culture'}),
@@ -35,14 +38,24 @@ class CultureForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        
+
         # Rendre tous les champs obligatoires sauf image
         for field_name, field in self.fields.items():
             if field_name != 'image':
                 field.required = True
-            # Ajouter la classe form-control si pas déjà présente
             if 'class' not in field.widget.attrs:
                 field.widget.attrs['class'] = 'form-control'
 
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        if instance.sol:
+            instance.pin_surface = instance.sol.pin_surface  # ✅ récupère le type de sol sélectionné
+        if commit:
+            instance.save()
+        return instance
+
+    # 🔹 Les validations restent inchangées
     def clean_nom(self):
         nom = self.cleaned_data.get('nom')
         if not nom:
@@ -57,7 +70,7 @@ class CultureForm(forms.ModelForm):
             raise ValidationError("La surface est obligatoire.")
         if surface_m2 <= 0:
             raise ValidationError("La surface doit être supérieure à 0.")
-        if surface_m2 > 100000:  # 10 hectares maximum
+        if surface_m2 > 100000:
             raise ValidationError("La surface ne peut pas dépasser 100 000 m².")
         return surface_m2
 
@@ -67,7 +80,7 @@ class CultureForm(forms.ModelForm):
             raise ValidationError("Le besoin en eau est obligatoire.")
         if besoin < 0:
             raise ValidationError("Le besoin en eau ne peut pas être négatif.")
-        if besoin > 10000:  # Limite raisonnable
+        if besoin > 10000:
             raise ValidationError("Le besoin en eau est trop élevé.")
         return besoin
 
@@ -88,32 +101,24 @@ class CultureForm(forms.ModelForm):
         date_semis = cleaned_data.get('date_semis')
         date_recolte_prevue = cleaned_data.get('date_recolte_prevue')
 
-        # Validation des dates seulement si elles sont présentes
         if date_semis and date_recolte_prevue:
             if date_recolte_prevue <= date_semis:
                 self.add_error('date_recolte_prevue', "La date de récolte doit être après la date de semis.")
             
-            # Vérifier que la date de semis n'est pas dans le futur de plus d'un an
             from datetime import date, timedelta
             if date_semis > date.today() + timedelta(days=365):
                 self.add_error('date_semis', "La date de semis ne peut pas être plus d'un an dans le futur.")
 
-        # Vérification de l'image
         image = cleaned_data.get('image')
         if image and hasattr(image, 'size'):
-            # Vérifier la taille du fichier (5MB max)
             if image.size > 5 * 1024 * 1024:
                 self.add_error('image', "L'image ne peut pas dépasser 5MB.")
-            
-            # Vérifier l'extension
             valid_extensions = ['jpg', 'jpeg', 'png', 'gif', 'webp']
             extension = image.name.split('.')[-1].lower()
             if extension not in valid_extensions:
                 self.add_error('image', f"Format non supporté. Utilisez: {', '.join(valid_extensions)}")
 
         return cleaned_data
-    
-
 
 
 class PlantationForm(forms.ModelForm):
@@ -132,7 +137,7 @@ class PlantationForm(forms.ModelForm):
                 'class': 'form-control',
                 'placeholder': 'Ex: Tous les 2 jours'
             }),
-            'heureArrosage': forms.TimeInput(attrs={  # NOUVEAU
+            'heureArrosage': forms.TimeInput(attrs={
                 'type': 'time', 
                 'class': 'form-control'
             }),
@@ -145,12 +150,11 @@ class PlantationForm(forms.ModelForm):
             'variete': forms.TextInput(attrs={'class': 'form-control'}),
             'etat': forms.Select(attrs={'class': 'form-select'}),
             'image': forms.FileInput(attrs={'class': 'form-control'}),
+            'sol': forms.Select(attrs={'class': 'form-control'}),
         }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # Personnalisation des help_text
         self.fields['datesIrrigation'].help_text = "Une date par ligne (format: JJ/MM/AAAA)"
         self.fields['frequenceArrosage'].help_text = "Ex: Tous les 2 jours, 2 fois par semaine, etc."
-        self.fields['heureArrosage'].help_text = "Heure fixe pour l'arrosage (ex: 08:00)"  # NOUVEAU
-        
+        self.fields['heureArrosage'].help_text = "Heure fixe pour l'arrosage (ex: 08:00)"

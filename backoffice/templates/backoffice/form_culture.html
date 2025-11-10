@@ -22,9 +22,12 @@
       </div>
     {% endfor %}
 
+
     {% if form.non_field_errors %}
       <div class="alert alert-danger">{{ form.non_field_errors.0 }}</div>
     {% endif %}
+
+    
 
     <button type="submit" class="btn-submit">Enregistrer</button>
     <a href="{% url 'gestion_cultures' %}" class="btn btn-secondary">Annuler</a>

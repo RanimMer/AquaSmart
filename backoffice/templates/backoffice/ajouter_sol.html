@@ -66,13 +66,20 @@
                             
                             <div class="form-grid-agriculture compact-grid">
                                 <div class="form-group-agriculture">
-                                    <div class="input-wrapper-agriculture">
-                                        <i class="input-icon-agriculture fas fa-hashtag"></i>
-                                        <input type="text" class="form-control-agriculture" name="pin_surface" 
-                                               placeholder="PIN-2024-001" required>
-                                        <label class="floating-label-agriculture">PIN Surface</label>
-                                    </div>
-                                    <div class="input-hint-agriculture">Identifiant unique de la parcelle</div>
+                                    <div class="form-group-agriculture">
+    <div class="input-wrapper-agriculture">
+        <label class="floating-label-agriculture" for="pin_surface">PIN Surface</label>
+        <select name="pin_surface" id="pin_surface" class="form-control-agriculture" required>
+            <option value="argileux">Argileux</option>
+            <option value="sableux">Sableux</option>
+            <option value="limoneux">Limoneux</option>
+            <option value="humifere">Humifère</option>
+        </select>
+    </div>
+    <div class="input-hint-agriculture">Sélectionnez le type de sol</div>
+</div>
+
+                                   
                                 </div>
 
                                 <div class="form-group-agriculture">
@@ -186,12 +193,7 @@
                                     <textarea class="form-control-agriculture textarea-agriculture" 
                                               name="bundles_composition" rows="4"
                                               placeholder="Décrivez la texture, couleur, structure, présence de cailloux, matière organique, humidité..."></textarea>
-                                    <select name="type_sol" id="id_type_sol">
-                                        <option value="argileux">Argileux</option>
-                                        <option value="sableux">Sableux</option>
-                                        <option value="limoneux">Limoneux</option>
-                                        <option value="humifere">Humifère</option>
-                                    </select>
+                                    
                                     <label class="floating-label-agriculture">Composition & Observations</label>
                                 </div>
                                 <div class="input-hint-agriculture">Texture, couleur, structure, matière organique observée</div>

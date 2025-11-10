@@ -75,10 +75,13 @@
     </a>
     <div class="collapse navbar-collapse" id="navbarCollapse">
       <div class="navbar-nav ms-auto p-4 p-lg-0">
-        <a href="{% url 'index' %}" class="nav-item nav-link">Accueil</a>
-        <a href="{% url 'apropos' %}" class="nav-item nav-link">À propos</a>
-        <a href="{% url 'serres' %}" class="nav-item nav-link active">Serres</a>
-        <a href="{% url 'contact' %}" class="nav-item nav-link">Contact</a>
+        <li class="nav-item"><a href="{% url 'index' %}" class="nav-link active">Accueil</a></li>
+            <li class="nav-item"><a href="{% url 'apropos' %}" class="nav-link">À propos</a></li>
+            <li class="nav-item"><a href="{% url 'produits' %}" class="nav-link">Produits</a></li>
+            <li class="nav-item"><a href="{% url 'cultures' %}" class="nav-link">Cultures</a></li>
+            <li class="nav-item"><a href="{% url 'liste_sols_front' %}" class="nav-link">Analyses Sol</a></li>
+            <li class="nav-item"></li><a href="{% url 'serres' %}" class="nav-item nav-link">Serres</a></li>
+            <li class="nav-item"><a href="{% url 'contact' %}" class="nav-link">Contact</a></li>
         <div class="d-flex align-items-center">
           <a href="{% url 'logout' %}" class="btn btn-logout d-none d-lg-flex">Déconnecter <i class="fa fa-arrow-right"></i></a>
         </div>
@@ -212,7 +215,8 @@
           <h4 class="text-white mb-4">Liens rapides :</h4>
           <a class="btn btn-link" href="{% url 'index' %}">Accueil</a>
           <a class="btn btn-link" href="{% url 'apropos' %}">À propos</a>
-          <a class="btn btn-link" href="{% url 'serres' %}">Serres</a>
+          <a href="{% url 'cultures' %}" class="nav-item nav-link">cultures</a>
+          <a class="btn btn-link" href="{% url 'liste_sols_front' %}">Analyses Sol</a>
           <a class="btn btn-link" href="{% url 'contact' %}">Contact</a>
         </div>
       </div>

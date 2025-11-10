@@ -67,6 +67,20 @@ class Culture(models.Model):
         through='CultureProduit',
         related_name='cultures'
     )
+    sol = models.ForeignKey(
+        'AnalyseSol',
+        on_delete=models.PROTECT,          # empêche la suppression d’un sol utilisé
+        related_name="cultures",
+        null=True,                         # voir stratégie de migration plus bas
+        blank=True,
+        db_index=True
+    )
+    pin_surface = models.CharField(max_length=20, blank=True)  # Optionnel, pour stocker le type du sol
+
+    def save(self, *args, **kwargs):
+        if self.sol:
+            self.pin_surface = self.sol.pin_surface  # Récupère le type du sol choisi
+        super().save(*args, **kwargs)
 
     
     def clean(self):
@@ -118,9 +132,8 @@ class AnalyseSol(models.Model):
     
     # Attributs de base
     id_analyse = models.AutoField(primary_key=True)
-    type = models.CharField(max_length=20, choices=TYPE_SOL_CHOICES, default='autre')
+    pin_surface = models.CharField(max_length=20, choices=TYPE_SOL_CHOICES, default='autre')
     date_analyse = models.DateField(auto_now_add=True)
-    pin_surface = models.CharField(max_length=50, verbose_name="PIN Surface")
     surface = models.DecimalField(max_digits=10, decimal_places=2, help_text="Surface en hectares")
     total_region = models.CharField(max_length=100, verbose_name="Région totale")
     bundles_composition = models.TextField(verbose_name="Composition des bundles")
@@ -287,6 +300,21 @@ class Plantation(models.Model):
         verbose_name="Image de la plantation",
         help_text="Format supporté: JPG, PNG, GIF. Taille max: 5MB"
     )
+
+    sol = models.ForeignKey(
+        'AnalyseSol',
+        on_delete=models.PROTECT,          # empêche la suppression d’un sol utilisé
+        related_name="Plantation",
+        null=True,                         # voir stratégie de migration plus bas
+        blank=True,
+        db_index=True
+    )
+    
+
+    def save(self, *args, **kwargs):
+        if self.sol:
+            self.pin_surface = self.sol.pin_surface  # Récupère le type du sol choisi
+        super().save(*args, **kwargs)
 
     # ✅ VALIDATIONS AVANCÉES
     def clean(self):

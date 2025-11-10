@@ -3,6 +3,7 @@ from django.contrib import messages
 from django.utils import timezone
 from ..models import Plantation
 from ..forms import PlantationForm
+from backoffice.models import AnalyseSol
 
 # Vue pour la liste des plantations (FRONT OFFICE - accessible à tous)
 def plantation_list(request):
@@ -27,7 +28,7 @@ def plantation_list(request):
 
 # Vues CRUD (BACK OFFICE - nécessite une connexion)
 def plantation_create(request):
-    """Créer une nouvelle plantation - BACK OFFICE"""
+    sols = AnalyseSol.objects.all()  
     if request.method == 'POST':
         form = PlantationForm(request.POST, request.FILES)
         if form.is_valid():
@@ -42,13 +43,14 @@ def plantation_create(request):
     context = {
         'form': form,
         'title': 'Ajouter une Plantation',
-        'active_page': 'serre'
+        'active_page': 'serre',
+        'sols': sols   # ← AJOUT ICI
     }
     return render(request, 'backoffice/plantation_form.html', context)
 
 def plantation_update(request, idSerre):
-    """Modifier une plantation existante - BACK OFFICE"""
     plantation = get_object_or_404(Plantation, idSerre=idSerre)
+    sols = AnalyseSol.objects.all()  # ← AJOUT ICI
     
     if request.method == 'POST':
         form = PlantationForm(request.POST, request.FILES, instance=plantation)
@@ -65,10 +67,10 @@ def plantation_update(request, idSerre):
         'form': form,
         'title': f'Modifier {plantation.nomCulture}',
         'plantation': plantation,
-        'active_page': 'serre'
+        'active_page': 'serre',
+        'sols': sols   # ← AJOUT ICI
     }
     return render(request, 'backoffice/plantation_form.html', context)
-
 
 def plantation_delete(request, idSerre):
     """Supprimer une plantation - BACK OFFICE"""

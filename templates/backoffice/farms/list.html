@@ -1,0 +1,40 @@
+{% extends "backoffice/base.html" %}
+{% load static %}
+
+{% block title %}Fermes{% endblock %}
+{% block page_title %}Fermes{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+    <h3 style="margin:0;">Liste des fermes</h3>
+    <a href="{% url 'farm_create' %}" class="btn btn-success">+ Nouvelle ferme</a>
+  </div>
+
+  {% if farms %}
+  <table>
+    <thead>
+      <tr>
+        <th>Nom</th>
+        <th>Créée le</th>
+        <th style="width:180px;">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for f in farms %}
+      <tr>
+        <td>{{ f.name }}</td>
+        <td>{{ f.created_at|date:"d/m/Y H:i" }}</td>
+        <td>
+          <a class="btn btn-secondary" href="{% url 'farm_update' f.pk %}">Éditer</a>
+          <a class="btn btn-danger" href="{% url 'farm_delete'  f.pk %}">Supprimer</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+    <p>Aucune ferme enregistrée.</p>
+  {% endif %}
+</div>
+{% endblock %}

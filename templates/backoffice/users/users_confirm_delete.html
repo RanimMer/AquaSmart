@@ -1,0 +1,16 @@
+{% extends "backoffice/base.html" %}
+{% load static %}
+
+{% block title %}Supprimer l’utilisateur{% endblock %}
+{% block page_title %}Supprimer l’utilisateur{% endblock %}
+
+{% block content %}
+<div class="card">
+  <p>Confirmer la suppression de l’utilisateur <strong>{{ user_obj.username }}</strong> ?</p>
+  <form method="post">
+    {% csrf_token %}
+    <button class="btn btn-danger" type="submit">Supprimer</button>
+    <a class="btn btn-secondary" href="{% url 'users_list' %}">Annuler</a>
+  </form>
+</div>
+{% endblock %}

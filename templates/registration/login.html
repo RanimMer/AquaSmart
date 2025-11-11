@@ -1,0 +1,45 @@
+{% extends 'base_front.html' %}
+
+{% block content %}
+<div class="form-container">
+    <h1 class="form-title">Aqua Smart</h1>
+    <h2 class="form-subtitle">Connexion</h2>
+    
+    <form method="post" autocomplete="off">
+        {% csrf_token %}
+        {% if form.non_field_errors %}
+            <div class="non-field-errors">
+                {% for err in form.non_field_errors %}
+                    <div>{{ err }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <div class="form-group">
+            <label for="username">Nom d'utilisateur</label>
+            <input type="text" id="username" name="username" placeholder="Votre identifiant" value="{{ form.username.value|default_if_none:'' }}" autocomplete="new-username">
+            {% if form.username.errors %}
+                <div class="field-error">{{ form.username.errors.0 }}</div>
+            {% endif %}
+
+        </div>
+        
+        <div class="form-group">
+            <label for="password">Mot de passe</label>
+            <input type="password" id="password" name="password" placeholder="......" autocomplete="new-password">
+            {% if form.password.errors %}
+                <div class="field-error">{{ form.password.errors.0 }}</div>
+            {% endif %}
+
+        </div>
+        
+        <button type="submit" class="btn btn-custom">Se connecter</button>
+
+        
+        <div class="form-links">
+            <a href="{% url 'signup' %}">Créer un compte</a> | 
+            <a href="#">Mot de passe oublié ?</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

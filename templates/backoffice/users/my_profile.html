@@ -1,0 +1,208 @@
+{% extends "backoffice/base.html" %}
+{% load static %}
+
+{% block title %}Mon profil{% endblock %}
+{% block page_title %}Mon profil{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8 col-md-10 mx-auto">
+
+        <div class="card shadow-sm mb-4 border-0">
+            <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center">
+                <h5 class="mb-0 fw-bold">Mon profil</h5>
+                <span class="text-muted" style="font-size: 0.9rem;">
+                    Connecté en tant que <strong>{{ request.user.username }}</strong>
+                </span>
+            </div>
+
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+
+                    {% if form_user.non_field_errors or form_profile.non_field_errors %}
+                        <div class="alert alert-danger">
+                            {% for err in form_user.non_field_errors %}
+                                <div>{{ err }}</div>
+                            {% endfor %}
+                            {% for err in form_profile.non_field_errors %}
+                                <div>{{ err }}</div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+
+                    <!-- Compte -->
+                    <h6 class="text-uppercase text-muted mb-3">Compte</h6>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label">Nom d'utilisateur</label>
+                            {{ form_user.username }}
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Email</label>
+                            {{ form_user.email }}
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Prénom</label>
+                            {{ form_user.first_name }}
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Nom</label>
+                            {{ form_user.last_name }}
+                        </div>
+
+                        <div class="col-12 mt-2">
+                            <div class="form-check">
+                                {{ form_user.is_active }}
+                                <label class="form-check-label ms-1">Compte actif</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <!-- Profil -->
+                    <h6 class="text-uppercase text-muted mb-3">Profil</h6>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Téléphone</label>
+                            {{ form_profile.phone }}
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Ferme</label>
+                            {{ form_profile.farm }}
+                        </div>
+
+                        <div class="col-md-6">
+                          <label class="form-label d-block">Avatar</label>
+
+                          {{ form_profile.avatar }}
+
+                          {% if form_profile.instance.avatar %}
+                            <div class="mt-2">
+                              <img src="{{ form_profile.instance.avatar.url }}" alt="Avatar"
+                              style="width:60px;height:60px;border-radius:50%;object-fit:cover;">
+                            </div>
+                          {% endif %}
+                        </div>
+
+
+                    </div>
+
+                    <!-- Boutons -->
+                    <div class="form-actions">
+                        <a href="{% url 'users_list' %}" class="btn btn-secondary">Retour</a>
+                        <button type="submit" class="btn btn-success">Enregistrer</button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<style>
+    .form-label {
+        font-weight: 600;
+        color: #333;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="file"],
+    select {
+        width: 100%;
+        border: 1px solid #ced4da;
+        border-radius: 8px;
+        padding: 8px 10px;
+        transition: border-color 0.3s ease;
+    }
+
+    input:focus, select:focus {
+        border-color: #198754;
+        outline: none;
+        box-shadow: 0 0 0 0.1rem rgba(25, 135, 84, 0.25);
+    }
+
+    .btn-secondary {
+        background-color: #6c757d;
+        color: #fff;
+        border-radius: 8px;
+        transition: 0.3s;
+    }
+
+    .btn-secondary:hover {
+        background-color: #5a6268;
+    }
+
+    .custom-file-upload input[type="file"] {
+        display: none;
+    }
+
+    .custom-file-upload {
+        display: inline-block;
+        background-color: #f8f9fa;
+        border: 1px solid #ced4da;
+        border-radius: 8px;
+        padding: 8px 10px;
+        cursor: pointer;
+        width: 100%;
+    }
+
+    .custom-file-upload:hover {
+        background-color: #e9ecef;
+    }
+
+    #file-name {
+        margin-left: 8px;
+        color: #6c757d;
+        font-size: 0.9rem;
+    }
+
+    .form-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px; /* espace entre les boutons */
+      margin-top: 20px;
+    }
+
+    .form-actions .btn {
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 0.95rem;
+    }
+
+.form-actions .btn-secondary {
+    background-color: #adb5bd; /* gris clair */
+    color: white;
+    border: none;
+    transition: background-color 0.2s ease;
+}
+
+.form-actions .btn-secondary:hover {
+    background-color: #6c757d;
+}
+
+</style>
+
+<script>
+    // Traduction "Choose File" -> "Choisir un fichier"
+    const input = document.querySelector('input[type="file"]');
+    const fileNameSpan = document.getElementById("file-name");
+
+    if (input) {
+        input.addEventListener("change", function () {
+            if (this.files && this.files.length > 0) {
+                fileNameSpan.textContent = this.files[0].name;
+            } else {
+                fileNameSpan.textContent = "Aucun fichier sélectionné";
+            }
+        });
+    }
+</script>
+{% endblock %}

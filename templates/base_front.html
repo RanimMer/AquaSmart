@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aqua Smart</title>
+    {% load static %}
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <!-- Font Awesome (même que index.html) -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+
+
+
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Police par défaut pour le texte */
+        body {
+            ont-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), 
+                        url('{% static "img/carousel-1.jpg" %}') !important;
+            background-size: cover !important;
+            background-position: center !important;
+            background-attachment: fixed !important;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* TOPBAR VERTE */
+        .topbar-custom {
+            background: #0F4229 !important;
+            color: white !important;
+            padding: 0.5rem 0 !important;
+        }
+
+        .topbar-custom .fa-phone-alt,
+        .topbar-custom .fa-envelope {
+            margin-right: 0.5rem !important;
+            color: white !important;
+        }
+
+        .topbar-custom span {
+            color: white !important;
+            font-size: 0.9rem !important;
+        }
+
+        .topbar-custom .btn-link {
+            color: white !important;
+            text-decoration: none !important;
+            padding: 0.25rem 0.5rem !important;
+        }
+
+        .topbar-custom .btn-link:hover {
+            color: #c8e6c9 !important;
+        }
+
+        /* NAVBAR */
+        .navbar-custom {
+            background: rgba(255, 255, 255, 0.95) !important;
+            padding: 0 !important;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1) !important;
+            border-bottom: 2px solid #0F4229 !important;
+
+        }
+
+        .navbar-brand-custom {
+            padding: 0.5rem 1rem !important;
+        }
+
+        .nav-item-custom {
+            margin: 0 1.5rem !important;
+        }
+
+        .nav-link-custom {
+            margin: 0 1.5rem !important;   /* espace horizontal entre Accueil / À propos / Contact */
+            color: #333 !important;
+            font-weight: 500 !important;
+            padding: 1rem 0 !important;
+            text-decoration: none !important;
+        }
+
+        .nav-link-custom:hover,
+        .nav-link-custom.active {
+            color: #f0a500 !important;
+        }
+
+        .btn-logout-custom {
+            background: #28a745 !important;
+            color: white !important;
+            font-weight: 700 !important;
+            border: none !important;
+            padding: 0.8rem 1.5rem !important;
+            border-radius: 0 !important;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .btn-logout-custom:hover {
+            background: #218838 !important;
+        }
+
+
+        /* CONTENU PRINCIPAL */
+        .main-content {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+        }
+
+        .form-container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 2.5rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 450px;
+            backdrop-filter: blur(10px);
+        }
+
+        .form-title {
+            color: #2c5530;
+            text-align: center;
+            margin-bottom: 0.5rem;
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+
+        .form-subtitle {
+            color: #666;
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 1.2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #2c5530;
+            box-shadow: 0 0 0 0.2rem rgba(44, 85, 48, 0.25);
+        }
+
+        .help-text {
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 0.25rem;
+        }
+
+        .btn-custom {
+            width: 100%;
+            padding: 0.75rem;
+            background: #2c5530;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .btn-custom:hover {
+            background: #1e3a23;
+            color: white;
+        }
+
+        .form-links {
+            text-align: center;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #e1e5e9;
+        }
+
+        .form-links a {
+            color: #2c5530;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .form-links a:hover {
+            text-decoration: underline;
+        }
+
+        /* FOOTER */
+        .footer-custom {
+            background: #0F4229 !important;
+            color: white !important;
+        }
+
+        .footer-section h4 {
+            color: white !important;
+            margin-bottom: 1rem !important;
+        }
+
+        .footer-links a {
+            color: white !important;
+            text-decoration: none !important;
+            display: block;
+            margin-bottom: 0.5rem;
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: #c8e6c9 !important;
+        }
+
+        .contact-info p {
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .contact-info i {
+            margin-right: 0.5rem;
+            width: 20px;
+        }
+
+        .copyright {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 1rem;
+            margin-top: 2rem;
+            text-align: center;
+        }
+
+        .field-error {
+            color: #b00020;
+            font-size: 0.85rem;
+            margin-top: 4px;
+        }
+        .non-field-errors {
+            color: #b00020;
+            margin-bottom: 10px;
+        }
+
+    </style>
+</head>
+<body>
+    <!-- Topbar Start -->
+    <div class="container-fluid topbar-custom">
+    <div class="row gx-0">
+        <div class="col-lg-7 px-5 text-start">
+            <div class="h-100 d-inline-flex align-items-center me-4">
+                <i class="fa fa-phone-alt me-2"></i>
+                <span>+216 26 102 035</span>
+            </div>
+            <div class="h-100 d-inline-flex align-items-center">
+                <i class="far fa-envelope me-2"></i>
+                <span>AquaSmart@gmail.com</span>
+            </div>
+        </div>
+        <div class="col-lg-5 px-5 text-end">
+            <div class="h-100 d-inline-flex align-items-center mx-n2">
+                <span>Suivez-nous:</span>
+                <a class="btn btn-link text-light" href="#">
+                    <i class="fab fa-instagram"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+    <!-- Topbar End -->
+
+    <!-- Navbar Start -->
+    <nav class="navbar navbar-expand-lg navbar-custom sticky-top">
+        <div class="container-fluid">
+            <a href="{% url 'index' %}" class="navbar-brand navbar-brand-custom">
+                <img src="{% static 'img/logo.png' %}" alt="logo" style="width:180px; height:60px;">
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarCollapse">
+                <div class="navbar-nav ms-auto p-4 p-lg-0">
+                    <a href="{% url 'index' %}" class="nav-item nav-link-custom active">Accueil</a>
+                    <a href="{% url 'apropos' %}" class="nav-item nav-link-custom">À propos</a>
+                    <a href="{% url 'contact' %}" class="nav-item nav-link-custom">Contact</a>
+                    <div class="d-flex align-items-center">
+                        <a href="{% url 'login' %}" class="btn btn-logout-custom">
+                            Se connecter <i class="fa fa-arrow-right ms-2"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <!-- Navbar End -->
+
+    <!-- Main Content -->
+    <div class="main-content">
+        {% block content %}
+        <!-- LE CONTENU DES AUTRES PAGES VIENT ICI -->
+        {% endblock %}
+    </div>
+
+    <!-- Footer Start -->
+    <div class="container-fluid footer-custom text-light py-5">
+        <div class="container">
+            <div class="row g-5">
+                <!-- Notre bureau -->
+                <div class="col-lg-4 col-md-6 footer-section">
+                    <h4>Notre bureau :</h4>
+                    <div class="contact-info">
+                        <p><i class="fa fa-map-marker-alt"></i>Avenue Hbib Bourguiba, Tunis</p>
+                        <p><i class="fa fa-phone-alt"></i>+216 26 102 035</p>
+                        <p><i class="fa fa-envelope"></i>AquaSmart@gmail.com</p>
+                    </div>
+                </div>
+                
+                <!-- Services -->
+                <div class="col-lg-4 col-md-6 footer-section">
+                    <h4>Services :</h4>
+                    <div class="footer-links">
+                        <a href="#">Analyse du sol</a>
+                        <a href="#">Gestion des cultures</a>
+                        <a href="#">Gestion des serres</a>
+                        <a href="#">Analyse du météo</a>
+                        <a href="#">Gestion des produits</a>
+                    </div>
+                </div>
+                
+                <!-- Liens rapides -->
+                <div class="col-lg-4 col-md-6 footer-section">
+                    <h4>Liens rapides :</h4>
+                    <div class="footer-links">
+                        <a href="{% url 'apropos' %}">À propos</a>
+                        <a href="{% url 'contact' %}">Contact</a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Copyright -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="copyright">
+                        <p class="mb-0">© Aqua Smart, All Right Reserved.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Footer End -->
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,18 @@
+{% extends "backoffice/base.html" %}
+{% load static %}
+
+{% block title %}Ferme{% endblock %}
+{% block page_title %}Ferme{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width:640px;">
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <div style="display:flex;gap:8px;">
+      <button type="submit" class="btn btn-success">{{ submit_label }}</button>
+      <a href="{% url 'farm_list' %}" class="btn btn-secondary">Retour</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

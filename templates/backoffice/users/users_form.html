@@ -1,0 +1,203 @@
+{% extends "backoffice/base.html" %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock %}
+{% block page_title %}{{ title }}{% endblock %}
+
+{% block content %}
+<style>
+  .card {
+    background: #fff;
+    border-radius: 10px;
+    padding: 32px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    max-width: 850px;
+    margin: 0 auto;
+  }
+
+  .form-section {
+    margin-bottom: 30px;
+  }
+
+  .form-section h5 {
+    color: #198754;
+    font-weight: 600;
+    border-bottom: 1px solid #dee2e6;
+    padding-bottom: 8px;
+    margin-bottom: 18px;
+    text-transform: uppercase;
+    font-size: 14px;
+  }
+
+  .form-label {
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 6px;
+  }
+
+  /* Inputs classiques (texte, mail, password, file) + select */
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="file"],
+  select {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 14px;
+  }
+
+  input[type="text"]:focus,
+  input[type="email"]:focus,
+  input[type="password"]:focus,
+  input[type="file"]:focus,
+  select:focus {
+    outline: none;
+    border-color: #198754;
+    box-shadow: 0 0 0 2px rgba(25,135,84,0.2);
+  }
+
+/* Checkbox = style normal, pas full width */
+  input[type="checkbox"] {
+    width: auto;
+    height: auto;
+    padding: 0;
+    margin: 0;
+    border: none;
+    box-shadow: none;
+  }
+
+
+  .form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 14px;
+    margin-top: 24px;
+  }
+
+  .btn {
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+  }
+
+  .btn-success {
+    background-color: #198754;
+    color: white;
+  }
+
+  .btn-success:hover {
+    background-color: #157347;
+  }
+
+  .btn-secondary {
+    background-color: #6c757d;
+    color: white;
+  }
+
+  .btn-secondary:hover {
+    background-color: #495057;
+  }
+
+  .avatar-preview img {
+    margin-top: 8px;
+    border-radius: 50%;
+    width: 70px;
+    height: 70px;
+    object-fit: cover;
+  }
+
+  .form-check {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.form-check-input {
+    cursor: pointer;
+}
+
+.form-check-label {
+    cursor: pointer;
+}
+
+</style>
+
+<div class="card">
+  <h4 style="margin-bottom: 20px;">{{ title }}</h4>
+
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <div class="form-section">
+      <h5>Compte</h5>
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Nom d’utilisateur</label>
+          {{ form_user.username }}
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Email</label>
+          {{ form_user.email }}
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Prénom</label>
+          {{ form_user.first_name }}
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Nom</label>
+          {{ form_user.last_name }}
+        </div>
+        <div class="col-md-6 mb-3">
+          <div class="form-check mt-4 d-flex align-items-center">
+            {{ form_user.is_active }}
+            <label class="form-check-label ms-2" for="{{ form_user.is_active.id_for_label }}">
+              Compte actif
+            </label>
+          </div>
+        </div>
+
+
+      </div>
+    </div>
+
+    {% if form_profile %}
+    <div class="form-section">
+      <h5>Profil</h5>
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Rôle</label>
+          {{ form_profile.role }}
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Téléphone</label>
+          {{ form_profile.phone }}
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Ferme</label>
+          {{ form_profile.farm }}
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Avatar</label>
+          {{ form_profile.avatar }}
+          {% if form_profile.instance.avatar %}
+          <div class="avatar-preview">
+            <img src="{{ form_profile.instance.avatar.url }}" alt="Avatar">
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
+    <div class="form-actions">
+      <button type="button" class="btn btn-secondary" onclick="history.back()">Annuler</button>
+      <button type="submit" class="btn btn-success">{{ submit_label }}</button>
+    </div>
+  </form>
+</div>
+{% endblock %}

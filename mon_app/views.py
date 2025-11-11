@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from backoffice.models import Produit , Culture , AnalyseSol , Plantation
+from backoffice.models import Produit , Culture , AnalyseSol , Plantation, StationMeteo
 
 # Create your views here.
 def index(request):
@@ -86,3 +86,29 @@ def serres(request):
         'active_page': 'serres'
     }
     return render(request, 'serres.html', context)
+
+
+
+
+
+
+
+# Create your views here.
+def index(request):
+    return render(request, 'index.html')
+
+
+def station_meteo(request):
+    
+    stations = StationMeteo.objects.all()  # Récupère toutes les stations depuis la BDD
+    return render(request, 'station_meteo.html', {'stations': stations})
+
+
+def logout_view(request):
+    return render(request, 'logout.html')
+    
+def apropos(request):
+    return render(request, 'apropos.html')
+
+def contact(request):
+    return render(request, 'contact.html')

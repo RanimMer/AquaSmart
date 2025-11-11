@@ -1,5 +1,5 @@
 from django import forms
-from .models import Produit, Culture, Plantation, AnalyseSol
+from .models import Produit, Culture, Plantation, AnalyseSol, StationMeteo
 from django.core.exceptions import ValidationError
 from backoffice.models import AnalyseSol  # 🔹 modèle du module Sol
 
@@ -158,3 +158,40 @@ class PlantationForm(forms.ModelForm):
         self.fields['datesIrrigation'].help_text = "Une date par ligne (format: JJ/MM/AAAA)"
         self.fields['frequenceArrosage'].help_text = "Ex: Tous les 2 jours, 2 fois par semaine, etc."
         self.fields['heureArrosage'].help_text = "Heure fixe pour l'arrosage (ex: 08:00)"
+
+
+
+class StationMeteoForm(forms.ModelForm):
+    class Meta:
+        model = StationMeteo
+        fields = [
+            'nom_station',
+            'emplacement', 
+            'actif',
+            'id_sol',
+            'id_capteur_pluie',
+            'id_capteur_luminosite_humidite',
+            'id_capteur_vent',
+            'sol'
+        ]
+        widgets = {
+            'nom_station': forms.TextInput(attrs={
+                'placeholder': 'Nom de la station'
+            }),
+            'emplacement': forms.TextInput(attrs={
+                'placeholder': 'Emplacement de la station'
+            }),
+            'id_sol': forms.TextInput(attrs={
+                'placeholder': 'ID capteur sol'
+            }),
+            'id_capteur_pluie': forms.TextInput(attrs={
+                'placeholder': 'ID capteur pluie'
+            }),
+            'id_capteur_luminosite_humidite': forms.TextInput(attrs={
+                'placeholder': 'ID capteur luminosité/humidité'
+            }),
+            'id_capteur_vent': forms.TextInput(attrs={
+                'placeholder': 'ID capteur vent'
+            }),
+            'sol': forms.Select(attrs={'class': 'form-control'}),
+        }

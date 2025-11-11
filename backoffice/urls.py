@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import viewsProduits, viewsCultures, viewsSols, viewsSerres
+from .views import viewsProduits, viewsCultures, viewsSols, viewsSerres, viewsMeteo
 from django.shortcuts import redirect
 
 urlpatterns = [
@@ -33,4 +33,10 @@ urlpatterns = [
     # ✅ NOUVELLE URL POUR ARROSAGE AUTOMATIQUE
     path('arrosage/confirmer/<int:idSerre>/', viewsSerres.confirmer_arrosage, name='confirmer_arrosage'),
 
+    path('station_meteo/', viewsMeteo.gestion_station_meteo, name='gestion_station_meteo'),
+
+    # CRUD StationMeteo
+    path('station_meteo/ajouter/', viewsMeteo.StationMeteoCreateView.as_view(), name='ajouter_station_meteo'),
+    path('station_meteo/modifier/<str:pk>/', viewsMeteo.StationMeteoUpdateView.as_view(), name='modifier_station_meteo'),
+    path('station_meteo/supprimer/<str:pk>/', viewsMeteo.StationMeteoDeleteView.as_view(), name='supprimer_station_meteo'),
 ]

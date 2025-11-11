@@ -12,5 +12,5 @@ urlpatterns = [
     path('contact/', views.contact, name='contact'),
     path('', views.index, name='index'),
     path('serres/', views.serres, name='serres'),  # Cette ligne doit être présente
-    
+    path('station_meteo/', views.station_meteo, name='station_meteo'),
 ]

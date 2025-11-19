@@ -1,0 +1,70 @@
+<!-- templates/includes/chatbot_ia.html -->
+<div id="chatbot-button">💬</div>
+
+<div id="chatbot-window">
+    <div id="chatbot-header">
+        AquaBot
+        <span id="close-chatbot">✖</span>
+    </div>
+
+    <div id="chatbot-content"></div>
+
+    <div id="chatbot-input">
+        <input type="text" id="message" placeholder="Écrire un message...">
+        <button id="send-btn">Envoyer</button>
+    </div>
+</div>
+
+<style>
+#chatbot-button { position: fixed; bottom: 25px; right: 25px; background-color: #0fe786; color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 28px; cursor: pointer; z-index: 9999; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+#chatbot-window { position: fixed; bottom: 100px; right: 25px; width: 350px; height: 450px; background: white; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); display: none; flex-direction: column; overflow: hidden; z-index: 99999; }
+#chatbot-header { background: #0fe786; color: white; padding: 10px; text-align: center; position: relative; font-weight: bold; }
+#close-chatbot { position: absolute; right: 10px; cursor: pointer; }
+#chatbot-content { flex: 1; padding: 10px; overflow-y: auto; background: #f7f7f7; }
+#chatbot-input { display: flex; border-top: 1px solid #ccc; }
+#message { flex: 1; padding: 10px; border: none; outline: none; }
+#send-btn { background: #0fe786; color: white; padding: 0 15px; cursor: pointer; border: none; }
+.user-message { text-align: right; margin: 5px; }
+.bot-message { text-align: left; margin: 5px; }
+</style>
+
+<script>
+document.getElementById("chatbot-button").addEventListener("click", function () {
+    document.getElementById("chatbot-window").style.display = "flex";
+});
+
+document.getElementById("close-chatbot").addEventListener("click", function () {
+    document.getElementById("chatbot-window").style.display = "none";
+});
+
+document.getElementById("send-btn").addEventListener("click", sendMessage);
+
+function sendMessage() {
+    let msg = document.getElementById("message").value.trim();
+    if (!msg) return;
+
+    let chat = document.getElementById("chatbot-content");
+    chat.innerHTML += `<div class="user-message"><b>Vous :</b> ${msg}</div>`;
+    document.getElementById("message").value = "";
+
+    fetch("/api/chatbot/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ question: msg })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.answer) {
+            chat.innerHTML += `<div class="bot-message"><b>Bot :</b> ${data.answer}</div>`;
+        } else if (data.error) {
+            chat.innerHTML += `<div class="bot-message" style="color:red;"><b>Erreur :</b> ${data.error}</div>`;
+        }
+        chat.scrollTop = chat.scrollHeight;
+    })
+    .catch(err => {
+        chat.innerHTML += `<div class="bot-message" style="color:red;"><b>Erreur :</b> ${err}</div>`;
+        chat.scrollTop = chat.scrollHeight;
+    });
+}
+
+</script>

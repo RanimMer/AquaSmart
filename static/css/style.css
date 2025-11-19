@@ -113,7 +113,7 @@ h6,
 
 .navbar .navbar-nav .nav-link:hover,
 .navbar .navbar-nav .nav-link.active {
-    color: #9ACD32
+    color: var(--primary);
 }
 
 .navbar .dropdown-toggle::after {
@@ -180,8 +180,8 @@ h6,
     width: 3rem;
     height: 3rem;
     border-radius: 3rem;
-    background-color: #9ACD32; 
-    border: 10px solid #9ACD32; 
+    background-color: var(--primary);
+    border: 10px solid var(--primary);
 }
 
 @media (max-width: 768px) {
@@ -210,7 +210,7 @@ h6,
 .page-header .breadcrumb-item,
 .page-header .breadcrumb-item a {
     font-size: 18px;
-    color: white;
+    color: var(--light);
 }
 
 
@@ -961,56 +961,34 @@ button {
     height: auto;
 }
 
-/* Bouton Déconnecter - version réduite et équilibrée */
-.btn-logout {
-    background-color: #9ACD32; /* vert clair */
-    color: white;
-    font-weight: 600;
-    padding: 1px 50px; /* réduit la hauteur, augmente la largeur */
-    border: none;
-    border-radius: 50px; /* forme ovale */
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    text-decoration: none;
-    font-size: 13px;
-    transition: all 0.3s ease;
-    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.25);
-    
-    /* Espace autour pour ne pas coller la barre */
-    margin: 8px 25px;
-    
-    /* Pour contrôler davantage la largeur si nécessaire */
-    min-width: 120px;
-}
 
-/* Effet au survol */
-.btn-logout:hover {
-    background-color: #7fbf00;
-    transform: translateY(-2px);
-    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
-}
+        /* Bouton Se connecter rectangulaire avec texte centré */
+        .btn-logout {
+            background-color: #28a745; /* vert */
+            color: white; /* texte blanc */
+            font-weight: bold;
+            width: 150px;
+            height: 50px;
+            border-radius: 0;
+            border: 2px solid #28a745;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
 
-/* Icône */
-.btn-logout i {
-    margin-left: 6px;
-    font-size: 12px;
-}
+        .btn-logout:hover {
+            background-color: #218838;
+            border-color: #1e7e34;
+            color: white;
+            text-decoration: none;
+        }
 
+        .btn-logout i {
+            margin-left: 8px;
+        }
 
-/* changement  dans le sidebar de l'acceuil */
-
-.topbar-green {
-    background-color: #9ACD32 !important; /* ton vert personnalisé */
-    color: white !important;
-}
-
-.topbar-green a {
-    color: white !important;
-    transition: color 0.3s ease;
-}
-
-.topbar-green a:hover {
-    color: #f8f9fa !important; /* blanc légèrement cassé au survol */
-}
-/*changes in the navbar */
+        
+        

@@ -1,115 +1,13 @@
 {% extends 'backoffice/base.html' %}
-{% load static %}
 
 {% block content %}
 <h2 class="page-title" style="color: black;">Liste des produits :</h2>
 
 
-
-<!-- Notification flash (s'affiche seulement si messages existent) 
-{% if messages %}
-<div id="flash-notification" style="position:fixed; top:20px; left:50%; transform:translateX(-50%);
-    background:#1fa64a; color:white; padding:15px 25px; border-radius:8px; box-shadow:0 4px 10px rgba(0,0,0,0.2);
-    z-index:2000; display:flex; align-items:center; gap:15px;">
-    <div id="flash-message">Vous avez une nouvelle notification ! Voir le bouton 🔔</div>
-    <button id="flash-ok" style="background:white; color:#1fa64a; border:none; border-radius:5px; padding:5px 10px; cursor:pointer;">OK</button>
+<!-- Bouton Ajouter -->
+<div style="margin-bottom:20px;">
+    <a href="{% url 'ajouter_produit' %}" class="btn btn-vert">➕ Ajouter un produit </a>
 </div>
-{% endif %}
--->
-
-<!-- Boutons -->
-<div style="display: flex; justify-content: center; gap: 20px; margin-bottom: 20px; flex-wrap: wrap; align-items: center;">
-    <a href="{% url 'ajouter_produit' %}" class="btn btn-vert">➕ Ajouter un produit</a>
-    
-    <!--
-    <a href="{% url 'statistiques_produits' %}" class="btn btn-vert">📈 Voir les statistiques</a>
-    <a href="{% url 'export_pdf_produits' %}" class="btn btn-vert">📄 Exporter en PDF</a>
-    <a href="?sort=asc" class="btn btn-vert">⬆ Trier par quantité</a>
-    <a href="?sort=desc" class="btn btn-vert">⬇ Trier par quantité</a> 
-    --> 
-
-    <!-- Bouton Notifications 
-    <div style="position: relative;">
-        <button class="btn btn-vert" id="notif-btn">
-            🔔 Notifications 
-            <span id="notif-count">{% if messages %}{{ messages|length }}{% else %}0{% endif %}</span>
-        </button>
-        <div id="notif-dropdown" style="display:none; position:absolute; top:40px; right:0; background:white; min-width:250px; max-height:300px; overflow-y:auto; border-radius:8px; box-shadow:0 4px 15px rgba(0,0,0,0.2); z-index:1000;">
-            {% if messages %}
-                {% for message in messages %}
-                    <div style="padding:10px; border-bottom:1px solid #ddd;">{{ message }}</div>
-                {% endfor %}
-            {% else %}
-                <div style="padding:10px;">Aucune notification</div>
-            {% endif %}
-        </div>
-    </div>
-</div>
--->
-
-<!-- Barre de recherche 
-<form method="get" action="{% url 'gestion_produits' %}" style="display:flex;gap:10px;margin-bottom:15px;width:100%;">
-    <input type="text" name="query" placeholder="Rechercher un produit..." 
-           value="{{ query|default:'' }}" 
-           style="flex:1;padding:10px;border:1px solid #1fa64a;border-radius:5px;">
-    <button type="submit" style="background:#1fa64a;color:white;border:none;padding:10px 16px;border-radius:5px;cursor:pointer;">
-        🔍 Rechercher
-    </button>
-    <a href="{% url 'gestion_produits' %}" style="background:#aaa;color:white;padding:10px 16px;border-radius:5px;text-decoration:none;">
-        Réinitialiser
-    </a>
-</form>
--->
-
-<style>
-.btn { padding: 8px 14px; border-radius: 8px; text-decoration: none; font-weight: 500; transition: 0.3s; color: white; }
-.btn-vert { background-color: #1fa64a; }
-.btn-vert:hover { background-color: #15903c; }
-
-
-.tableau-produits { width: 100%; border-collapse: collapse; margin-top: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); border-radius: 10px; overflow: hidden; }
-.tableau-produits th, .tableau-produits td { padding: 12px 15px; text-align: left; }
-.tableau-produits thead { background-color: #1fa64a; color: white; }
-.tableau-produits tbody tr { background-color: white; transition: 0.3s; }
-.tableau-produits tbody tr:hover { background-color: #e8f5e9; }
-.img-produit { border-radius: 6px; object-fit: cover; }
-/* La cellule Actions doit être un conteneur flex centré */ .actions-cell { display: flex; justify-content: center; /* centre horizontalement */ align-items: center; /* centre verticalement */ gap: 8px; /* espace entre les boutons */ height: 100%; /* s’étend sur toute la hauteur */ } /* Uniformiser les boutons */ .actions-cell .btn { width: 42px; height: 42px; display: flex; justify-content: center; align-items: center; padding: 0; border-radius: 8px; } /* Tes couleurs inchangées */ .btn-edit { background-color: #f0ad4e; } .btn-edit:hover { background-color: #e59400; } .btn-delete { background-color: #d9534f; } .btn-delete:hover { background-color: #c12c2c; }
-</style>
-
-<script>
-window.addEventListener('DOMContentLoaded', () => {
-    const notifBtn = document.getElementById('notif-btn');
-    const notifDropdown = document.getElementById('notif-dropdown');
-    const flashNotification = document.getElementById('flash-notification');
-    const flashOk = document.getElementById('flash-ok');
-
-    // Affiche le flash seulement si le div existe (i.e., il y a une notification)
-    if (flashNotification) {
-        flashNotification.style.display = "flex";
-    }
-
-    // Clique sur OK = cache le flash
-    if (flashOk) {
-        flashOk.addEventListener('click', () => {
-            flashNotification.style.display = "none";
-        });
-    }
-
-    // Toggle dropdown notifications
-    notifBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        notifDropdown.style.display = notifDropdown.style.display === 'block' ? 'none' : 'block';
-    });
-
-    // Fermer dropdown si clic ailleurs
-    window.addEventListener('click', function(e) {
-        if (!notifBtn.contains(e.target) && !notifDropdown.contains(e.target)) {
-            notifDropdown.style.display = 'none';
-        }
-    });
-});
-</script>
-
 
 <!-- Tableau des produits -->
 <table class="tableau-produits">
@@ -127,20 +25,133 @@ window.addEventListener('DOMContentLoaded', () => {
     <tbody>
         {% for produit in produits %}
         <tr>
-            <td>{% if produit.image %}<img src="{{ produit.image.url }}" alt="{{ produit.nom_produit }}" width="60" class="img-produit">{% else %}N/A{% endif %}</td>
+            <td>
+                {% if produit.image %}
+                    <img src="{{ produit.image.url }}" alt="{{ produit.nom_produit }}" width="60" class="img-produit">
+                {% else %}
+                    N/A
+                {% endif %}
+            </td>
             <td>{{ produit.nom_produit }}</td>
             <td>{{ produit.type_produit }}</td>
             <td>{{ produit.description }}</td>
             <td>{{ produit.quantite_stock }}</td>
             <td>{{ produit.date_ajout|date:"d M Y" }}</td>
-            <td class="actions-cell">
-    <a href="{% url 'modifier_produit' produit.pk %}" class="btn btn-edit">✏️</a>
-    <a href="{% url 'supprimer_produit' produit.pk %}" class="btn btn-delete">🗑️</a>
-</td>
-
+            <td>
+                <a href="{% url 'modifier_produit' produit.pk %}" class="btn btn-edit">✏️ Modifier</a>
+                <a href="{% url 'supprimer_produit' produit.pk %}" class="btn btn-delete">🗑️ Supprimer</a>
+            </td>
         </tr>
         {% endfor %}
     </tbody>
 </table>
 
+<style>
+/* Boutons */
+.btn {
+    padding: 8px 14px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: 0.3s;
+    color: white;
+}
+
+/* Bouton vert principal */
+.btn-vert {
+    background-color: #1fa64a;
+}
+.btn-vert:hover {
+    background-color: #15903c;
+}
+
+/* Modifier et supprimer */
+.btn-edit {
+    background-color: #f0ad4e;
+}
+.btn-edit:hover {
+    background-color: #e59400;
+}
+.btn-delete {
+    background-color: #d9534f;
+}
+.btn-delete:hover {
+    background-color: #c12c2c;
+}
+
+/* Tableau */
+.tableau-produits {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.tableau-produits th, .tableau-produits td {
+    padding: 12px 15px;
+    text-align: left;
+}
+
+.tableau-produits thead {
+    background-color: #1fa64a;
+    color: white;
+}
+
+.tableau-produits tbody tr {
+    background-color: white;
+    transition: 0.3s;
+}
+
+.tableau-produits tbody tr:hover {
+    background-color: #e8f5e9;
+}
+
+/* Images */
+.img-produit {
+    border-radius: 6px;
+    object-fit: cover;
+}
+
+/* Formulaire dans ajouter_produit.html */
+.form-container {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+    max-width: 500px;
+    margin-top: 20px;
+}
+
+.form-container input, .form-container textarea, .form-container select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 12px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+    transition: 0.3s;
+}
+
+.form-container input:focus, .form-container textarea:focus, .form-container select:focus {
+    border-color: #1fa64a;
+    outline: none;
+}
+
+.form-container button {
+    background-color: #1fa64a;
+    border: none;
+    color: white;
+    padding: 10px 16px;
+    font-size: 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.form-container button:hover {
+    background-color: #15903c;
+}
+</style>
 {% endblock %}

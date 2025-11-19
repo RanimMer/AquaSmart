@@ -12,10 +12,13 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 import os
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+GOOGLE_API_KEY="AIzaSyDm2w2KcxDE1Jie3Sulf-7sRr172z45pEw"
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.

@@ -1,16 +1,12 @@
 from django.shortcuts import render
 from backoffice.models import Produit
-import os
-import json
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from google.genai import Client, types
 import re
 
-# Initialise le client avec la clé API
-client = Client(api_key="AIzaSyDm2w2KcxDE1Jie3Sulf-7sRr172z45pEw")  # ou utilisez GOOGLE_API_KEY
+client = Client(api_key="AIzaSyDm2w2KcxDE1Jie3Sulf-7sRr172z45pEw")
 
-# Pages principales
 def index(request):
     return render(request, 'index.html')
 
@@ -30,25 +26,43 @@ def contact(request):
 def chatbot_ia(request):
     return render(request, "chatbot_ia.html")
 
-# API du chatbot (désactivé CSRF pour le développement)
 @csrf_exempt
 def chatbot_api(request):
     if request.method == "POST":
         try:
-            data = json.loads(request.body)
-            question = data.get("question", "")
-            if not question:
-                return JsonResponse({"error": "Aucune question fournie"}, status=400)
+            question = request.POST.get("question", "")
+            image = request.FILES.get("image")
 
-            # Appel à Gemini via generate_content
+            if not question and not image:
+                return JsonResponse({"error": "Aucune donnée reçue"}, status=400)
+
+            parts = []
+
+            # Si question texte existe, l'ajouter comme part
+            if question:
+                parts.append(types.Part.from_text(text=question))
+
+            # Si image existe, l'ajouter comme part
+            if image:
+                image_bytes = image.read()
+                parts.append(types.Part.from_bytes(data=image_bytes, mime_type=image.content_type))
+
+            # Créer un content “user” avec ces parts
+            content = types.Content(
+                role="user",
+                parts=parts
+            )
+
             response = client.models.generate_content(
-                model="gemini-2.5-flash",  # ou un modèle Gemini valide
-                contents=question,
+                model="gemini-2.5-flash",  # ou un modèle Gemini approprié
+                contents=[content],
                 config=types.GenerateContentConfig(temperature=0.7)
             )
 
             answer = response.text
+            # Optionnel : nettoyer la réponse
             answer = re.sub(r'(\*\*|\*)', '', answer)
+
             return JsonResponse({"answer": answer})
 
         except Exception as e:

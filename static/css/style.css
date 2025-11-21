@@ -1,8 +1,8 @@
 /********** Template CSS **********/
 :root {
-    --primary: #e99e13;
     --secondary: #525368;
-    --light: #e99e13;
+    --primary: #9ACD32;  /* Vert */
+    --light: #9ACD32;    /* Vert */
     --dark: #000000;
 }
 
@@ -180,8 +180,8 @@ h6,
     width: 3rem;
     height: 3rem;
     border-radius: 3rem;
-    background-color: var(--primary);
-    border: 10px solid var(--primary);
+    background-color: #9ACD32;
+    border: 10px solid #9ACD32;
 }
 
 @media (max-width: 768px) {

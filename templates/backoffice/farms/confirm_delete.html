@@ -1,18 +1,82 @@
-{% extends "backoffice/base.html" %}
+{% extends 'backoffice/base.html' %}
 {% load static %}
 
-{% block title %}Ferme{% endblock %}
-{% block page_title %}Ferme{% endblock %}
+{% block title %}Confirmer la suppression - Backoffice{% endblock %}
+
+{% block page_title %}🗑️ Confirmer la suppression{% endblock %}
 
 {% block content %}
-<div class="card" style="max-width:640px;">
-  <form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <div style="display:flex;gap:8px;">
-      <button type="submit" class="btn btn-success">{{ submit_label }}</button>
-      <a href="{% url 'farm_list' %}" class="btn btn-secondary">Retour</a>
+<div class="card">
+  <div class="card-body">
+    <div class="text-center">
+      <div class="alert alert-warning">
+        <i class="fas fa-exclamation-triangle fa-2x mb-3 text-warning"></i>
+        <h4 class="alert-heading">⚠️ Confirmer la suppression</h4>
+        <p>Vous êtes sur le point de supprimer définitivement la ferme :</p>
+        
+        <div class="card mb-4" style="background: #f8f9fa;">
+          <div class="card-body">
+            <h5 class="card-title">{{ farm.name }}</h5>
+            <p class="card-text mb-1"><strong>Localisation:</strong> {{ farm.location }}</p>
+            <p class="card-text mb-1"><strong>Superficie:</strong> {{ farm.size }} ha</p>
+            <p class="card-text mb-1"><strong>Type:</strong> {{ farm.farm_type }}</p>
+            <p class="card-text mb-1"><strong>Propriétaire:</strong> {{ farm.owner.username }}</p>
+            <p class="card-text mb-1"><strong>Date de création:</strong> {{ farm.created_at|date:"d/m/Y" }}</p>
+          </div>
+        </div>
+
+        <p class="text-danger fw-bold">Cette action est irréversible !</p>
+
+        <form method="post">
+          {% csrf_token %}
+          <div class="d-flex justify-content-center gap-3">
+            <a href="{% url 'farm_list' %}" class="btn btn-cancel">
+              ❌ Annuler
+            </a>
+            <button type="submit" class="btn btn-delete">
+              🗑️ Confirmer la suppression
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
-  </form>
+  </div>
 </div>
+
+<style>
+.alert-warning {
+  background-color: #fff3cd;
+  border-color: #ffeaa7;
+  color: #856404;
+}
+
+.btn-delete {
+  background-color: #dc3545;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 500;
+  transition: 0.3s;
+  border: none;
+}
+
+.btn-delete:hover {
+  background-color: #c82333;
+}
+
+.btn-cancel {
+  background-color: #6c757d;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 500;
+  transition: 0.3s;
+}
+
+.btn-cancel:hover {
+  background-color: #545b62;
+}
+</style>
 {% endblock %}

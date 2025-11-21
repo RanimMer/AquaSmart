@@ -1,69 +1,364 @@
 {% extends "backoffice/base.html" %}
 {% load static %}
 
-{% block title %}Utilisateurs{% endblock %}
-{% block page_title %}Gestion des utilisateurs{% endblock %}
+{% block title %}Gestion des Utilisateurs - Backoffice{% endblock %}
+
+{% block page_title %}
+<div style="text-align:left; margin-bottom:14px;">
+    <span style="font-size:32px; font-weight:400; color:#9ACD32;">
+        Gestion des utilisateurs
+    </span>
+</div>
+{% endblock %}
 
 {% block content %}
-<style>
-  /* Ligne spéciale pour l'admin (propriétaire) */
-  .admin-row {
-    background-color: #fff1cdff; /* jaune pâle type "alert" */
-  }
-</style>
 <div class="card">
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-    <h3 style="margin:0;">Utilisateurs</h3>
-    <a href="{% url 'user_create' %}" class="btn btn-success" style="padding:8px 14px;border-radius:8px;">+ Nouvel utilisateur</a>
-  </div>
-
-  <table>
-    <thead>
-      <tr>
-        <th>Avatar</th>
-        <th>Username</th>
-        <th>Email</th>
-        <th>Prénom</th>
-        <th>Nom</th>
-        <th>Rôle</th>
-        <th>Ferme</th>
-        <th>Actif</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for u in users %}
-      <tr class="{% if u.profile.role == 'ADMIN' %}admin-row{% endif %}">
-        <td>
-          {% if u.profile.avatar %}
-            <img src="{{ u.profile.avatar.url }}" alt="avatar" style="width:36px;height:36px;border-radius:50%;">
-          {% else %}
-            <img src="{% static 'img/undraw_profile.svg' %}" alt="avatar" style="width:36px;height:36px;border-radius:50%;">
-          {% endif %}
-        </td>
-        <td>{{ u.username }}</td>
-        <td>{{ u.email }}</td>
-        <td>{{ u.first_name }}</td>
-        <td>{{ u.last_name }}</td>
-        <td>
-          {% if u.profile.role == 'ADMIN' %}
-            <span class="badge bg-warning text-dark">👑 Propriétaire</span>
-          {% else %}
-            <span class="badge bg-success">Employé agricole</span>
-          {% endif %}
-        </td>
-
-        <td>{{ u.profile.farm|default:"-" }}</td>
-        <td>{{ u.is_active|yesno:"Oui,Non" }}</td>
-        <td>
-          <a href="{% url 'user_edit' u.id %}" class="btn btn-sm btn-primary">Éditer</a>
-          <a href="{% url 'user_delete' u.id %}" class="btn btn-sm btn-danger">Supprimer</a>
-        </td>
-      </tr>
-      {% empty %}
-      <tr><td colspan="9">Aucun utilisateur.</td></tr>
+  <div class="card-body">
+    {% if messages %}
+      {% for message in messages %}
+      <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
       {% endfor %}
-    </tbody>
-  </table>
+    {% endif %}
+
+    <table class="tableau-elegant">
+      <thead>
+        <tr>
+          <th style="width: 70px;">Avatar</th>
+          <th style="width: 120px;">Username</th>
+          <th style="width: 160px;">Email</th>
+          <th style="width: 100px;">Prénom</th>
+          <th style="width: 100px;">Nom</th>
+          <th style="width: 120px;">Rôle</th>
+          <th style="width: 120px;">Ferme</th>
+          <th style="width: 80px;">Actif</th>
+          <th style="width: 120px;">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for u in users %}
+        <tr class="{% if u.profile.role == 'ADMIN' %}admin-row{% endif %}">
+          <td>
+            {% if u.profile.avatar %}
+              <img src="{{ u.profile.avatar.url }}" alt="avatar" class="user-avatar">
+            {% else %}
+              <img src="{% static 'img/undraw_profile.svg' %}" alt="avatar" class="user-avatar">
+            {% endif %}
+          </td>
+          <td>
+            <span class="username-data">{{ u.username }}</span>
+          </td>
+          <td>
+            <span class="email-data">{{ u.email }}</span>
+          </td>
+          <td>
+            <span class="name-data">{{ u.first_name|default:"-" }}</span>
+          </td>
+          <td>
+            <span class="name-data">{{ u.last_name|default:"-" }}</span>
+          </td>
+          <td>
+            {% if u.profile.role == 'ADMIN' %}
+              <span class="role-badge role-admin">👑 Propriétaire</span>
+            {% else %}
+              <span class="role-badge role-employee">Employé agricole</span>
+            {% endif %}
+          </td>
+          <td>
+            <span class="farm-data">{{ u.profile.farm|default:"-" }}</span>
+          </td>
+          <td>
+            {% if u.is_active %}
+              <span class="status-badge status-active">Oui</span>
+            {% else %}
+              <span class="status-badge status-inactive">Non</span>
+            {% endif %}
+          </td>
+          <td class="actions-cell">
+            <a href="{% url 'user_edit' u.id %}" class="btn btn-edit" data-title="Éditer">✏️</a>
+            <a href="{% url 'user_delete' u.id %}" class="btn btn-delete" data-title="Supprimer">🗑️</a>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="9" class="no-data">
+            <div class="empty-state">
+              <h6 class="text-muted">Aucun utilisateur enregistré</h6>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
 </div>
+
+<style>
+/* Tableau élégant */
+.tableau-elegant {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin-top: 10px;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    background: white;
+    table-layout: fixed;
+}
+
+.tableau-elegant th {
+    background-color: rgba(154, 205, 50, 0.08);
+    color: #2d5016;
+    padding: 14px 8px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 13px;
+    border-bottom: 1px solid rgba(154, 205, 50, 0.2);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.tableau-elegant td {
+    padding: 12px 8px;
+    text-align: left;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 13px;
+    color: #555;
+    vertical-align: middle;
+}
+
+.tableau-elegant tbody tr {
+    background-color: white;
+    transition: all 0.2s ease;
+}
+
+.tableau-elegant tbody tr:hover {
+    background-color: rgba(154, 205, 50, 0.03);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.tableau-elegant tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* Ligne spéciale pour l'admin (propriétaire) */
+.admin-row {
+    background-color: rgba(255, 193, 7, 0.05) !important; /* Jaune très léger */
+    border-left: 3px solid #ffc107;
+}
+
+.admin-row:hover {
+    background-color: rgba(255, 193, 7, 0.08) !important;
+}
+
+/* Avatar utilisateur */
+.user-avatar {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #f0f0f0;
+}
+
+/* Données stylisées */
+.username-data {
+    font-size: 14px;
+    color: #333;
+    font-weight: 600;
+    padding: 6px 10px;
+    background: rgba(52, 152, 219, 0.1);
+    border-radius: 6px;
+    display: inline-block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+
+.email-data {
+    font-size: 13px;
+    color: #555;
+    font-weight: 500;
+    padding: 6px 10px;
+    background: rgba(149, 165, 166, 0.1);
+    border-radius: 6px;
+    display: inline-block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+
+.name-data {
+    font-size: 13px;
+    color: #333;
+    font-weight: 500;
+    padding: 6px 10px;
+    background: rgba(39, 174, 96, 0.1);
+    border-radius: 6px;
+    display: inline-block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+
+.farm-data {
+    font-size: 13px;
+    color: #555;
+    font-weight: 500;
+    padding: 6px 10px;
+    background: rgba(155, 89, 182, 0.1);
+    border-radius: 6px;
+    display: inline-block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+
+/* Badges de rôle */
+.role-badge {
+    padding: 6px 10px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 11px;
+    border: 1px solid;
+    display: inline-block;
+    text-align: center;
+    min-width: 100px;
+}
+
+.role-admin {
+    background: rgba(255, 193, 7, 0.1);
+    color: #856404;
+    border-color: rgba(255, 193, 7, 0.3);
+}
+
+.role-employee {
+    background: rgba(39, 174, 96, 0.1);
+    color: #155724;
+    border-color: rgba(39, 174, 96, 0.3);
+}
+
+/* Badges de statut */
+.status-badge {
+    padding: 6px 10px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 11px;
+    border: 1px solid;
+    display: inline-block;
+    text-align: center;
+    min-width: 50px;
+}
+
+.status-active {
+    background: rgba(39, 174, 96, 0.1);
+    color: #155724;
+    border-color: rgba(39, 174, 96, 0.3);
+}
+
+.status-inactive {
+    background: rgba(220, 53, 69, 0.1);
+    color: #721c24;
+    border-color: rgba(220, 53, 69, 0.3);
+}
+
+/* Message pas de données */
+.no-data {
+    text-align: center;
+    color: #6c757d;
+    font-style: italic;
+    padding: 40px !important;
+}
+
+.empty-state {
+    padding: 20px;
+}
+
+.empty-state h6 {
+    margin-bottom: 15px;
+    font-size: 16px;
+}
+
+/* Boutons d'action */
+.btn {
+    padding: 8px 12px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    color: white;
+    display: inline-block;
+    font-size: 13px;
+    position: relative;
+}
+
+.btn-edit {
+    background-color: #ffc107;
+}
+.btn-edit:hover {
+    background-color: #e0a800;
+    transform: scale(1.1);
+}
+
+.btn-delete {
+    background-color: #dc3545;
+}
+.btn-delete:hover {
+    background-color: #c82333;
+    transform: scale(1.1);
+}
+
+.actions-cell {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Tooltip personnalisé - EN HAUT */
+.btn[data-title] {
+    position: relative;
+}
+
+.btn[data-title]:hover::after {
+    content: attr(data-title);
+    position: absolute;
+    top: -40px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: white;
+    color: #333;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    white-space: nowrap;
+    z-index: 1000;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    border: 1px solid #e0e0e0;
+    font-weight: 500;
+}
+
+.btn[data-title]:hover::before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 5px;
+    border-style: solid;
+    border-color: white transparent transparent transparent;
+    z-index: 1000;
+}
+
+</style>
 {% endblock %}

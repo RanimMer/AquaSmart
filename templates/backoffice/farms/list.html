@@ -1,40 +1,278 @@
 {% extends "backoffice/base.html" %}
 {% load static %}
 
-{% block title %}Fermes{% endblock %}
-{% block page_title %}Fermes{% endblock %}
+{% block title %}Gestion des Fermes - Backoffice{% endblock %}
+
+{% block page_title %}
+<div style="text-align:left; margin-bottom:14px;">
+    <span style="font-size:32px; font-weight:400; color:#9ACD32;">
+        Gestion des fermes
+    </span>
+</div>
+{% endblock %}
 
 {% block content %}
 <div class="card">
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-    <h3 style="margin:0;">Liste des fermes</h3>
-    <a href="{% url 'farm_create' %}" class="btn btn-success">+ Nouvelle ferme</a>
-  </div>
+  <div class="card-body">
+    <div style="margin-bottom:20px;">
+      <a href="{% url 'farm_create' %}" class="btn-add-plantation">
+        Ajouter une ferme
+      </a>
+    </div>
 
-  {% if farms %}
-  <table>
-    <thead>
-      <tr>
-        <th>Nom</th>
-        <th>Créée le</th>
-        <th style="width:180px;">Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for f in farms %}
-      <tr>
-        <td>{{ f.name }}</td>
-        <td>{{ f.created_at|date:"d/m/Y H:i" }}</td>
-        <td>
-          <a class="btn btn-secondary" href="{% url 'farm_update' f.pk %}">Éditer</a>
-          <a class="btn btn-danger" href="{% url 'farm_delete'  f.pk %}">Supprimer</a>
-        </td>
-      </tr>
+    {% if messages %}
+      {% for message in messages %}
+      <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
       {% endfor %}
-    </tbody>
-  </table>
-  {% else %}
-    <p>Aucune ferme enregistrée.</p>
-  {% endif %}
+    {% endif %}
+
+    <table class="tableau-elegant">
+      <thead>
+        <tr>
+          <th style="width: 200px;">Nom</th>
+          <th style="width: 150px;">Créée le</th>
+          <th style="width: 200px;">Localisation</th>
+          <th style="width: 140px;">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for f in farms %}
+        <tr>
+          <td>
+            <span class="ferme-name">{{ f.name }}</span>
+          </td>
+          <td>
+            <span class="date-data">{{ f.created_at|date:"d/m/Y H:i" }}</span>
+          </td>
+          <td>
+            <span class="location-data">{{ f.location }}</span>
+          </td>
+          <td class="actions-cell">
+            <a href="{% url 'farm_update' f.pk %}" class="btn btn-edit" data-title="Modifier">✏️</a>
+            <a href="{% url 'farm_delete' f.pk %}" class="btn btn-delete" data-title="Supprimer">🗑️</a>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="4" class="no-data">
+            <div class="empty-state">
+              <h6 class="text-muted">Aucune ferme enregistrée</h6>
+              <a href="{% url 'farm_create' %}" class="btn-add-plantation mt-2">
+                Créer une ferme
+              </a>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
 </div>
+
+<style>
+/* Bouton Ajouter une ferme - Style smooth */
+.btn-add-plantation {
+    background-color: rgba(154, 205, 50, 0.1);
+    color: #9ACD32;
+    padding: 12px 24px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    border: 2px solid rgba(154, 205, 50, 0.3);
+    display: inline-block;
+    font-size: 15px;
+}
+
+.btn-add-plantation:hover {
+    background-color: rgba(154, 205, 50, 0.2);
+    border-color: rgba(154, 205, 50, 0.5);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(154, 205, 50, 0.2);
+}
+
+/* Tableau élégant */
+.tableau-elegant {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin-top: 10px;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    background: white;
+    table-layout: fixed;
+}
+
+.tableau-elegant th {
+    background-color: rgba(154, 205, 50, 0.08);
+    color: #2d5016;
+    padding: 14px 8px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 13px;
+    border-bottom: 1px solid rgba(154, 205, 50, 0.2);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.tableau-elegant td {
+    padding: 12px 8px;
+    text-align: left;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 13px;
+    color: #555;
+    vertical-align: middle;
+}
+
+.tableau-elegant tbody tr {
+    background-color: white;
+    transition: all 0.2s ease;
+}
+
+.tableau-elegant tbody tr:hover {
+    background-color: rgba(154, 205, 50, 0.03);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.tableau-elegant tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* Données stylisées */
+.ferme-name {
+    font-size: 14px;
+    color: #333;
+    font-weight: 600;
+    padding: 6px 10px;
+    background: rgba(52, 152, 219, 0.1);
+    border-radius: 6px;
+    display: inline-block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+
+.date-data {
+    font-size: 13px;
+    color: #555;
+    font-weight: 500;
+    padding: 6px 10px;
+    background: rgba(149, 165, 166, 0.1);
+    border-radius: 6px;
+    display: inline-block;
+    white-space: nowrap;
+}
+
+.location-data {
+    font-size: 13px;
+    color: #333;
+    font-weight: 500;
+    padding: 6px 10px;
+    background: rgba(39, 174, 96, 0.1);
+    border-radius: 6px;
+    display: inline-block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+
+/* Message pas de données */
+.no-data {
+    text-align: center;
+    color: #6c757d;
+    font-style: italic;
+    padding: 40px !important;
+}
+
+.empty-state {
+    padding: 20px;
+}
+
+.empty-state h6 {
+    margin-bottom: 15px;
+    font-size: 16px;
+}
+
+/* Boutons d'action */
+.btn {
+    padding: 8px 12px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    color: white;
+    display: inline-block;
+    font-size: 13px;
+    position: relative;
+}
+
+.btn-edit {
+    background-color: #ffc107;
+}
+.btn-edit:hover {
+    background-color: #e0a800;
+    transform: scale(1.1);
+}
+
+.btn-delete {
+    background-color: #dc3545;
+}
+.btn-delete:hover {
+    background-color: #c82333;
+    transform: scale(1.1);
+}
+
+.actions-cell {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Tooltip personnalisé - EN HAUT */
+.btn[data-title] {
+    position: relative;
+}
+
+.btn[data-title]:hover::after {
+    content: attr(data-title);
+    position: absolute;
+    top: -40px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: white;
+    color: #333;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    white-space: nowrap;
+    z-index: 1000;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    border: 1px solid #e0e0e0;
+    font-weight: 500;
+}
+
+.btn[data-title]:hover::before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 5px;
+    border-style: solid;
+    border-color: white transparent transparent transparent;
+    z-index: 1000;
+}
+
+</style>
 {% endblock %}

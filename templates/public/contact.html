@@ -1,3 +1,4 @@
+
 {% load static %}
 <!DOCTYPE html>
 <html lang="fr">
@@ -28,64 +29,77 @@
   </head>
 
   <body>
-    <!-- Topbar Start -->
-    <div class="container-fluid bg-dark text-light px-0 py-2">
-      <div class="row gx-0 d-none d-lg-flex">
-        <div class="col-lg-7 px-5 text-start">
-          <div class="h-100 d-inline-flex align-items-center me-4">
-            <span class="fa fa-phone-alt me-2"></span>
-            <span>+216 26 102 035</span>
-          </div>
-          <div class="h-100 d-inline-flex align-items-center">
-            <span class="far fa-envelope me-2"></span>
-            <span>AquaSmart@gmail.com</span>
-          </div>
-        </div>
-        <div class="col-lg-5 px-5 text-end">
-          <div class="h-100 d-inline-flex align-items-center mx-n2">
-            <span>Suivez-nous:</span>
-            <a class="btn btn-link text-light" href="#"><i class="fab fa-facebook-f"></i></a>
-            <a class="btn btn-link text-light" href="#"><i class="fab fa-instagram"></i></a>
-          </div>
-        </div>
-      </div>
+     <!-- Topbar Start -->
+<div class="container-fluid topbar-green text-light py-3 px-4">
+
+  <div class="d-flex justify-content-between align-items-center small">
+    <div>
+      
+      <i class="fa fa-envelope me-2"></i> AquaSmart@gmail.com
+      <span class="mx-3">|</span>
+      <i class="fa fa-phone-alt me-2"></i> +216 26 102 035
     </div>
-    <!-- Topbar End -->
+    <div>
+      <a href="#" class="text-light me-4"><i class="fab fa-facebook-f"></i></a>
+      <a href="#" class="text-light me-4"><i class="fab fa-instagram"></i></a>
+      
+    </div>
+  </div>
+</div>
+<!-- Topbar End -->
 
     <!-- Navbar Start -->
-    <nav class="navbar navbar-expand-lg bg-white navbar-light sticky-top p-0">
-        <a href="{% url 'index' %}" class="navbar-brand d-flex align-items-center px-4 px-lg-5">
-            <img src="{% static 'img/logo.png' %}" alt="logo" style="width:180px; height:60px;">
-        </a>
+<nav class="navbar navbar-expand-lg bg-white navbar-light sticky-top p-0 custom-nav">
+    <a href="{% url 'index' %}" class="navbar-brand d-flex align-items-center px-4">
+        <img src="{% static 'img/Gemini_Generated_Image_uiawfquiawfquiaw-removebg-preview.png' %}" alt="logo" style="width:120px; height:100px;">
+    </a>
 
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
-        <span class="navbar-toggler-icon"></span>
-      </button>
+    <div class="collapse navbar-collapse" id="navbarCollapse">
+        <ul class="navbar-nav mx-auto">
+            <li class="nav-item"><a href="{% url 'index' %}" class="nav-link ">Accueil</a></li>
+            <li class="nav-item"><a href="{% url 'apropos' %}" class="nav-link  ">À propos</a></li>
+            <li class="nav-item"><a href="{% url 'contact' %}" class="nav-link active ">Contact</a></li>
+            <li class="nav-item"><a href="{% url 'produits' %}" class="nav-link">Produits</a></li>
+            <li class="nav-item"><a href="{% url 'cultures' %}" class="nav-link">Cultures</a></li>
+            <li class="nav-item"><a href="{% url 'serres' %}" class="nav-link">Serres</a></li>
+            <li class="nav-item"><a href="{% url 'station_meteo' %}" class="nav-link">Météo</a></li>
+            <li class="nav-item"><a href="{% url 'liste_sols_front' %}" class="nav-link">Analyses Sol</a></li>
+            
+        </ul>
 
-      <div class="collapse navbar-collapse" id="navbarCollapse">
-        <div class="navbar-nav ms-auto p-4 p-lg-0">
-          <a href="{% url 'index' %}" class="nav-item nav-link">Accueil</a>
-          <a href="{% url 'apropos' %}" class="nav-item nav-link">À propos</a>
-          <a href="{% url 'contact' %}" class="nav-item nav-link active">Contact</a>
-          
 
-          <div class="d-flex align-items-center">
-                    <a href="{% url 'logout' %}" class="btn btn-logout d-none d-lg-flex">
-                        Déconnecter <i class="fa fa-arrow-right"></i>
-                    </a>
-                </div>
+    </div>
+    {% if user.is_authenticated %}
+<div class="profile-dropdown">
+    <div class="profile-btn">
+        <div class="profile-circle">
+            {{ user.username|first|upper }}
         </div>
-      </div>
-    </nav>
-    <!-- Navbar End -->
+        <span class="username">{{ user.username }}</span>
+        <i class="fas fa-chevron-down"></i>
+    </div>
 
+    <div class="profile-menu">
+        <a href="{% url 'front_profile' %}"><i class="fas fa-user"></i> Mon profil</a>
+        <form method="post" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button type="submit" class="logout-item">
+                <i class="fas fa-sign-out-alt"></i> Déconnexion
+            </button>
+        </form>
+    </div>
+</div>
+{% endif %}
+
+</nav>
+<!-- Navbar End -->
     <!-- Page Header Start -->
     <div class="container-fluid page-header py-5 mb-5 wow fadeIn" data-wow-delay="0.1s">
       <div class="container text-center py-5">
         <h1 class="display-3 text-white mb-4 animated slideInDown">Contactez-nous</h1>
         <nav aria-label="breadcrumb animated slideInDown">
           <ol class="breadcrumb justify-content-center mb-0">
-            <li class="breadcrumb-item active" aria-current="page">
+            <li class="breadcrumb-item active text-white" aria-current="page">
               Une question, une idée ou un besoin ? Parlons-en, on est là pour vous !
             </li>
           </ol>
@@ -94,81 +108,89 @@
     </div>
     <!-- Page Header End -->
 
-    <!-- Contact Start -->
-    <div class="container-xxl py-5">
-      <div class="container">
-        <div class="row g-5">
-          <div class="col-lg-6 wow fadeIn" data-wow-delay="0.1s">
-            <p class="fs-5 fw-bold text-primary">Contactez-nous</p>
-            <h1 class="display-5 mb-5">
-              Si vous avez des questions, veuillez nous contacter !
-            </h1>
-            <p>
-              Vous avez une question, une suggestion ou besoin d’un accompagnement personnalisé ?
-              L’équipe Aqua Smart est à votre écoute ! Que ce soit pour en savoir plus sur nos services,
-              nos solutions intelligentes ou nos produits, n’hésitez pas à nous écrire.
-            </p>
-          </div>
-
-          <div class="col-lg-6 wow fadeIn" data-wow-delay="0.5s" style="min-height: 450px;">
-            <div class="position-relative rounded overflow-hidden h-100">
-              <iframe
-                class="position-relative w-100 h-100"
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3001156.4288297426!2d-78.01371936852176!3d42.72876761954724!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4ccc4bf0f123a5a9%3A0xddcfc6c1de189567!2sNew%20York%2C%20USA!5e0!3m2!1sen!2sbd!4v1603794290143!5m2!1sen!2sbd"
-                frameborder="0"
-                style="min-height: 450px; border: 0;"
-                allowfullscreen=""
-                aria-hidden="false"
-                tabindex="0"
-              ></iframe>
+  <!-- Contact Section Start -->
+<div class="container-xxl py-5">
+    <div class="container">
+        <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
+            <h1 class="display-5 mb-5">Contactez-nous</h1>
+        </div>
+        <div class="row g-4">
+            <!-- Description -->
+            <div class="col-lg-6 wow fadeInUp" data-wow-delay="0.1s">
+                <div class="service-item p-4">
+                    <div class="service-icon mb-4">
+                        <i class="fas fa-comments fa-2x"></i>
+                    </div>
+                    <h4 class="mb-3">Nous sommes à votre écoute</h4>
+                    <p>
+                        Vous avez une question, une suggestion ou besoin d’un accompagnement personnalisé ? 
+                        L’équipe AquaSmart est prête à vous guider dans l’optimisation de vos cultures et l’utilisation de nos solutions intelligentes. 
+                        Contactez-nous pour en savoir plus sur nos services, nos produits et nos analyses avancées.
+                    </p>
+                </div>
             </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <!-- Contact End -->
 
-    <!-- Footer Start -->
-    <div class="container-fluid bg-dark text-light footer mt-5 py-5 wow fadeIn" data-wow-delay="0.1s">
-      <div class="container py-5">
+            <!-- Map -->
+            <div class="col-lg-6 wow fadeInUp" data-wow-delay="0.3s" style="min-height: 450px;">
+                <div class="position-relative rounded overflow-hidden h-100 service-item">
+                    <iframe
+                        class="position-relative w-100 h-100"
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3001156.4288297426!2d-78.01371936852176!3d42.72876761954724!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4ccc4bf0f123a5a9%3A0xddcfc6c1de189567!2sNew%20York%2C%20USA!5e0!3m2!1sen!2sbd!4v1603794290143!5m2!1sen!2sbd"
+                        frameborder="0"
+                        style="min-height: 450px; border: 0;"
+                        allowfullscreen=""
+                        aria-hidden="false"
+                        tabindex="0"
+                    ></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Contact Section End -->
+
+     <!-- Footer Start -->
+<div class="container-fluid footer-custom text-light footer mt-5 py-5">
+    <div class="container py-5">
         <div class="row g-5">
-          <div class="col-lg-3 col-md-6">
-            <h4 class="text-white mb-4">Notre bureau</h4>
-            <p class="mb-2"><i class="fa fa-map-marker-alt me-3"></i>Avenue Habib Bourguiba, Tunis</p>
-            <p class="mb-2"><i class="fa fa-phone-alt me-3"></i>+216 26 102 035</p>
-            <p class="mb-2"><i class="fa fa-envelope me-3"></i>AquaSmart@gmail.com</p>
-          </div>
-
-          <div class="col-lg-3 col-md-6">
-            <h4 class="text-white mb-4">Services :</h4>
-                    <a class="btn btn-link" href="#">Analyse du sol</a>
-                    <a class="btn btn-link" href="#">Gestion des cultures</a>
-                    <a class="btn btn-link" href="#">Gestion des serres</a>
-                    <a class="btn btn-link" href="#">Analyse du méteo</a>
-                    <a class="btn btn-link" href="#">Gestion des produits</a>
-          </div>
-
-          <div class="col-lg-3 col-md-6">
-            <h4 class="text-white mb-4">Liens rapides</h4>
-            <a class="btn btn-link" href="{% url 'index' %}">Accueil</a>
-            <a class="btn btn-link" href="{% url 'apropos' %}">À propos</a>
-            <a class="btn btn-link" href="{% url 'contact' %}">Contact</a>
-          </div>
+            <div class="col-lg-4 col-md-6">
+                <h4 class="footer-title mb-4">Notre bureau</h4>
+                <p class="mb-3 footer-text"><i class="fa fa-map-marker-alt me-3 footer-icon"></i>Avenue Hbib Bourguiba, Tunis</p>
+                <p class="mb-3 footer-text"><i class="fa fa-phone-alt me-3 footer-icon"></i>+216 26 102 035</p>
+                <p class="mb-3 footer-text"><i class="fa fa-envelope me-3 footer-icon"></i>AquaSmart@gmail.com</p>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <h4 class="footer-title mb-4">Nos services</h4>
+                <a class="footer-link" href="{% url 'liste_sols_front' %}">Analyse du sol</a>
+                <a class="footer-link" href="{% url 'cultures' %}">Gestion des cultures</a>
+                <a class="footer-link" href="{% url 'serres' %}">Gestion des serres</a>
+                <a class="footer-link" href="{% url 'station_meteo' %}">Analyse météo</a>
+                <a class="footer-link" href="{% url 'produits' %}">Gestion des produits</a>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <h4 class="footer-title mb-4">Navigation</h4>
+                <a class="footer-link" href="{% url 'index' %}">Accueil</a>
+                <a class="footer-link" href="{% url 'apropos' %}">À propos</a>
+                <a class="footer-link" href="{% url 'contact' %}">Contact</a>
+               
+            </div>
         </div>
-      </div>
     </div>
-    <!-- Footer End -->
-
+</div>
+<!-- Footer End -->
     <div class="container-fluid copyright py-4">
-      <div class="container">
-        <div class="row">
-          <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
-            &copy; <a class="border-bottom" href="#">Aqua Smart</a>, Tous droits réservés.
-          </div>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
+                    &copy; <a class="border-bottom" href="#">Aqua Smart</a>, All Right Reserved.
+                </div>
+            </div>
         </div>
-      </div>
     </div>
 
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
     <!-- JavaScript Libraries -->
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -180,5 +202,729 @@
     <script src="{% static 'lib/parallax/parallax.min.js' %}"></script>
     <script src="{% static 'lib/lightbox/js/lightbox.min.js' %}"></script>
     <script src="{% static 'js/main.js' %}"></script>
+    <script>
+document.addEventListener('DOMContentLoaded', () => {
+    const dropdowns = document.querySelectorAll('.profile-dropdown');
+    dropdowns.forEach(dd => {
+        const btn = dd.querySelector('.profile-btn');
+        btn.addEventListener('click', () => {
+            dd.classList.toggle('active');
+        });
+    });
+
+    // fermer si on clique ailleurs
+    document.addEventListener("click", function(e){
+        dropdowns.forEach(dd => {
+            if (!dd.contains(e.target)) {
+                dd.classList.remove('active');
+            }
+        });
+    });
+});
+</script>
+
   </body>
 </html>
+ <style>
+    .profile-dropdown {
+    position: relative;
+    margin-right: 30px;
+}
+
+.profile-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: white;
+    border: 2px solid #9ACD32;
+    padding: 6px 14px;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.profile-btn:hover {
+    background: #9ACD32;
+    color: white;
+}
+
+.profile-circle {
+    background: #9ACD32;
+    color: white;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+}
+
+.profile-menu {
+    position: absolute;
+    top: 48px;
+    right: 0;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    min-width: 180px;
+    display: none;
+    z-index: 1000;
+    padding: 10px 0;
+}
+
+.profile-menu a,
+.profile-menu .logout-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 18px;
+    text-decoration: none;
+    color: #333;
+    background: transparent;
+    width: 100%;
+    border: none;
+    text-align: left;
+    cursor: pointer;
+    font-size: 0.95rem;
+}
+
+.profile-menu a:hover,
+.profile-menu .logout-item:hover {
+    background: #9ACD32;
+    color: white;
+}
+
+.profile-dropdown.active .profile-menu {
+    display: block;
+}
+
+    /* --- STYLE HARMONISÉ AVEC #9ACD32 --- */
+    .page-header {
+        background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), 
+                    url('{% static "img/carousel-1.jpg" %}') center center no-repeat;
+        background-size: cover;
+    }
+
+    /* Cartes d'analyse harmonisées */
+    .analyse-card {
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+        border: 1px solid #f0f0f0;
+        padding: 2rem 1.5rem;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .analyse-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(135deg, #9ACD32, #7ec01f);
+    }
+
+    .analyse-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 30px rgba(154, 205, 50, 0.15);
+        border-color: #9ACD32;
+    }
+
+    .analyse-header {
+        text-align: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .analyse-title {
+        color: #1a6b3b;
+        font-weight: 600;
+        font-size: 1.3rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .analyse-badge {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: white;
+    }
+
+    .badge-excellente { background: linear-gradient(135deg, #9ACD32, #7ec01f); }
+    .badge-bonne { background: linear-gradient(135deg, #5dade2, #3498db); }
+    .badge-moyenne { background: linear-gradient(135deg, #f39c12, #f1c40f); }
+    .badge-critique { background: linear-gradient(135deg, #e74c3c, #ec7063); }
+
+    .analyse-parameters {
+        margin-bottom: 1.5rem;
+    }
+
+    .param-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid #e9ecef;
+    }
+
+    .param-item:last-child {
+        border-bottom: none;
+    }
+
+    .param-label {
+        color: #1a6b3b;
+        font-weight: 600;
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .param-value {
+        font-weight: 700;
+        font-size: 0.95rem;
+        color: #666;
+    }
+
+    .ph-value {
+        padding: 0.3rem 0.8rem;
+        border-radius: 8px;
+        font-weight: 700;
+        font-size: 0.85rem;
+    }
+
+    .ph-acide { 
+        background: rgba(231, 76, 60, 0.1); 
+        color: #e74c3c; 
+        border: 1px solid rgba(231, 76, 60, 0.2);
+    }
+    .ph-optimal { 
+        background: rgba(154, 205, 50, 0.1); 
+        color: #1a6b3b; 
+        border: 1px solid rgba(154, 205, 50, 0.2);
+    }
+    .ph-alcalin { 
+        background: rgba(52, 152, 219, 0.1); 
+        color: #2980b9; 
+        border: 1px solid rgba(52, 152, 219, 0.2);
+    }
+
+    .btn-details {
+        background-color: #ffffff;
+        color: #9ACD32;
+        border: 2px solid #9ACD32;
+        border-radius: 4px;
+        padding: 0.75rem 1.5rem;
+        font-weight: 600;
+        font-size: 0.9rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+        width: 100%;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+    .btn-details:hover {
+        background-color: #9ACD32;
+        color: #ffffff;
+        transform: translateY(-1px);
+        box-shadow: 0 3px 6px rgba(154, 205, 50, 0.3);
+    }
+
+    /* Modal harmonisé */
+    .analyse-modal .modal-content {
+        border-radius: 10px;
+        border: none;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+
+    .analyse-modal .modal-header {
+        background: linear-gradient(135deg, #9ACD32, #7ec01f);
+        color: white;
+        border-radius: 10px 10px 0 0;
+        padding: 1.5rem;
+        border-bottom: none;
+    }
+
+    .analyse-modal .modal-title {
+        font-size: 1.3rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .analyse-modal .modal-body {
+        padding: 2rem;
+    }
+
+    .section-title {
+        color: #1a6b3b;
+        font-weight: 600;
+        font-size: 1.1rem;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid #e9ecef;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .parameter-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .parameter-card {
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 1.5rem;
+        border-left: 4px solid #9ACD32;
+    }
+
+    .parameter-card h6 {
+        color: #1a6b3b;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        font-size: 0.95rem;
+    }
+
+    .parameter-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .parameter-list li {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+    }
+
+    .parameter-list li:last-child {
+        border-bottom: none;
+    }
+
+    .param-name {
+        color: #1a6b3b;
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+
+    .param-value-modal {
+        font-weight: 700;
+        color: #666;
+    }
+
+    .composition-section {
+        background: rgba(154, 205, 50, 0.05);
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin-top: 1.5rem;
+        border: 1px solid rgba(154, 205, 50, 0.2);
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+    }
+
+    .empty-state i {
+        font-size: 4rem;
+        color: #e9ecef;
+        margin-bottom: 1.5rem;
+    }
+
+    .empty-state h4 {
+        color: #1a6b3b;
+        margin-bottom: 1rem;
+    }
+
+    .empty-state p {
+        color: #666;
+        opacity: 0.7;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .analyse-card {
+            height: auto;
+            min-height: 400px;
+        }
+        
+        .parameter-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .analyse-modal .modal-body {
+            padding: 1.5rem;
+        }
+    }
+
+    /* Animations */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .analyse-card {
+        animation: fadeInUp 0.6s ease-out;
+    }
+
+    /* Styles pour la topbar, navbar et footer */
+    .topbar-green {
+        background-color: #9ACD32 !important;
+    }
+
+    .logout-container {
+        display: flex;
+        align-items: center;
+        margin-right: 40px;
+    }
+
+    .logout-btn {
+        background-color: #ffffff;
+        color: #9ACD32;
+        border: 2px solid #9ACD32;
+        border-radius: 4px;
+        padding: 6px 16px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .logout-btn:hover {
+        background-color: #9ACD32;
+        color: #ffffff;
+        transform: translateY(-1px);
+        box-shadow: 0 3px 6px rgba(154, 205, 50, 0.3);
+    }
+
+    .footer-custom {
+        background: linear-gradient(135deg, #1a6b3b 0%, #2d8c5a 50%, #1a6b3b 100%) !important;
+        border-top: 5px solid #9ACD32;
+    }
+
+    .footer-title {
+        color: #9ACD32 !important;
+        font-weight: 700;
+        font-size: 1.3rem;
+        border-bottom: 2px solid #9ACD32;
+        padding-bottom: 10px;
+        display: inline-block;
+    }
+
+    .footer-text {
+        color: #e8f5e8 !important;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .footer-text:hover {
+        color: #ffffff !important;
+        transform: translateX(5px);
+    }
+
+    .footer-icon {
+        color: #9ACD32 !important;
+        width: 20px;
+    }
+
+    .footer-link {
+        color: #e8f5e8 !important;
+        text-decoration: none;
+        display: block;
+        margin-bottom: 12px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        padding: 5px 0;
+        border-bottom: 1px solid rgba(154, 205, 50, 0.2);
+    }
+
+    .footer-link:hover {
+        color: #9ACD32 !important;
+        transform: translateX(8px);
+        text-decoration: none;
+        border-bottom-color: #9ACD32;
+    }
+
+    .copyright {
+        background: #1a6b3b !important;
+        color: #e8f5e8 !important;
+    }
+
+    .copyright a {
+        color: #9ACD32 !important;
+        text-decoration: none;
+    }
+
+    .copyright a:hover {
+        color: #ffffff !important;
+    }
+  </style>
+   <style>
+        /* --- STYLE HARMONISÉ AVEC #9ACD32 --- */
+        .page-header {
+            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), 
+                        url('{% static "img/carousel-1.jpg" %}') center center no-repeat;
+            background-size: cover;
+        }
+
+        /* Styles pour la topbar, navbar et footer */
+        .topbar-green {
+            background-color: #9ACD32 !important;
+        }
+
+        .logout-container {
+            display: flex;
+            align-items: center;
+            margin-right: 40px;
+        }
+
+        .logout-btn {
+            background-color: #ffffff;
+            color: #9ACD32;
+            border: 2px solid #9ACD32;
+            border-radius: 4px;
+            padding: 6px 16px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .logout-btn:hover {
+            background-color: #9ACD32;
+            color: #ffffff;
+            transform: translateY(-1px);
+            box-shadow: 0 3px 6px rgba(154, 205, 50, 0.3);
+        }
+
+        .footer-custom {
+            background: linear-gradient(135deg, #1a6b3b 0%, #2d8c5a 50%, #1a6b3b 100%) !important;
+            border-top: 5px solid #9ACD32;
+        }
+
+        .footer-title {
+            color: #9ACD32 !important;
+            font-weight: 700;
+            font-size: 1.3rem;
+            border-bottom: 2px solid #9ACD32;
+            padding-bottom: 10px;
+            display: inline-block;
+        }
+
+        .footer-text {
+            color: #e8f5e8 !important;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .footer-text:hover {
+            color: #ffffff !important;
+            transform: translateX(5px);
+        }
+
+        .footer-icon {
+            color: #9ACD32 !important;
+            width: 20px;
+        }
+
+        .footer-link {
+            color: #e8f5e8 !important;
+            text-decoration: none;
+            display: block;
+            margin-bottom: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            padding: 5px 0;
+            border-bottom: 1px solid rgba(154, 205, 50, 0.2);
+        }
+
+        .footer-link:hover {
+            color: #9ACD32 !important;
+            transform: translateX(8px);
+            text-decoration: none;
+            border-bottom-color: #9ACD32;
+        }
+
+        .copyright {
+            background: #1a6b3b !important;
+            color: #e8f5e8 !important;
+        }
+
+        .copyright a {
+            color: #9ACD32 !important;
+            text-decoration: none;
+        }
+
+        .copyright a:hover {
+            color: #ffffff !important;
+        }
+        
+        /* Navigation améliorée */
+        .nav-link {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link.active {
+            color: #9ACD32 !important;
+            font-weight: 700;
+        }
+
+        .nav-link.active::after {
+            content: '';
+            display: block;
+            width: 100%;
+            height: 3px;
+            background-color: #9ACD32;
+            margin-top: 3px;
+        }
+
+        /* NAVBAR : couleur verte au survol */
+        .nav-link:hover {
+            color: #9ACD32 !important;
+            font-weight: 700;
+        }
+
+        /* Ligne verte sous le texte lors du hover */
+        .nav-link:hover::after {
+            content: '';
+            display: block;
+            width: 100%;
+            height: 3px;
+            background-color: #9ACD32;
+            margin-top: 3px;
+        }
+        
+        /* Styles pour la section À propos */
+        .about-section {
+            padding: 5rem 0;
+        }
+        
+        .service-item {
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            border: 1px solid #f0f0f0;
+            padding: 2rem;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .service-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(135deg, #9ACD32, #7ec01f);
+        }
+        
+        .service-item:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(154, 205, 50, 0.15);
+            border-color: #9ACD32;
+        }
+        
+        .service-icon {
+            color: #9ACD32;
+            margin-bottom: 1.5rem;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .service-item {
+                margin-bottom: 2rem;
+            }
+        }
+        /* --- Amélioration subtile de la sidebar --- */
+
+/* Légère transparence + glass effect */
+.sidebar {
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  background: rgba(255, 255, 255, 0.9); /* + visible mais reste blanc */
+}
+
+/* Hover plus doux et plus visible */
+.sidebar li:hover {
+  background: rgba(154, 205, 50, 0.12);
+  transform: translateX(6px);
+  box-shadow: 0 2px 8px rgba(154, 205, 50, 0.25);
+}
+
+/* Texte légèrement plus foncé pour lisibilité */
+.sidebar a {
+  font-weight: 600;
+  color: #2a2a2a;
+}
+
+/* Séparateurs plus légers */
+.sidebar li + li {
+  border-top: 1px solid rgba(0,0,0,0.06);
+}
+
+/* Active item + effet glow */
+.sidebar li.active {
+  background: var(--vert);
+  color: white !important;
+  box-shadow: 0 3px 10px rgba(154, 205, 50, 0.45);
+}
+
+/* Icônes et texte plus contrastés */
+.sidebar li i {
+  opacity: .9;
+}
+
+/* Mode sombre – meilleure lisibilité */
+body.dark-mode .sidebar {
+  background: rgba(30, 30, 30, 0.85);
+  backdrop-filter: blur(6px);
+}
+
+body.dark-mode .sidebar li:hover {
+  background: rgba(255,255,255,0.08);
+  box-shadow: 0 2px 8px rgba(255,255,255,0.15);
+}
+
+body.dark-mode .sidebar a {
+  color: #eee;
+  font-weight: 500;
+}
+
+    </style>

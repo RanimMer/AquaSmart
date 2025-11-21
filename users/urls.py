@@ -4,7 +4,7 @@ from . import views
 urlpatterns = [
     # UTILISATEURS (backoffice)
     path('utilisateurs/', views.users_list, name='users_list'),
-    path('utilisateurs/create/', views.user_create, name='user_create'),
+    #path('utilisateurs/create/', views.user_create, name='user_create'),
     path('utilisateurs/<int:pk>/edit/', views.user_edit, name='user_edit'),  # Changé user_id en pk
     path('utilisateurs/<int:user_id>/delete/', views.user_delete, name='user_delete'),
 

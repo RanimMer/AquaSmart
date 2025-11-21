@@ -1,0 +1,936 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>Aqua Smart - Cultures</title>
+  <link rel="icon" type="image/png" href="{% static 'img/logo.png' %}">
+  <link href="https://fonts.googleapis.com/css2?family=Jost:wght@500;600;700&family=Open+Sans:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="{% static 'lib/animate/animate.min.css' %}" rel="stylesheet">
+  <link href="{% static 'lib/owlcarousel/assets/owl.carousel.min.css' %}" rel="stylesheet">
+  <link href="{% static 'lib/lightbox/css/lightbox.min.css' %}" rel="stylesheet">
+  <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+  <link href="{% static 'css/style.css' %}" rel="stylesheet">
+
+  {% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>Cultures - Aqua Smart</title>
+  <meta name="description" content="Gérez vos cultures intelligemment avec AquaSmart. Suivi des besoins en eau, planning de récolte et optimisation des ressources pour une agriculture durable.">
+  <link rel="icon" type="image/png" href="{% static 'img/logo.png' %}">
+  <link href="https://fonts.googleapis.com/css2?family=Jost:wght@500;600;700&family=Open+Sans:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="{% static 'lib/animate/animate.min.css' %}" rel="stylesheet">
+  <link href="{% static 'lib/owlcarousel/assets/owl.carousel.min.css' %}" rel="stylesheet">
+  <link href="{% static 'lib/lightbox/css/lightbox.min.css' %}" rel="stylesheet">
+  <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+  <link href="{% static 'css/style.css' %}" rel="stylesheet">
+
+  <style>
+    .profile-dropdown {
+    position: relative;
+    margin-right: 30px;
+}
+
+.profile-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: white;
+    border: 2px solid #9ACD32;
+    padding: 6px 14px;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.profile-btn:hover {
+    background: #9ACD32;
+    color: white;
+}
+
+.profile-circle {
+    background: #9ACD32;
+    color: white;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+}
+
+.profile-menu {
+    position: absolute;
+    top: 48px;
+    right: 0;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    min-width: 180px;
+    display: none;
+    z-index: 1000;
+    padding: 10px 0;
+}
+
+.profile-menu a,
+.profile-menu .logout-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 18px;
+    text-decoration: none;
+    color: #333;
+    background: transparent;
+    width: 100%;
+    border: none;
+    text-align: left;
+    cursor: pointer;
+    font-size: 0.95rem;
+}
+
+.profile-menu a:hover,
+.profile-menu .logout-item:hover {
+    background: #9ACD32;
+    color: white;
+}
+
+.profile-dropdown.active .profile-menu {
+    display: block;
+}
+
+    /* --- STYLE UNIFIÉ AVEC ANALYSES SOL ET PRODUITS --- */
+    .page-header {
+        background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), 
+                    url('{% static "img/carousel-1.jpg" %}') center center no-repeat;
+        background-size: cover;
+    }
+
+    /* Cartes de cultures harmonisées */
+    .culture-card {
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+        border: 1px solid #f0f0f0;
+        padding: 2rem 1.5rem;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .culture-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(135deg, #9ACD32, #7ec01f);
+    }
+
+    .culture-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 30px rgba(154, 205, 50, 0.15);
+        border-color: #9ACD32;
+    }
+
+    .culture-header {
+        text-align: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .culture-title {
+        color: #1a6b3b;
+        font-weight: 600;
+        font-size: 1.3rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .culture-badge {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: white;
+    }
+
+    .badge-legume { background: linear-gradient(135deg, #28a745, #1e7e34); }
+    .badge-fruit { background: linear-gradient(135deg, #dc3545, #c82333); }
+    .badge-cereale { background: linear-gradient(135deg, #ffc107, #e0a800); color: #000; }
+    .badge-aromatique { background: linear-gradient(135deg, #6f42c1, #5a36a8); }
+    .badge-autre { background: linear-gradient(135deg, #6c757d, #5a6268); }
+
+    .culture-image {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+        transition: transform 0.3s ease;
+    }
+
+    .culture-card:hover .culture-image {
+        transform: scale(1.05);
+    }
+
+    .culture-icon {
+        width: 80px;
+        height: 80px;
+        background: linear-gradient(135deg, #9ACD32, #7ec01f);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .culture-card:hover .culture-icon {
+        transform: scale(1.1);
+        box-shadow: 0 5px 15px rgba(154, 205, 50, 0.3);
+    }
+
+    .culture-icon i {
+        color: white;
+        font-size: 2rem;
+    }
+
+    .culture-parameters {
+        margin-bottom: 1.5rem;
+        flex-grow: 1;
+    }
+
+    .param-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid #e9ecef;
+    }
+
+    .param-item:last-child {
+        border-bottom: none;
+    }
+
+    .param-label {
+        color: #1a6b3b;
+        font-weight: 600;
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .param-value {
+        font-weight: 700;
+        font-size: 0.95rem;
+        color: #666;
+    }
+
+    .water-value {
+        padding: 0.3rem 0.8rem;
+        border-radius: 8px;
+        font-weight: 700;
+        font-size: 0.85rem;
+    }
+
+    .water-faible { 
+        background: rgba(40, 167, 69, 0.1); 
+        color: #28a745; 
+        border: 1px solid rgba(40, 167, 69, 0.2);
+    }
+    .water-moyen { 
+        background: rgba(255, 193, 7, 0.1); 
+        color: #ffc107; 
+        border: 1px solid rgba(255, 193, 7, 0.2);
+    }
+    .water-eleve { 
+        background: rgba(220, 53, 69, 0.1); 
+        color: #dc3545; 
+        border: 1px solid rgba(220, 53, 69, 0.2);
+    }
+
+    .btn-details {
+        background-color: #ffffff;
+        color: #9ACD32;
+        border: 2px solid #9ACD32;
+        border-radius: 4px;
+        padding: 0.75rem 1.5rem;
+        font-weight: 600;
+        font-size: 0.9rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+        width: 100%;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+    .btn-details:hover {
+        background-color: #9ACD32;
+        color: #ffffff;
+        transform: translateY(-1px);
+        box-shadow: 0 3px 6px rgba(154, 205, 50, 0.3);
+    }
+
+    /* Modal harmonisé */
+    .culture-modal .modal-content {
+        border-radius: 10px;
+        border: none;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+
+    .culture-modal .modal-header {
+        background: linear-gradient(135deg, #9ACD32, #7ec01f);
+        color: white;
+        border-radius: 10px 10px 0 0;
+        padding: 1.5rem;
+        border-bottom: none;
+    }
+
+    .culture-modal .modal-title {
+        font-size: 1.3rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .culture-modal .modal-body {
+        padding: 2rem;
+    }
+
+    .section-title {
+        color: #1a6b3b;
+        font-weight: 600;
+        font-size: 1.1rem;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid #e9ecef;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .parameter-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .parameter-card {
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 1.5rem;
+        border-left: 4px solid #9ACD32;
+    }
+
+    .parameter-card h6 {
+        color: #1a6b3b;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        font-size: 0.95rem;
+    }
+
+    .parameter-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .parameter-list li {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+    }
+
+    .parameter-list li:last-child {
+        border-bottom: none;
+    }
+
+    .param-name {
+        color: #1a6b3b;
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+
+    .param-value-modal {
+        font-weight: 700;
+        color: #666;
+    }
+
+    .water-section {
+        background: rgba(23, 162, 184, 0.05);
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin-top: 1.5rem;
+        border: 1px solid rgba(23, 162, 184, 0.2);
+    }
+
+    .water-info {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem;
+        background: white;
+        border-radius: 6px;
+        border-left: 4px solid #17a2b8;
+    }
+
+    .water-icon {
+        width: 50px;
+        height: 50px;
+        background: rgba(23, 162, 184, 0.1);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #17a2b8;
+        font-size: 1.5rem;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+    }
+
+    .empty-state i {
+        font-size: 4rem;
+        color: #e9ecef;
+        margin-bottom: 1.5rem;
+    }
+
+    .empty-state h4 {
+        color: #1a6b3b;
+        margin-bottom: 1rem;
+    }
+
+    .empty-state p {
+        color: #666;
+        opacity: 0.7;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .culture-card {
+            height: auto;
+            min-height: 400px;
+        }
+        
+        .parameter-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .culture-modal .modal-body {
+            padding: 1.5rem;
+        }
+        
+        .water-info {
+            flex-direction: column;
+            text-align: center;
+            gap: 0.5rem;
+        }
+    }
+
+    /* Animations */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .culture-card {
+        animation: fadeInUp 0.6s ease-out;
+    }
+
+    /* Styles pour la topbar, navbar et footer */
+    .topbar-green {
+        background-color: #9ACD32 !important;
+    }
+
+    .logout-container {
+        display: flex;
+        align-items: center;
+        margin-right: 40px;
+    }
+
+    .logout-btn {
+        background-color: #ffffff;
+        color: #9ACD32;
+        border: 2px solid #9ACD32;
+        border-radius: 4px;
+        padding: 6px 16px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .logout-btn:hover {
+        background-color: #9ACD32;
+        color: #ffffff;
+        transform: translateY(-1px);
+        box-shadow: 0 3px 6px rgba(154, 205, 50, 0.3);
+    }
+
+    .footer-custom {
+        background: linear-gradient(135deg, #1a6b3b 0%, #2d8c5a 50%, #1a6b3b 100%) !important;
+        border-top: 5px solid #9ACD32;
+    }
+
+    .footer-title {
+        color: #9ACD32 !important;
+        font-weight: 700;
+        font-size: 1.3rem;
+        border-bottom: 2px solid #9ACD32;
+        padding-bottom: 10px;
+        display: inline-block;
+    }
+
+    .footer-text {
+        color: #e8f5e8 !important;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .footer-text:hover {
+        color: #ffffff !important;
+        transform: translateX(5px);
+    }
+
+    .footer-icon {
+        color: #9ACD32 !important;
+        width: 20px;
+    }
+
+    .footer-link {
+        color: #e8f5e8 !important;
+        text-decoration: none;
+        display: block;
+        margin-bottom: 12px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        padding: 5px 0;
+        border-bottom: 1px solid rgba(154, 205, 50, 0.2);
+    }
+
+    .footer-link:hover {
+        color: #9ACD32 !important;
+        transform: translateX(8px);
+        text-decoration: none;
+        border-bottom-color: #9ACD32;
+    }
+
+    .copyright {
+        background: #1a6b3b !important;
+        color: #e8f5e8 !important;
+    }
+
+    .copyright a {
+        color: #9ACD32 !important;
+        text-decoration: none;
+    }
+
+    .copyright a:hover {
+        color: #ffffff !important;
+    }
+
+    /* Navigation améliorée */
+    .nav-link {
+        position: relative;
+        transition: all 0.3s ease;
+    }
+    
+    .nav-link.active {
+        color: #9ACD32 !important;
+        font-weight: 700;
+    }
+
+    .nav-link.active::after {
+        content: '';
+        display: block;
+        width: 100%;
+        height: 3px;
+        background-color: #9ACD32;
+        margin-top: 3px;
+    }
+
+    /* NAVBAR : couleur verte au survol */
+    .nav-link:hover {
+        color: #9ACD32 !important;
+        font-weight: 700;
+    }
+
+    /* Ligne verte sous le texte lors du hover */
+    .nav-link:hover::after {
+        content: '';
+        display: block;
+        width: 100%;
+        height: 3px;
+        background-color: #9ACD32;
+        margin-top: 3px;
+    }
+  </style>
+</head>
+<body>
+
+     <!-- Topbar Start -->
+<div class="container-fluid topbar-green text-light py-3 px-4">
+
+  <div class="d-flex justify-content-between align-items-center small">
+    <div>
+      
+      <i class="fa fa-envelope me-2"></i> AquaSmart@gmail.com
+      <span class="mx-3">|</span>
+      <i class="fa fa-phone-alt me-2"></i> +216 26 102 035
+    </div>
+    <div>
+      <a href="#" class="text-light me-4"><i class="fab fa-facebook-f"></i></a>
+      <a href="#" class="text-light me-4"><i class="fab fa-instagram"></i></a>
+      
+    </div>
+  </div>
+</div>
+<!-- Topbar End -->
+
+
+    <!-- Navbar Start -->
+<nav class="navbar navbar-expand-lg bg-white navbar-light sticky-top p-0 custom-nav">
+    <a href="{% url 'index' %}" class="navbar-brand d-flex align-items-center px-4">
+        <img src="{% static 'img/Gemini_Generated_Image_uiawfquiawfquiaw-removebg-preview.png' %}" alt="logo" style="width:120px; height:100px;">
+    </a>
+
+    <div class="collapse navbar-collapse" id="navbarCollapse">
+        <ul class="navbar-nav mx-auto">
+            <li class="nav-item"><a href="{% url 'index' %}" class="nav-link ">Accueil</a></li>
+            <li class="nav-item"><a href="{% url 'apropos' %}" class="nav-link">À propos</a></li>
+            <li class="nav-item"><a href="{% url 'contact' %}" class="nav-link">Contact</a></li>
+            <li class="nav-item"><a href="{% url 'produits' %}" class="nav-link">Produits</a></li>
+            <li class="nav-item"><a href="{% url 'cultures' %}" class="nav-link active">Cultures</a></li>
+            <li class="nav-item"><a href="{% url 'serres' %}" class="nav-link">Serres</a></li>
+            <li class="nav-item"><a href="{% url 'station_meteo' %}" class="nav-link">Météo</a></li>
+            <li class="nav-item"><a href="{% url 'liste_sols_front' %}" class="nav-link">Analyses Sol</a></li>
+            
+        </ul>
+
+
+    </div>
+    {% if user.is_authenticated %}
+<div class="profile-dropdown">
+    <div class="profile-btn">
+        <div class="profile-circle">
+            {{ user.username|first|upper }}
+        </div>
+        <span class="username">{{ user.username }}</span>
+        <i class="fas fa-chevron-down"></i>
+    </div>
+
+    <div class="profile-menu">
+        <a href="{% url 'front_profile' %}"><i class="fas fa-user"></i> Mon profil</a>
+        <form method="post" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button type="submit" class="logout-item">
+                <i class="fas fa-sign-out-alt"></i> Déconnexion
+            </button>
+        </form>
+    </div>
+</div>
+{% endif %}
+
+</nav>
+<!-- Navbar End -->
+
+  <!-- Header -->
+  <div class="container-fluid page-header py-5 mb-5 wow fadeIn" data-wow-delay="0.1s">
+    <div class="container text-center py-5">
+      <h1 class="display-3 text-white mb-4 animated slideInDown">Nos Cultures</h1>
+      <nav aria-label="breadcrumb animated slideInDown">
+        <ol class="breadcrumb justify-content-center mb-0">
+          <li class="breadcrumb-item active text-white" aria-current="page">
+            Des cultures suivies intelligemment pour économiser l'eau.
+          </li>
+        </ol>
+      </nav>
+    </div>
+  </div>
+
+  <!-- Liste des cultures -->
+  <div class="container-xxl py-5">
+    <div class="container">
+        <div class="row g-4">
+            {% if cultures %}
+            {% for c in cultures %}
+            <div class="col-lg-4 col-md-6">
+                <div class="culture-card">
+                    <div>
+                        <div class="culture-header">
+                            {% if c.image %}
+                            <img src="{{ c.image.url }}" alt="{{ c.nom }}" class="culture-image">
+                            {% else %}
+                            <div class="culture-icon">
+                                <i class="fas fa-seedling"></i>
+                            </div>
+                            {% endif %}
+                            <h3 class="culture-title">{{ c.nom }}</h3>
+                            <span class="culture-badge 
+                                {% if c.type == 'legume' %}badge-legume
+                                {% elif c.type == 'fruit' %}badge-fruit
+                                {% elif c.type == 'cereale' %}badge-cereale
+                                {% elif c.type == 'aromatique' %}badge-aromatique
+                                {% else %}badge-autre{% endif %}">
+                                {{ c.get_type_display|default:c.type|title }}
+                            </span>
+                        </div>
+
+                        <div class="culture-parameters">
+                            <div class="param-item">
+                                <span class="param-label">
+                                    <i class="fas fa-calendar-day"></i>
+                                    Date semis
+                                </span>
+                                <span class="param-value">{{ c.date_semis|date:"d/m/Y" }}</span>
+                            </div>
+                            
+                            <div class="param-item">
+                                <span class="param-label">
+                                    <i class="fas fa-calendar-check"></i>
+                                    Récolte prévue
+                                </span>
+                                <span class="param-value">{{ c.date_recolte_prevue|date:"d/m/Y" }}</span>
+                            </div>
+
+                            <div class="param-item">
+                                <span class="param-label">
+                                    <i class="fas fa-tint"></i>
+                                    Besoin en eau
+                                </span>
+                                <span class="water-value 
+                                    {% if c.besoin_base_l_j < 10 %}water-faible
+                                    {% elif c.besoin_base_l_j < 50 %}water-moyen
+                                    {% else %}water-eleve{% endif %}">
+                                    {{ c.besoin_base_l_j }} L/j
+                                </span>
+                            </div>
+
+                            <div class="param-item">
+                                <span class="param-label">
+                                    <i class="fas fa-ruler-combined"></i>
+                                    Surface
+                                </span>
+                                <span class="param-value">{{ c.surface_m2 }} m²</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="btn-details" data-bs-toggle="modal" data-bs-target="#cultureModal{{ c.id }}">
+                        <i class="fas fa-info-circle"></i>
+                        Détails Complets
+                    </button>
+                </div>
+            </div>
+
+            <!-- Modal -->
+            <div class="modal fade culture-modal" id="cultureModal{{ c.id }}" tabindex="-1"
+                aria-labelledby="cultureLabel{{ c.id }}" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="cultureLabel{{ c.id }}">
+                                <i class="fas fa-seedling"></i>
+                                {{ c.nom }}
+                            </h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fermer"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    {% if c.image %}
+                                    <img src="{{ c.image.url }}" alt="{{ c.nom }}" class="culture-image w-100">
+                                    {% else %}
+                                    <div class="culture-icon" style="width: 100px; height: 100px;">
+                                        <i class="fas fa-seedling fa-2x"></i>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6 text-end">
+                                    <span class="culture-badge 
+                                        {% if c.type == 'legume' %}badge-legume
+                                        {% elif c.type == 'fruit' %}badge-fruit
+                                        {% elif c.type == 'cereale' %}badge-cereale
+                                        {% elif c.type == 'aromatique' %}badge-aromatique
+                                        {% else %}badge-autre{% endif %}">
+                                        {{ c.get_type_display|default:c.type|title }}
+                                    </span>
+                                    <p class="text-muted mt-3 mb-1">Plantée le</p>
+                                    <strong>{{ c.date_semis|date:"d F Y" }}</strong>
+                                </div>
+                            </div>
+
+                            <div class="parameter-grid">
+                                <div class="parameter-card">
+                                    <h6><i class="fas fa-info-circle me-2"></i>Informations Générales</h6>
+                                    <ul class="parameter-list">
+                                        <li>
+                                            <span class="param-name">Type</span>
+                                            <span class="param-value-modal">{{ c.get_type_display|default:c.type }}</span>
+                                        </li>
+                                        <li>
+                                            <span class="param-name">Surface</span>
+                                            <span class="param-value-modal">{{ c.surface_m2 }} m²</span>
+                                        </li>
+                                        <li>
+                                            <span class="param-name">Date semis</span>
+                                            <span class="param-value-modal">{{ c.date_semis|date:"d/m/Y" }}</span>
+                                        </li>
+                                        <li>
+                                            <span class="param-name">Récolte prévue</span>
+                                            <span class="param-value-modal">{{ c.date_recolte_prevue|date:"d/m/Y" }}</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <!-- Section Eau -->
+                            <div class="water-section">
+                                <h6 class="section-title">
+                                    <i class="fas fa-tint"></i>
+                                    Gestion de l'Eau
+                                </h6>
+                                <div class="water-info">
+                                    <div class="water-icon">
+                                        <i class="fas fa-tint"></i>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <h6 class="mb-1">Besoin en eau quotidien</h6>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span class="water-value 
+                                                {% if c.besoin_base_l_j < 10 %}water-faible
+                                                {% elif c.besoin_base_l_j < 50 %}water-moyen
+                                                {% else %}water-eleve{% endif %}">
+                                                {{ c.besoin_base_l_j }} Litres/jour
+                                            </span>
+                                            <small class="text-muted">
+                                                {% if c.besoin_base_l_j < 10 %}Faible besoin
+                                                {% elif c.besoin_base_l_j < 50 %}Besoin modéré
+                                                {% else %}Fort besoin{% endif %}
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                <i class="fas fa-times me-2"></i>Fermer
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            {% else %}
+            <div class="col-12">
+                <div class="empty-state">
+                    <i class="fas fa-seedling"></i>
+                    <h4>Aucune culture</h4>
+                    <p>Les cultures seront bientôt disponibles.</p>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+   <!-- Footer Start -->
+<div class="container-fluid footer-custom text-light footer mt-5 py-5">
+    <div class="container py-5">
+        <div class="row g-5">
+            <div class="col-lg-4 col-md-6">
+                <h4 class="footer-title mb-4">Notre bureau</h4>
+                <p class="mb-3 footer-text"><i class="fa fa-map-marker-alt me-3 footer-icon"></i>Avenue Hbib Bourguiba, Tunis</p>
+                <p class="mb-3 footer-text"><i class="fa fa-phone-alt me-3 footer-icon"></i>+216 26 102 035</p>
+                <p class="mb-3 footer-text"><i class="fa fa-envelope me-3 footer-icon"></i>AquaSmart@gmail.com</p>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <h4 class="footer-title mb-4">Nos services</h4>
+                <a class="footer-link" href="{% url 'liste_sols_front' %}">Analyse du sol</a>
+                <a class="footer-link" href="{% url 'cultures' %}">Gestion des cultures</a>
+                <a class="footer-link" href="{% url 'serres' %}">Gestion des serres</a>
+                <a class="footer-link" href="{% url 'station_meteo' %}">Analyse météo</a>
+                <a class="footer-link" href="{% url 'produits' %}">Gestion des produits</a>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <h4 class="footer-title mb-4">Navigation</h4>
+                <a class="footer-link" href="{% url 'index' %}">Accueil</a>
+                <a class="footer-link" href="{% url 'apropos' %}">À propos</a>
+                <a class="footer-link" href="{% url 'contact' %}">Contact</a>
+                
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Footer End -->
+    <div class="container-fluid copyright py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
+                    &copy; <a class="border-bottom" href="#">Aqua Smart</a>, All Right Reserved.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+document.addEventListener('DOMContentLoaded', () => {
+    const dropdowns = document.querySelectorAll('.profile-dropdown');
+    dropdowns.forEach(dd => {
+        const btn = dd.querySelector('.profile-btn');
+        btn.addEventListener('click', () => {
+            dd.classList.toggle('active');
+        });
+    });
+
+    // fermer si on clique ailleurs
+    document.addEventListener("click", function(e){
+        dropdowns.forEach(dd => {
+            if (!dd.contains(e.target)) {
+                dd.classList.remove('active');
+            }
+        });
+    });
+});
+</script>
+
+</body>
+</html>

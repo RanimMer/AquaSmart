@@ -17,6 +17,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'users.apps.UsersConfig',
+    'cultures',
+    'produits',
+    'sols',
+    'serre',
+    'station_meteo',
     # tes apps viendront ici (ex: 'accounts', ...)
 ]
 

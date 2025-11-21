@@ -8,11 +8,7 @@
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
-    <!-- Font Awesome (même que index.html) -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
-
-
-
     
     <style>
         * {
@@ -23,7 +19,7 @@
 
         /* Police par défaut pour le texte */
         body {
-            ont-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), 
                         url('{% static "img/carousel-1.jpg" %}') !important;
             background-size: cover !important;
@@ -34,81 +30,85 @@
             flex-direction: column;
         }
 
-        /* TOPBAR VERTE */
-        .topbar-custom {
-            background: #0F4229 !important;
+        /* TOPBAR VERTE - COMME LE PROTOTYPE */
+        .topbar-green {
+            background-color: #9ACD32 !important;
             color: white !important;
-            padding: 0.5rem 0 !important;
+            padding: 0.75rem 0 !important;
         }
 
-        .topbar-custom .fa-phone-alt,
-        .topbar-custom .fa-envelope {
+        .topbar-green .fa-envelope,
+        .topbar-green .fa-phone-alt {
             margin-right: 0.5rem !important;
             color: white !important;
         }
 
-        .topbar-custom span {
+        .topbar-green span {
             color: white !important;
             font-size: 0.9rem !important;
         }
 
-        .topbar-custom .btn-link {
+        .topbar-green .text-light {
             color: white !important;
             text-decoration: none !important;
             padding: 0.25rem 0.5rem !important;
         }
 
-        .topbar-custom .btn-link:hover {
-            color: #c8e6c9 !important;
+        .topbar-green .text-light:hover {
+            color: #e8f5e8 !important;
         }
 
-        /* NAVBAR */
-        .navbar-custom {
-            background: rgba(255, 255, 255, 0.95) !important;
+        /* NAVBAR - COMME LE PROTOTYPE */
+        .custom-nav {
+            background: white !important;
             padding: 0 !important;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1) !important;
-            border-bottom: 2px solid #0F4229 !important;
-
         }
 
-        .navbar-brand-custom {
+        .navbar-brand {
             padding: 0.5rem 1rem !important;
         }
 
-        .nav-item-custom {
-            margin: 0 1.5rem !important;
-        }
-
-        .nav-link-custom {
-            margin: 0 1.5rem !important;   /* espace horizontal entre Accueil / À propos / Contact */
+        .nav-link {
             color: #333 !important;
             font-weight: 500 !important;
-            padding: 1rem 0 !important;
+            padding: 1rem 1.5rem !important;
             text-decoration: none !important;
-        }
-
-        .nav-link-custom:hover,
-        .nav-link-custom.active {
-            color: #f0a500 !important;
-        }
-
-        .btn-logout-custom {
-            background: #28a745 !important;
-            color: white !important;
-            font-weight: 700 !important;
-            border: none !important;
-            padding: 0.8rem 1.5rem !important;
-            border-radius: 0 !important;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             transition: all 0.3s ease;
         }
 
-        .btn-logout-custom:hover {
-            background: #218838 !important;
+        .nav-link:hover,
+        .nav-link.active {
+            color: #9ACD32 !important;
         }
 
+        .logout-container {
+            display: flex;
+            align-items: center;
+            margin-right: 40px;
+        }
+
+        .logout-btn {
+            background-color: #ffffff;
+            color: #9ACD32;
+            border: 2px solid #9ACD32;
+            border-radius: 4px;
+            padding: 6px 16px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .logout-btn:hover {
+            background-color: #9ACD32;
+            color: #ffffff;
+            transform: translateY(-1px);
+            box-shadow: 0 3px 6px rgba(154, 205, 50, 0.3);
+        }
 
         /* CONTENU PRINCIPAL */
         .main-content {
@@ -130,7 +130,7 @@
         }
 
         .form-title {
-            color: #2c5530;
+            color: #1a6b3b;
             text-align: center;
             margin-bottom: 0.5rem;
             font-size: 1.8rem;
@@ -168,8 +168,8 @@
         .form-group input:focus,
         .form-group select:focus {
             outline: none;
-            border-color: #2c5530;
-            box-shadow: 0 0 0 0.2rem rgba(44, 85, 48, 0.25);
+            border-color: #9ACD32;
+            box-shadow: 0 0 0 0.2rem rgba(154, 205, 50, 0.25);
         }
 
         .help-text {
@@ -181,19 +181,20 @@
         .btn-custom {
             width: 100%;
             padding: 0.75rem;
-            background: #2c5530;
+            background: #9ACD32;
             color: white;
             border: none;
             border-radius: 8px;
             font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
-            transition: background 0.3s;
+            transition: all 0.3s ease;
         }
 
         .btn-custom:hover {
-            background: #1e3a23;
+            background: #7ec01f;
             color: white;
+            transform: translateY(-1px);
         }
 
         .form-links {
@@ -204,7 +205,7 @@
         }
 
         .form-links a {
-            color: #2c5530;
+            color: #1a6b3b;
             text-decoration: none;
             font-weight: 500;
         }
@@ -213,45 +214,67 @@
             text-decoration: underline;
         }
 
-        /* FOOTER */
+        /* FOOTER - COMME LE PROTOTYPE */
         .footer-custom {
-            background: #0F4229 !important;
-            color: white !important;
+            background: linear-gradient(135deg, #1a6b3b 0%, #2d8c5a 50%, #1a6b3b 100%) !important;
+            border-top: 5px solid #9ACD32;
         }
 
-        .footer-section h4 {
-            color: white !important;
-            margin-bottom: 1rem !important;
+        .footer-title {
+            color: #9ACD32 !important;
+            font-weight: 700;
+            font-size: 1.3rem;
+            border-bottom: 2px solid #9ACD32;
+            padding-bottom: 10px;
+            display: inline-block;
         }
 
-        .footer-links a {
-            color: white !important;
-            text-decoration: none !important;
-            display: block;
-            margin-bottom: 0.5rem;
-            transition: color 0.3s;
+        .footer-text {
+            color: #e8f5e8 !important;
+            font-size: 1rem;
+            transition: all 0.3s ease;
         }
 
-        .footer-links a:hover {
-            color: #c8e6c9 !important;
+        .footer-text:hover {
+            color: #ffffff !important;
+            transform: translateX(5px);
         }
 
-        .contact-info p {
-            margin-bottom: 0.5rem;
-            display: flex;
-            align-items: center;
-        }
-
-        .contact-info i {
-            margin-right: 0.5rem;
+        .footer-icon {
+            color: #9ACD32 !important;
             width: 20px;
         }
 
+        .footer-link {
+            color: #e8f5e8 !important;
+            text-decoration: none;
+            display: block;
+            margin-bottom: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            padding: 5px 0;
+            border-bottom: 1px solid rgba(154, 205, 50, 0.2);
+        }
+
+        .footer-link:hover {
+            color: #9ACD32 !important;
+            transform: translateX(8px);
+            text-decoration: none;
+            border-bottom-color: #9ACD32;
+        }
+
         .copyright {
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            padding-top: 1rem;
-            margin-top: 2rem;
-            text-align: center;
+            background: #1a6b3b !important;
+            color: #e8f5e8 !important;
+        }
+
+        .copyright a {
+            color: #9ACD32 !important;
+            text-decoration: none;
+        }
+
+        .copyright a:hover {
+            color: #ffffff !important;
         }
 
         .field-error {
@@ -264,58 +287,66 @@
             margin-bottom: 10px;
         }
 
+        /* Responsive */
+        @media (max-width: 768px) {
+            .footer-custom {
+                text-align: center;
+            }
+            
+            .footer-link:hover {
+                transform: translateX(0);
+            }
+            
+            .footer-text:hover {
+                transform: translateX(0);
+            }
+            
+            .nav-link {
+                padding: 0.5rem 1rem !important;
+            }
+        }
+
     </style>
 </head>
 <body>
-    <!-- Topbar Start -->
-    <div class="container-fluid topbar-custom">
-    <div class="row gx-0">
-        <div class="col-lg-7 px-5 text-start">
-            <div class="h-100 d-inline-flex align-items-center me-4">
-                <i class="fa fa-phone-alt me-2"></i>
-                <span>+216 26 102 035</span>
+    <!-- Topbar Start - COMME LE PROTOTYPE -->
+    <div class="container-fluid topbar-green text-light py-3 px-4">
+        <div class="d-flex justify-content-between align-items-center small">
+            <div>
+                <i class="fa fa-envelope me-2"></i> AquaSmart@gmail.com
+                <span class="mx-3">|</span>
+                <i class="fa fa-phone-alt me-2"></i> +216 26 102 035
             </div>
-            <div class="h-100 d-inline-flex align-items-center">
-                <i class="far fa-envelope me-2"></i>
-                <span>AquaSmart@gmail.com</span>
-            </div>
-        </div>
-        <div class="col-lg-5 px-5 text-end">
-            <div class="h-100 d-inline-flex align-items-center mx-n2">
-                <span>Suivez-nous:</span>
-                <a class="btn btn-link text-light" href="#">
-                    <i class="fab fa-instagram"></i>
-                </a>
+            <div>
+                <a href="#" class="text-light me-4"><i class="fab fa-facebook-f"></i></a>
+                <a href="#" class="text-light me-4"><i class="fab fa-instagram"></i></a>
             </div>
         </div>
     </div>
-</div>
-
-
     <!-- Topbar End -->
 
-    <!-- Navbar Start -->
-    <nav class="navbar navbar-expand-lg navbar-custom sticky-top">
-        <div class="container-fluid">
-            <a href="{% url 'index' %}" class="navbar-brand navbar-brand-custom">
-                <img src="{% static 'img/logo.png' %}" alt="logo" style="width:180px; height:60px;">
-            </a>
-            
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            
-            <div class="collapse navbar-collapse" id="navbarCollapse">
-                <div class="navbar-nav ms-auto p-4 p-lg-0">
-                    <a href="{% url 'index' %}" class="nav-item nav-link-custom active">Accueil</a>
-                    <a href="{% url 'apropos' %}" class="nav-item nav-link-custom">À propos</a>
-                    <a href="{% url 'contact' %}" class="nav-item nav-link-custom">Contact</a>
-                    <div class="d-flex align-items-center">
-                        <a href="{% url 'login' %}" class="btn btn-logout-custom">
-                            Se connecter <i class="fa fa-arrow-right ms-2"></i>
-                        </a>
-                    </div>
-                </div>
+    <!-- Navbar Start - COMME LE PROTOTYPE -->
+    <nav class="navbar navbar-expand-lg bg-white navbar-light sticky-top p-0 custom-nav">
+        <a href="{% url 'index' %}" class="navbar-brand d-flex align-items-center px-4">
+            <img src="{% static 'img/Gemini_Generated_Image_uiawfquiawfquiaw-removebg-preview.png' %}" alt="logo" style="width:120px; height:100px;">
+        </a>
+
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav mx-auto">
+                <li class="nav-item"><a href="{% url 'index' %}" class="nav-link active">Accueil</a></li>
+                <li class="nav-item"><a href="{% url 'apropos' %}" class="nav-link">À propos</a></li>
+                <li class="nav-item"><a href="{% url 'contact' %}" class="nav-link">Contact</a></li>
+                <li class="nav-item"><a href="{% url 'produits' %}" class="nav-link">Produits</a></li>
+                <li class="nav-item"><a href="{% url 'cultures' %}" class="nav-link">Cultures</a></li>
+                <li class="nav-item"><a href="{% url 'serres' %}" class="nav-link">Serres</a></li>
+                <li class="nav-item"><a href="{% url 'station_meteo' %}" class="nav-link">Météo</a></li>
+                <li class="nav-item"><a href="{% url 'liste_sols_front' %}" class="nav-link">Analyses Sol</a></li>
+            </ul>
+
+            <div class="logout-container">
+                <a href="{% url 'login' %}" class="logout-btn">
+                    Se connecter <i class="fa fa-arrow-right ms-2"></i>
+                </a>
             </div>
         </div>
     </nav>
@@ -328,53 +359,45 @@
         {% endblock %}
     </div>
 
-    <!-- Footer Start -->
-    <div class="container-fluid footer-custom text-light py-5">
-        <div class="container">
+    <!-- Footer Start - COMME LE PROTOTYPE -->
+    <div class="container-fluid footer-custom text-light footer mt-5 py-5">
+        <div class="container py-5">
             <div class="row g-5">
-                <!-- Notre bureau -->
-                <div class="col-lg-4 col-md-6 footer-section">
-                    <h4>Notre bureau :</h4>
-                    <div class="contact-info">
-                        <p><i class="fa fa-map-marker-alt"></i>Avenue Hbib Bourguiba, Tunis</p>
-                        <p><i class="fa fa-phone-alt"></i>+216 26 102 035</p>
-                        <p><i class="fa fa-envelope"></i>AquaSmart@gmail.com</p>
-                    </div>
+                <div class="col-lg-4 col-md-6">
+                    <h4 class="footer-title mb-4">Notre bureau</h4>
+                    <p class="mb-3 footer-text"><i class="fa fa-map-marker-alt me-3 footer-icon"></i>Avenue Hbib Bourguiba, Tunis</p>
+                    <p class="mb-3 footer-text"><i class="fa fa-phone-alt me-3 footer-icon"></i>+216 26 102 035</p>
+                    <p class="mb-3 footer-text"><i class="fa fa-envelope me-3 footer-icon"></i>AquaSmart@gmail.com</p>
                 </div>
-                
-                <!-- Services -->
-                <div class="col-lg-4 col-md-6 footer-section">
-                    <h4>Services :</h4>
-                    <div class="footer-links">
-                        <a href="#">Analyse du sol</a>
-                        <a href="#">Gestion des cultures</a>
-                        <a href="#">Gestion des serres</a>
-                        <a href="#">Analyse du météo</a>
-                        <a href="#">Gestion des produits</a>
-                    </div>
+                <div class="col-lg-4 col-md-6">
+                    <h4 class="footer-title mb-4">Nos services</h4>
+                    <a class="footer-link" href="{% url 'liste_sols_front' %}">Analyse du sol</a>
+                    <a class="footer-link" href="{% url 'cultures' %}">Gestion des cultures</a>
+                    <a class="footer-link" href="{% url 'serres' %}">Gestion des serres</a>
+                    <a class="footer-link" href="{% url 'station_meteo' %}">Analyse météo</a>
+                    <a class="footer-link" href="{% url 'produits' %}">Gestion des produits</a>
                 </div>
-                
-                <!-- Liens rapides -->
-                <div class="col-lg-4 col-md-6 footer-section">
-                    <h4>Liens rapides :</h4>
-                    <div class="footer-links">
-                        <a href="{% url 'apropos' %}">À propos</a>
-                        <a href="{% url 'contact' %}">Contact</a>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Copyright -->
-            <div class="row">
-                <div class="col-12">
-                    <div class="copyright">
-                        <p class="mb-0">© Aqua Smart, All Right Reserved.</p>
-                    </div>
+                <div class="col-lg-4 col-md-6">
+                    <h4 class="footer-title mb-4">Navigation</h4>
+                    <a class="footer-link" href="{% url 'index' %}">Accueil</a>
+                    <a class="footer-link" href="{% url 'apropos' %}">À propos</a>
+                    <a class="footer-link" href="{% url 'contact' %}">Contact</a>
+                   
                 </div>
             </div>
         </div>
     </div>
     <!-- Footer End -->
+
+    <div class="container-fluid copyright py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
+                    &copy; <a class="border-bottom" href="#">Aqua Smart</a>, All Right Reserved.
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

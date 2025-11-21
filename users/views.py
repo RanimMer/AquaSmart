@@ -13,7 +13,8 @@ from django.http import HttpResponse
 from django.contrib.auth import logout
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404, redirect, render
-
+from django.db.models import Case, When, Value, IntegerField, Q
+from .forms import FrontUserUpdateForm, FrontUserProfileForm
 
 
 
@@ -32,25 +33,40 @@ def is_admin_or_superuser(user):
 admin_required = user_passes_test(is_admin_or_superuser, login_url="login")
 
 
-
 @login_required
 @admin_required
 def users_list(request):
-    qs = User.objects.select_related("profile").exclude(is_superuser=True)
+    me = request.user
 
-    if request.user.is_superuser:
-        # Le superuser voit tous les utilisateurs (sauf les superusers)
-        qs = qs.order_by("username")
-    else:
-        # Un admin "normal" ne voit que les users de SA ferme (lui inclus)
-        admin_profile = getattr(request.user, "profile", None)
-        if admin_profile and admin_profile.farm:
-            qs = qs.filter(profile__farm=admin_profile.farm).order_by("username")
-        else:
-            qs = qs.none()
+    # Les fermes de l’admin connecté
+    my_farms = Farm.objects.filter(owner=me)
+
+    # Tous les comptes visibles pour cet admin :
+    # - lui-même
+    # - ses employés (rattachés à ses fermes)
+    qs = (
+        User.objects.select_related("profile")
+        .filter(Q(pk=me.pk) | Q(profile__farm__in=my_farms))
+        .exclude(is_superuser=True)
+        .distinct()
+        # --- clé de tri : l'admin connecté en 1er, puis le reste
+        .annotate(
+            sort_owner=Case(
+                When(pk=me.pk, then=Value(0)),  # l'admin loggé en tout premier
+                default=Value(1),
+                output_field=IntegerField(),
+            ),
+            # (optionnel) met les autres admins après toi mais avant les TECH
+            sort_role=Case(
+                When(profile__role="ADMIN", then=Value(0)),
+                default=Value(1),
+                output_field=IntegerField(),
+            ),
+        )
+        .order_by("sort_owner", "sort_role", "username")
+    )
 
     return render(request, "backoffice/users/users_list.html", {"users": qs})
-
 
 
 @login_required
@@ -169,7 +185,7 @@ def profile_view(request):
 
     if request.method == "POST":
         form_user = UserUpdateForm(request.POST, instance=user)
-        form_profile = UserProfileForm(request.POST, request.FILES, instance=profile)
+        form_profile = UserProfileForm(request.POST, request.FILES, instance=profile, user=request.user)
         if form_user.is_valid() and form_profile.is_valid():
             form_user.save()
             form_profile.save()
@@ -177,7 +193,7 @@ def profile_view(request):
             return redirect("profile_view")
     else:
         form_user = UserUpdateForm(instance=user)
-        form_profile = UserProfileForm(instance=profile)
+        form_profile = UserProfileForm(instance=profile, user=request.user)
 
     return render(request, "backoffice/users/my_profile.html", {
         "form_user": form_user,
@@ -323,6 +339,9 @@ class CustomLoginView(LoginView):
     template_name = 'registration/login.html'
     
     def get_success_url(self):
+        storage = messages.get_messages(self.request)
+        for _ in storage:
+            pass
         # Redirection selon le rôle après connexion
         user = self.request.user
         if user.is_superuser or hasattr(user, 'profile') and user.profile.role == "ADMIN":
@@ -342,3 +361,51 @@ def apropos(request):
 def contact(request):
     """Page Contact"""
     return render(request, 'public/contact.html')
+
+from .forms import (
+    FrontUserUpdateForm,
+    FrontUserProfileForm,
+    # (et tes autres forms backoffice si besoin)
+)
+
+@login_required
+def front_profile_view(request):
+    """Profil côté FRONT (employé)."""
+    user = request.user
+    profile, _ = UserProfile.objects.get_or_create(user=user)
+
+    if request.method == "POST":
+        form_user = FrontUserUpdateForm(request.POST, instance=user)
+        form_profile = FrontUserProfileForm(
+            request.POST,
+            request.FILES,
+            instance=profile,
+            user=request.user,   # ⚠️ important
+        )
+
+        if form_user.is_valid() and form_profile.is_valid():
+            form_user.save()
+
+            profil_obj = form_profile.save(commit=False)
+
+            # Sécurité : on garde la ferme d’origine de l’employé
+            if profile.farm:
+                profil_obj.farm = profile.farm
+
+            profil_obj.save()
+
+            messages.success(request, "Profil mis à jour avec succès.")
+            return redirect("index")   # /profil/
+        else:
+            messages.error(request, "Veuillez corriger les erreurs dans le formulaire.")
+    else:
+        form_user = FrontUserUpdateForm(instance=user)
+        form_profile = FrontUserProfileForm(
+            instance=profile,
+            user=request.user,
+        )
+
+    return render(request, "public/profile_front.html", {
+        "form_user": form_user,
+        "form_profile": form_profile,
+    })

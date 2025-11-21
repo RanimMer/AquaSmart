@@ -71,6 +71,17 @@ class UserProfileForm(forms.ModelForm):
         model = UserProfile
         fields = ( "role","phone", "farm", "avatar")
 
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)  # récupérer l’utilisateur connecté
+        super().__init__(*args, **kwargs)
+
+        # Filtrer les fermes sur l'utilisateur connecté
+        if user and not user.is_superuser:
+            self.fields['farm'].queryset = Farm.objects.filter(owner=user)
+        else:
+            # admin = peut voir toutes les fermes
+            self.fields['farm'].queryset = Farm.objects.all()
+
 class FarmForm(forms.ModelForm):
         class Meta:
             model = Farm
@@ -158,3 +169,44 @@ class UserSignupForm(UserCreationForm):
         if User.objects.filter(email__iexact=email).exists():
             raise forms.ValidationError("Cet email est déjà utilisé.")
         return email
+    
+class FrontUserUpdateForm(forms.ModelForm):
+    email = forms.EmailField(required=True)
+    first_name = forms.CharField(label="Prénom", required=False)
+    last_name  = forms.CharField(label="Nom", required=False)
+
+    class Meta:
+        model = User
+        fields = ("username", "email", "first_name", "last_name")
+
+    def clean_email(self):
+        email = self.cleaned_data["email"]
+        qs = User.objects.filter(email__iexact=email).exclude(pk=self.instance.pk)
+        if qs.exists():
+            raise forms.ValidationError("Cet email est déjà utilisé par un autre compte.")
+        return email
+
+
+class FrontUserProfileForm(forms.ModelForm):
+    class Meta:
+        model = UserProfile
+        fields = ("phone", "farm", "avatar")
+
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)   # utilisateur connecté (l’employé)
+        super().__init__(*args, **kwargs)
+
+        # On ne veut surtout pas que ce champ casse le form
+        self.fields['farm'].required = False
+
+        # On récupère le profil lié au form
+        profile = self.instance or (getattr(user, "profile", None) if user else None)
+
+        if profile and profile.farm:
+            # 👉 une seule ferme : celle assignée à l’employé
+            self.fields['farm'].queryset = Farm.objects.filter(pk=profile.farm_id)
+            self.fields['farm'].initial = profile.farm
+            self.fields['farm'].disabled = True  # il ne peut pas la changer
+        else:
+            self.fields['farm'].queryset = Farm.objects.none()
+

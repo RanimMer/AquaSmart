@@ -11,6 +11,11 @@ from station_meteo import views as station_views
 from sols import views as sols_views
 from serre import views as serre_views
 from users import views as users_views
+import matplotlib.pyplot as plt
+
+
+
+
 
 
 
@@ -23,6 +28,8 @@ urlpatterns = [
     path('contact/', TemplateView.as_view(template_name='public/contact.html'), name='contact'),
     path('cultures/', cultures_views.cultures, name='cultures'),
     path('produits/', produits_views.produits, name='produits'),
+    path('chatbot/', produits_views.chatbot_ia, name='chatbot_ia'),
+    path('api/chatbot/', produits_views.chatbot_api, name='chatbot_api'),
     path('station_meteo/', station_views.station_meteo, name='station_meteo'),
     path('analyses-sols/', sols_views.liste_sols_front, name='liste_sols_front'),
     path('analyses-sols/<int:id_analyse>/', sols_views.details_sol_front, name='details_sol_front'),

@@ -42,7 +42,7 @@
         display: inline-block;
         margin-top: 30px;
         padding: 12px 30px;
-        background-color: #2e7d32;
+        background-color: #9ACD32;
         color: white;
         font-weight: bold;
         border-radius: 8px;
@@ -52,7 +52,7 @@
     }
 
     .btn-vert:hover {
-        background-color: #1b5e20;
+        background-color: #9ACD32;
         box-shadow: 0 6px 14px rgba(27, 94, 32, 0.4);
         transform: translateY(-2px);
     }
@@ -62,6 +62,9 @@
     <h3>📊 Statistiques des produits par type :</h3>
     <img src="data:image/png;base64,{{ graph }}" alt="Statistiques produits">
     <br>
-    <a href="{% url 'gestion_produits' %}" class="btn-vert">⬅ Retour</a>
+    <form action="{% url 'gestion_produits' %}" method="get" style="display:inline;">
+        <button type="submit" class="btn-vert">⬅ Retour</button>
+    </form>
 </div>
+
 {% endblock %} 

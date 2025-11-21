@@ -12,85 +12,232 @@
 {% endblock %}
 
 {% block content %}
-<div class="card">
-  <div class="card-body">
-    <div style="margin-bottom:20px;">
-      <a href="{% url 'ajouter_produit' %}" class="btn-add-plantation">
-        Ajouter un produit
-      </a>
+<!-- Élément audio pour le son de notification (caché) -->
+<audio id="notification-sound" preload="auto">
+    <source src="{% static 'sounds/notification.mp3' %}" type="audio/mpeg">
+    <source src="{% static 'sounds/notification.wav' %}" type="audio/wav">
+</audio>
+
+<!-- Zone de notifications en haut de l'écran -->
+{% if messages %}
+<div id="notification-area" class="notification-area">
+    {% for message in messages %}
+    <div class="notification-item {% if 'insuffisante' in message|lower %}notification-warning{% else %}notification-info{% endif %}">
+        <div class="notification-content">
+            <span class="notification-icon">
+                {% if 'insuffisante' in message|lower %}⚠️{% else %}ℹ️{% endif %}
+            </span>
+            <span class="notification-text">{{ message }}</span>
+        </div>
+        <button class="notification-close" onclick="this.parentElement.style.display='none'">×</button>
     </div>
+    {% endfor %}
+</div>
+{% endif %}
 
-    {% if messages %}
-      {% for message in messages %}
-      <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
-        {{ message }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-      </div>
-      {% endfor %}
-    {% endif %}
+<!-- Conteneur boutons avec fond blanc et boutons centrés -->
+<div style="display:flex; justify-content:center; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:15px; background:white; padding:15px; border-radius:10px; box-shadow:0 2px 8px rgba(0,0,0,0.05);">
+    <a href="{% url 'ajouter_produit' %}" class="btn btn-vert">+ Ajouter un produit</a>
+    <a href="{% url 'statistiques_produits' %}" class="btn btn-vert">📈 Voir les statistiques</a>
+    <a href="{% url 'export_pdf_produits' %}" class="btn btn-vert">📄 Exporter en PDF</a>
+    <a href="?sort=asc" class="btn btn-vert">⬆ Trier par quantité</a>
+    <a href="?sort=desc" class="btn btn-vert">⬇ Trier par quantité</a> 
 
-    <table class="tableau-elegant">
-      <thead>
-        <tr>
-          <th style="width: 80px;">Image</th>
-          <th style="width: 140px;">Nom</th>
-          <th style="width: 120px;">Type</th>
-          <th style="width: 200px;">Description</th>
-          <th style="width: 100px;">Quantité</th>
-          <th style="width: 120px;">Date ajout</th>
-          <th style="width: 120px;">Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for produit in produits %}
-        <tr>
-          <td>
-            {% if produit.image %}
-              <img src="{{ produit.image.url }}" alt="{{ produit.nom_produit }}" class="table-image">
+    <!-- Bouton Notifications -->
+    <div style="position:relative;">
+        <button class="btn btn-vert" id="notif-btn">
+            🔔 Notifications 
+            <span id="notif-count">{% if messages %}{{ messages|length }}{% else %}(0){% endif %}</span>
+        </button>
+        <div id="notif-dropdown" style="display:none; position:absolute; top:40px; right:0; background:white; min-width:250px; max-height:300px; overflow-y:auto; border-radius:8px; box-shadow:0 4px 15px rgba(0,0,0,0.2); z-index:1000;">
+            {% if messages %}
+                {% for message in messages %}
+                    <div style="padding:10px; border-bottom:1px solid #ddd;">{{ message }}</div>
+                {% endfor %}
             {% else %}
-              <div class="no-image">
-                <small>Aucune image</small>
-              </div>
+                <div style="padding:10px;">Aucune notification</div>
             {% endif %}
-          </td>
-          <td>
-            <span class="produit-name">{{ produit.nom_produit }}</span>
-          </td>
-          <td>
-            <span class="type-data">{{ produit.type_produit }}</span>
-          </td>
-          <td>
-            <span class="description-data">{{ produit.description|truncatewords:10 }}</span>
-          </td>
-          <td>
-            <span class="quantite-data">{{ produit.quantite_stock }}</span>
-          </td>
-          <td>
-            <span class="date-data">{{ produit.date_ajout|date:"d/m/Y" }}</span>
-          </td>
-          <td class="actions-cell">
-            <a href="{% url 'modifier_produit' produit.pk %}" class="btn btn-edit" data-title="Modifier">✏️</a>
-            <a href="{% url 'supprimer_produit' produit.pk %}" class="btn btn-delete" data-title="Supprimer">🗑️</a>
-          </td>
-        </tr>
-        {% empty %}
-        <tr>
-          <td colspan="7" class="no-data">
-            <div class="empty-state">
-              <h6 class="text-muted">Aucun produit enregistré</h6>
-              <a href="{% url 'ajouter_produit' %}" class="btn-add-plantation mt-2">
-                Créer un produit
-              </a>
-            </div>
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+        </div>
+    </div>
+</div>
+
+<!-- Barre de recherche-->
+<form method="get" action="{% url 'gestion_produits' %}" style="display:flex;gap:10px;margin-bottom:15px;width:100%;">
+    <input type="text" name="query" placeholder="Rechercher un produit..." 
+           value="{{ query|default:'' }}" 
+           style="flex:1;padding:10px;border:1px solid #9ACD32;border-radius:5px;">
+    <button type="submit" style="background:#9ACD32;color:white;border:none;padding:10px 16px;border-radius:5px;cursor:pointer;">
+        🔍
+    </button>
+    <a href="{% url 'gestion_produits' %}" 
+   style="background:#9ACD32; color:white; padding:10px 16px; border-radius:5px; text-decoration:none; font-weight:bold;">
+    <span style="color:red;">X</span>
+</a>
+</form>
+
+<table class="tableau-elegant">
+  <thead>
+    <tr>
+      <th style="width: 80px;">Image</th>
+      <th style="width: 140px;">Nom</th>
+      <th style="width: 120px;">Type</th>
+      <th style="width: 200px;">Description</th>
+      <th style="width: 100px;">Quantité</th>
+      <th style="width: 120px;">Date ajout</th>
+      <th style="width: 120px;">Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for produit in produits %}
+    <tr>
+      <td>
+        {% if produit.image %}
+          <img src="{{ produit.image.url }}" alt="{{ produit.nom_produit }}" class="table-image">
+        {% else %}
+          <div class="no-image">
+            <small>Aucune image</small>
+          </div>
+        {% endif %}
+      </td>
+      <td>
+        <span class="produit-name">{{ produit.nom_produit }}</span>
+      </td>
+      <td>
+        <span class="type-data">{{ produit.type_produit }}</span>
+      </td>
+      <td>
+        <span class="description-data">{{ produit.description|truncatewords:10 }}</span>
+      </td>
+      <td>
+        <span class="quantite-data">{{ produit.quantite_stock }}</span>
+      </td>
+      <td>
+        <span class="date-data">{{ produit.date_ajout|date:"d/m/Y" }}</span>
+      </td>
+      <td class="actions-cell">
+        <a href="{% url 'modifier_produit' produit.pk %}" class="btn btn-edit" data-title="Modifier">✏️</a>
+
+        <!-- Bouton suppression modal -->
+        <button 
+            class="btn btn-delete btn-modal" 
+            data-title="Supprimer" 
+            data-produit-id="{{ produit.pk }}" 
+            data-produit-nom="{{ produit.nom_produit }}">
+            🗑️
+        </button>
+      </td>
+    </tr>
+    {% empty %}
+    <tr>
+      <td colspan="7" class="no-data">
+        <div class="empty-state">
+          <h6 class="text-muted">Aucun produit enregistré</h6>
+          <a href="{% url 'ajouter_produit' %}"  class="btn btn-vert">
+            Créer un produit
+          </a>
+        </div>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<!-- Modal de confirmation suppression -->
+<div id="confirm-modal" class="modal-overlay">
+  <div class="modal-content modal-green-border">
+    <h5>⚠️ Confirmer la suppression</h5>
+    <p>Vous êtes sur le point de supprimer définitivement le produit :</p>
+    <p class="fw-bold" id="modal-produit-nom"></p>
+    <div class="d-flex justify-content-center gap-3 mt-3">
+      <!-- Bouton Annuler -->
+      <button type="button" id="btn-annuler" class="btn btn-green-outline">❌ Annuler</button>
+
+      <!-- Bouton Valider -->
+      <form id="modal-delete-form" method="post" style="display:inline;">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-green-outline">✅ Valider</button>
+      </form>
+    </div>
   </div>
 </div>
 
 <style>
+/* Zone de notifications */
+.notification-area {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 10000;
+    max-width: 400px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.notification-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    animation: slideIn 0.3s ease-out;
+    max-width: 100%;
+}
+
+.notification-info {
+    background-color: #e8f5e9;
+    border-left: 4px solid #4caf50;
+    color: #2e7d32;
+}
+
+.notification-warning {
+    background-color: #fff3e0;
+    border-left: 4px solid #ff9800;
+    color: #e65100;
+}
+
+.notification-content {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+}
+
+.notification-icon {
+    font-size: 18px;
+}
+
+.notification-text {
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+.notification-close {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: inherit;
+    opacity: 0.7;
+    margin-left: 10px;
+}
+
+.notification-close:hover {
+    opacity: 1;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
 /* Bouton Ajouter un produit - Style smooth */
 .btn-add-plantation {
     background-color: rgba(154, 205, 50, 0.1);
@@ -284,27 +431,57 @@
     position: relative;
 }
 
+/* Bouton modifier : carré jaune avec icône blanche (style corrigé) */
 .btn-edit {
-    background-color: #ffc107;
+    background-color: #fab800; /* jaune vif comme sur la photo */
+    border: none;
+    width: 48px;
+    height: 48px;
+    color: white !important;
+    font-size: 24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 12px;
+    padding: 0;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    text-decoration: none;
 }
+
 .btn-edit:hover {
-    background-color: #e0a800;
+    background-color: #d6a200; /* jaune plus foncé au hover */
     transform: scale(1.1);
 }
 
+/* Bouton supprimer : carré rouge avec icône blanche (style corrigé) */
 .btn-delete {
-    background-color: #dc3545;
+    background-color: #e03e3e; /* rouge vif comme sur la photo */
+    border: none;
+    width: 48px;
+    height: 48px;
+    color: white !important;
+    font-size: 24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 12px;
+    padding: 0;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    text-decoration: none;
 }
+
 .btn-delete:hover {
-    background-color: #c82333;
+    background-color: #b73131; /* rouge plus foncé au hover */
     transform: scale(1.1);
 }
 
 .actions-cell {
     display: flex;
-    gap: 6px;
-    align-items: center;
+    gap: 10px;
     justify-content: center;
+    align-items: center;
 }
 
 /* Tooltip personnalisé - EN HAUT */
@@ -342,5 +519,214 @@
     z-index: 1000;
 }
 
+/* Suppression des styles conflictuels (optionnel, à enlever si vous voulez conserver) */
+.btn-vert {
+    background-color: rgba(154, 205, 50, 0.1);
+    color: #9ACD32 !important;
+    padding: 10px 20px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 500;
+    border: 2px solid rgba(154, 205, 50, 0.3);
+    transition: all 0.3s ease;
+    display: inline-block;
+    font-size: 14px;
+}
+
+.btn-vert:hover {
+    background-color: rgba(154, 205, 50, 0.2);
+    border-color: rgba(154, 205, 50, 0.5);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(154, 205, 50, 0.2);
+}
+
+.modal-overlay {
+  display: none;
+  position: fixed;
+  top:0; left:0;
+  width:100%; height:100%;
+  background-color: rgba(0,0,0,0.5);
+  justify-content:center;
+  align-items:center;
+  z-index: 9999;
+}
+.modal-content {
+  background: white;
+  padding: 30px;
+  border-radius: 15px;
+  text-align: center;
+  max-width: 400px;
+  margin: auto;
+}
+
+/* Overlay modal */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  top:0; left:0;
+  width:100%; height:100%;
+  background-color: rgba(0,0,0,0.5);
+  justify-content:center;
+  align-items:center;
+  z-index: 9999;
+}
+
+/* Contenu modal avec bordure verte */
+.modal-content.modal-green-border {
+  background: white;
+  padding: 30px;
+  border-radius: 15px;
+  text-align: center;
+  max-width: 400px;
+  margin: auto;
+  border: 3px solid #9ACD32; /* bordure verte */
+}
+
+/* Boutons style bordure verte */
+.btn-green-outline {
+  background-color: white;
+  color: #9ACD32;
+  border: 2px solid #9ACD32;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 14px;
+}
+
+.btn-green-outline:hover {
+  background-color: #9ACD32;
+  color: white;
+}
 </style>
+
+<script>
+window.addEventListener('DOMContentLoaded', () => {
+    const notifBtn = document.getElementById('notif-btn');
+    const notifDropdown = document.getElementById('notif-dropdown');
+    const notificationSound = document.getElementById('notification-sound');
+    
+    // Jouer le son de notification si des messages existent
+    if (notificationSound && document.querySelector('.notification-item')) {
+        // Réinitialiser et jouer le son
+        notificationSound.currentTime = 0;
+        notificationSound.play().catch(e => {
+            console.log("Lecture automatique du son bloquée:", e);
+        });
+    }
+    
+    // Toggle dropdown notifications
+    notifBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        notifDropdown.style.display = notifDropdown.style.display === 'block' ? 'none' : 'block';
+    });
+
+    // Fermer dropdown si clic ailleurs
+    window.addEventListener('click', function(e) {
+        if (!notifBtn.contains(e.target) && !notifDropdown.contains(e.target)) {
+            notifDropdown.style.display = 'none';
+        }
+    });
+    
+    // Auto-dismiss notifications after 5 seconds
+    const notifications = document.querySelectorAll('.notification-item');
+    notifications.forEach(notification => {
+        setTimeout(() => {
+            if (notification.parentElement) {
+                notification.style.opacity = '0';
+                notification.style.transform = 'translateX(100%)';
+                setTimeout(() => {
+                    if (notification.parentElement) {
+                        notification.parentElement.removeChild(notification);
+                    }
+                }, 300);
+            }
+        }, 5000);
+    });
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+    const modal = document.getElementById('confirm-modal');
+    const modalNom = document.getElementById('modal-produit-nom');
+    const modalForm = document.getElementById('modal-delete-form');
+    const btnAnnuler = document.getElementById('btn-annuler');
+
+    // Récupère tous les boutons supprimer
+    document.querySelectorAll('.btn-modal').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const nom = btn.getAttribute('data-nom');
+            const url = btn.getAttribute('data-url');
+
+            modalNom.textContent = nom;
+            modalForm.action = url;
+
+            modal.style.display = 'flex';
+        });
+    });
+
+    // Annuler
+    btnAnnuler.addEventListener('click', () => {
+        modal.style.display = 'none';
+    });
+
+    // fermer si clic en dehors du modal
+    window.addEventListener('click', (e) => {
+        if (e.target == modal) {
+            modal.style.display = 'none';
+        }
+    });
+});
+
+// Fonction pour ajouter une notification dynamiquement (si nécessaire plus tard)
+function addNotification(message, type = 'info') {
+    const notificationArea = document.getElementById('notification-area');
+    const notificationSound = document.getElementById('notification-sound');
+    
+    // Créer la notification
+    const notification = document.createElement('div');
+    notification.className = `notification-item notification-${type}`;
+    notification.innerHTML = `
+        <div class="notification-content">
+            <span class="notification-icon">${type === 'warning' ? '⚠️' : 'ℹ️'}</span>
+            <span class="notification-text">${message}</span>
+        </div>
+        <button class="notification-close" onclick="this.parentElement.style.display='none'">×</button>
+    `;
+    
+    // Ajouter à la zone de notifications
+    if (!notificationArea) {
+        // Créer la zone si elle n'existe pas
+        const newArea = document.createElement('div');
+        newArea.id = 'notification-area';
+        newArea.className = 'notification-area';
+        newArea.appendChild(notification);
+        document.body.insertBefore(newArea, document.body.firstChild);
+    } else {
+        notificationArea.appendChild(notification);
+    }
+    
+    // Jouer le son
+    if (notificationSound) {
+        notificationSound.currentTime = 0;
+        notificationSound.play().catch(e => {
+            console.log("Lecture automatique du son bloquée:", e);
+        });
+    }
+    
+    // Auto-dismiss
+    setTimeout(() => {
+        if (notification.parentElement) {
+            notification.style.opacity = '0';
+            notification.style.transform = 'translateX(100%)';
+            setTimeout(() => {
+                if (notification.parentElement) {
+                    notification.parentElement.removeChild(notification);
+                }
+            }, 300);
+        }
+    }, 5000);
+}
+</script>
 {% endblock %}

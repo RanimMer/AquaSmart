@@ -4,15 +4,15 @@ from django.db.models import Count, Q
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 # imports graphiques/PDF laissés comme dans ton projet (commentés)
-# import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 from io import BytesIO
 import base64
 import re
 
-# from reportlab.lib import colors
-# from reportlab.lib.pagesizes import A4, landscape
-# from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
-# from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import A4, landscape
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 
 from .models import Produit
 from .forms import ProduitForm
@@ -227,7 +227,7 @@ def export_pdf_produits(request):
     table = Table(data, colWidths=col_widths, repeatRows=1)  # type: ignore[name-defined]
 
     table.setStyle(TableStyle([  # type: ignore[name-defined]
-        ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#28a745')),  # type: ignore[name-defined]
+        ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#9ACD32')),  # type: ignore[name-defined]
         ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),            # type: ignore[name-defined]
         ('ALIGN', (0, 0), (-1, 0), 'CENTER'),
         ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
@@ -278,21 +278,86 @@ def index(request):
 
 from django.shortcuts import render
 from .models import Produit
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from google.genai import Client, types
+import re
 
 def produits(request):
     query_type = request.GET.get('type_produit', '')
 
-    # base filtrée par ferme
-    base_qs = _produits_for_user(request.user)  # ✅ CORRIGÉ
+    # Base filtrée par utilisateur
+    base_qs = _produits_for_user(request.user)  # ✅ ta fonction existante
 
+    # Filtrage selon le type si présent
     if query_type:
-        produits = base_qs.filter(type_produit__icontains=query_type)
+        produits_list = base_qs.filter(type_produit__icontains=query_type)
     else:
-        produits = base_qs
+        produits_list = base_qs
+
+    # Pagination
+    page = request.GET.get('page', 1)  # Récupère le numéro de page dans l'URL, défaut 1
+    paginator = Paginator(produits_list, 6)  # 6 produits par page (modifiable)
+    try:
+        produits = paginator.page(page)
+    except PageNotAnInteger:
+        produits = paginator.page(1)
+    except EmptyPage:
+        produits = paginator.page(paginator.num_pages)
 
     context = {
         'produits': produits,
         'query_type': query_type,
         'active_page': 'produits',
+        'paginator': paginator,
     }
     return render(request, 'public/produits.html', context)
+
+client = Client(api_key="AIzaSyDm2w2KcxDE1Jie3Sulf-7sRr172z45pEw")
+def chatbot_ia(request):
+    return render(request, "chatbot_ia.html")
+
+@csrf_exempt
+def chatbot_api(request):
+    if request.method == "POST":
+        try:
+            question = request.POST.get("question", "")
+            image = request.FILES.get("image")
+
+            if not question and not image:
+                return JsonResponse({"error": "Aucune donnée reçue"}, status=400)
+
+            parts = []
+
+            # Si question texte existe, l'ajouter comme part
+            if question:
+                parts.append(types.Part.from_text(text=question))
+
+            # Si image existe, l'ajouter comme part
+            if image:
+                image_bytes = image.read()
+                parts.append(types.Part.from_bytes(data=image_bytes, mime_type=image.content_type))
+
+            # Créer un content “user” avec ces parts
+            content = types.Content(
+                role="user",
+                parts=parts
+            )
+
+            response = client.models.generate_content(
+                model="gemini-2.5-flash",  # ou un modèle Gemini approprié
+                contents=[content],
+                config=types.GenerateContentConfig(temperature=0.7)
+            )
+
+            answer = response.text
+            # Optionnel : nettoyer la réponse
+            answer = re.sub(r'(\*\*|\*)', '', answer)
+
+            return JsonResponse({"answer": answer})
+
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+
+    return JsonResponse({"error": "Méthode non autorisée"}, status=405)

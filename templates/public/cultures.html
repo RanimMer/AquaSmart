@@ -4,23 +4,6 @@
 <head>
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
-  <title>Aqua Smart - Cultures</title>
-  <link rel="icon" type="image/png" href="{% static 'img/logo.png' %}">
-  <link href="https://fonts.googleapis.com/css2?family=Jost:wght@500;600;700&family=Open+Sans:wght@400;500&display=swap" rel="stylesheet">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
-  <link href="{% static 'lib/animate/animate.min.css' %}" rel="stylesheet">
-  <link href="{% static 'lib/owlcarousel/assets/owl.carousel.min.css' %}" rel="stylesheet">
-  <link href="{% static 'lib/lightbox/css/lightbox.min.css' %}" rel="stylesheet">
-  <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
-  <link href="{% static 'css/style.css' %}" rel="stylesheet">
-
-  {% load static %}
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-  <meta charset="utf-8">
-  <meta content="width=device-width, initial-scale=1.0" name="viewport">
   <title>Cultures - Aqua Smart</title>
   <meta name="description" content="Gérez vos cultures intelligemment avec AquaSmart. Suivi des besoins en eau, planning de récolte et optimisation des ressources pour une agriculture durable.">
   <link rel="icon" type="image/png" href="{% static 'img/logo.png' %}">
@@ -37,6 +20,74 @@
     .profile-dropdown {
     position: relative;
     margin-right: 30px;
+}
+
+/* Section Bouton Calendrier */
+.btn-calendar-small {
+    background: #17a2b8;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    transition: all 0.3s ease;
+}
+
+.btn-calendar-small:hover {
+    background: #138496;
+    color: white;
+    transform: translateY(-2px);
+    text-decoration: none;
+}
+
+.calendar-redirect-section {
+    background: linear-gradient(135deg, #f8fff0, #e8f5e8);
+    border-radius: 15px;
+    padding: 3rem 2rem;
+    border: 2px solid #9ACD32;
+    box-shadow: 0 10px 30px rgba(154, 205, 50, 0.1);
+}
+
+.btn-calendar {
+    background: linear-gradient(135deg, #9ACD32, #7ec01f);
+    color: white;
+    border: none;
+    padding: 1rem 2.5rem;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 1.1rem;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(154, 205, 50, 0.3);
+}
+
+.btn-calendar:hover {
+    background: linear-gradient(135deg, #1a6b3b, #9ACD32);
+    color: white;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(154, 205, 50, 0.4);
+    text-decoration: none;
+}
+
+.calendar-redirect-section h3 {
+    color: #1a6b3b;
+    font-weight: 600;
+}
+
+@media (max-width: 768px) {
+    .calendar-redirect-section {
+        padding: 2rem 1rem;
+    }
+    
+    .btn-calendar {
+        padding: 0.8rem 2rem;
+        font-size: 1rem;
+    }
 }
 
 .profile-btn {
@@ -112,6 +163,124 @@
         background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), 
                     url('{% static "img/carousel-1.jpg" %}') center center no-repeat;
         background-size: cover;
+    }
+
+    /* NOUVEAU : Barre de recherche améliorée */
+    .search-section {
+        background: linear-gradient(135deg, #f8fff0, #e8f5e8);
+        padding: 30px 0;
+        margin-bottom: 40px;
+        border-bottom: 3px solid #9ACD32;
+    }
+
+    .search-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 0 20px;
+    }
+
+    .search-title {
+        text-align: center;
+        color: #1a6b3b;
+        font-weight: 600;
+        margin-bottom: 20px;
+        font-size: 1.5rem;
+    }
+
+    .search-box {
+        position: relative;
+        background: white;
+        border-radius: 50px;
+        padding: 5px;
+        box-shadow: 0 5px 20px rgba(154, 205, 50, 0.2);
+        border: 2px solid #9ACD32;
+    }
+
+    .search-input {
+        width: 100%;
+        border: none;
+        padding: 15px 60px 15px 25px;
+        border-radius: 50px;
+        font-size: 1rem;
+        outline: none;
+        background: transparent;
+    }
+
+    .search-input::placeholder {
+        color: #9ACD32;
+        font-weight: 500;
+    }
+
+    .search-buttons {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        display: flex;
+        gap: 5px;
+    }
+
+    .search-btn {
+        background: #9ACD32;
+        color: white;
+        border: none;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .search-btn:hover {
+        background: #1a6b3b;
+        transform: scale(1.1);
+    }
+
+    .voice-btn {
+        background: #17a2b8;
+        color: white;
+        border: none;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .voice-btn:hover {
+        background: #138496;
+        transform: scale(1.1);
+    }
+
+    .voice-btn.listening {
+        background: #dc3545;
+        animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.1); }
+        100% { transform: scale(1); }
+    }
+
+    .voice-status {
+        text-align: center;
+        margin-top: 10px;
+        font-size: 0.9rem;
+        color: #1a6b3b;
+        font-weight: 500;
+        min-height: 20px;
+    }
+
+    .voice-status.active {
+        color: #dc3545;
+        font-weight: 600;
     }
 
     /* Cartes de cultures harmonisées */
@@ -450,6 +619,14 @@
             text-align: center;
             gap: 0.5rem;
         }
+
+        .search-box {
+            border-radius: 25px;
+        }
+
+        .search-input {
+            padding: 12px 50px 12px 20px;
+        }
     }
 
     /* Animations */
@@ -682,13 +859,41 @@
     </div>
   </div>
 
+  <!-- NOUVELLE SECTION : Barre de recherche améliorée -->
+  <div class="search-section">
+    <div class="search-container">
+      <h2 class="search-title">🔍 Rechercher une culture</h2>
+      <div class="search-box">
+        <input type="text" id="searchInput" class="search-input" placeholder="Tapez le nom d'une culture ou utilisez la reconnaissance vocale...">
+        <div class="search-buttons">
+          <button class="search-btn" id="searchButton" title="Rechercher">
+            <i class="fas fa-search"></i>
+          </button>
+          <button class="voice-btn" id="voiceButton" title="Recherche vocale">
+            <i class="fas fa-microphone"></i>
+          </button>
+        </div>
+      </div>
+      <div class="voice-status" id="voiceStatus"></div>
+
+        <!-- Bouton Calendrier ajouté ici -->
+        <div class="text-center mt-4">
+            <a href="{% url 'calendrier' %}" class="btn-calendar-small">
+                <i class="fas fa-calendar-alt me-2"></i>
+                Voir le Calendrier Complet
+            </a>
+        </div>
+    </div>
+</div>
+   
+
   <!-- Liste des cultures -->
   <div class="container-xxl py-5">
     <div class="container">
-        <div class="row g-4">
+        <div class="row g-4" id="culturesContainer">
             {% if cultures %}
             {% for c in cultures %}
-            <div class="col-lg-4 col-md-6">
+            <div class="col-lg-4 col-md-6 culture-item" data-name="{{ c.nom|lower }}" data-type="{{ c.type|lower }}">
                 <div class="culture-card">
                     <div>
                         <div class="culture-header">
@@ -929,11 +1134,156 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     });
+
+    // NOUVEAU : Recherche et reconnaissance vocale
+    const searchInput = document.getElementById('searchInput');
+    const searchButton = document.getElementById('searchButton');
+    const voiceButton = document.getElementById('voiceButton');
+    const voiceStatus = document.getElementById('voiceStatus');
+    const cultureItems = document.querySelectorAll('.culture-item');
+    const culturesContainer = document.getElementById('culturesContainer');
+
+    let recognition = null;
+    
+    // Vérifier si la reconnaissance vocale est supportée
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+        recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        recognition.continuous = false;
+        recognition.interimResults = false;
+        recognition.lang = 'fr-FR';
+
+        recognition.onstart = function() {
+            voiceButton.classList.add('listening');
+            voiceStatus.textContent = '🎤 Écoute en cours... Parlez maintenant';
+            voiceStatus.classList.add('active');
+        };
+
+        recognition.onresult = function(event) {
+            const transcript = event.results[0][0].transcript;
+            
+            // CORRECTION : Nettoyer le texte de la reconnaissance vocale
+            const cleanedText = cleanVoiceText(transcript);
+            
+            searchInput.value = cleanedText;
+            voiceStatus.textContent = `✅ Reconnu : "${cleanedText}"`;
+            performSearch(cleanedText);
+        };
+
+        recognition.onerror = function(event) {
+            voiceButton.classList.remove('listening');
+            voiceStatus.textContent = '❌ Erreur de reconnaissance vocale';
+            voiceStatus.classList.remove('active');
+        };
+
+        recognition.onend = function() {
+            voiceButton.classList.remove('listening');
+            setTimeout(() => {
+                voiceStatus.textContent = '';
+                voiceStatus.classList.remove('active');
+            }, 3000);
+        };
+
+        voiceButton.addEventListener('click', function() {
+            if (voiceButton.classList.contains('listening')) {
+                recognition.stop();
+            } else {
+                recognition.start();
+            }
+        });
+    } else {
+        voiceButton.style.display = 'none';
+        voiceStatus.textContent = '❌ Reconnaissance vocale non supportée par votre navigateur';
+    }
+
+    // Recherche par texte
+    searchButton.addEventListener('click', function() {
+        performSearch(searchInput.value);
+    });
+
+    searchInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            performSearch(searchInput.value);
+        }
+    });
+
+    // CORRECTION : Fonction pour nettoyer le texte de la reconnaissance vocale
+    function cleanVoiceText(text) {
+        return text
+            .toLowerCase() // Convertir en minuscules
+            .replace(/\./g, '') // Supprimer les points
+            .replace(/,/g, '') // Supprimer les virgules
+            .replace(/!/g, '') // Supprimer les points d'exclamation
+            .replace(/\?/g, '') // Supprimer les points d'interrogation
+            .trim() // Supprimer les espaces en début et fin
+            .replace(/\s+/g, ' '); // Remplacer les espaces multiples par un seul
+    }
+
+    function performSearch(searchTerm) {
+        // CORRECTION : Nettoyer aussi le texte de recherche manuel
+        const term = cleanVoiceText(searchTerm);
+        let hasResults = false;
+
+        cultureItems.forEach(item => {
+            const cultureName = item.getAttribute('data-name');
+            const cultureType = item.getAttribute('data-type');
+            
+            // CORRECTION : Recherche plus flexible
+            const nameMatches = cultureName.includes(term) || 
+                               cultureName.replace(/s$/, '').includes(term); // Gérer le pluriel
+            
+            const typeMatches = cultureType.includes(term);
+            
+            if (nameMatches || typeMatches || term === '') {
+                item.style.display = 'block';
+                hasResults = true;
+            } else {
+                item.style.display = 'none';
+            }
+        });
+
+        // Afficher un message si aucun résultat
+        const noResults = document.getElementById('noResults');
+        if (noResults) {
+            noResults.remove();
+        }
+
+        if (!hasResults && term !== '') {
+            const noResultsDiv = document.createElement('div');
+            noResultsDiv.id = 'noResults';
+            noResultsDiv.className = 'col-12';
+            noResultsDiv.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-search"></i>
+                    <h4>Aucune culture trouvée</h4>
+                    <p>Aucune culture ne correspond à "${searchTerm}"</p>
+                    <button class="btn-details" onclick="clearSearch()">
+                        <i class="fas fa-times"></i>
+                        Effacer la recherche
+                    </button>
+                </div>
+            `;
+            culturesContainer.appendChild(noResultsDiv);
+        }
+    }
+
+    // Fonction pour effacer la recherche
+    window.clearSearch = function() {
+        searchInput.value = '';
+        performSearch('');
+    };
+
+    // CORRECTION : Recherche améliorée avec correspondances partielles
+    function normalizeText(text) {
+        return text
+            .toLowerCase()
+            .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // Supprimer les accents
+            .replace(/[^a-z0-9]/g, ' ') // Remplacer les caractères spéciaux par des espaces
+            .replace(/\s+/g, ' ') // Normaliser les espaces
+            .trim();
+    }
 });
 </script>
 {# {% include 'public/chatbot_ia.html' %} #}
-
-
 
 </body>
 </html>

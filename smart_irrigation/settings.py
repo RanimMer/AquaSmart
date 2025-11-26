@@ -101,6 +101,20 @@ LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'bo_dashboard'   # ou 'users_list' si tu préfères
 LOGOUT_REDIRECT_URL = 'login'
 
+"""
 # Pour tests du reset mot de passe en console
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 DEFAULT_FROM_EMAIL = 'noreply@aquasmart.local'
+"""
+
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+
+EMAIL_HOST_USER = "styleiq2024@gmail.com"
+EMAIL_HOST_PASSWORD = "lxbq dkrm kbdv iscs"  # pas ton vrai mdp !
+
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+

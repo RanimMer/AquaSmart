@@ -1,0 +1,239 @@
+{% load static %}
+
+{% block title %}Calendrier des cultures{% endblock %}
+
+{% block content %}
+
+<!-- Bouton Retour -->
+<div style="margin-bottom: 12px;">
+  <button type="button" class="btn-back"
+          onclick="window.location.href='{% url 'cultures' %}'">
+    ← Retour
+  </button>
+</div>
+
+<div class="calendar-wrapper">
+  <div class="calendar-header">
+    <h2>📅 Calendrier des arrosages – {{ month_name }} {{ year }}</h2>
+    <div class="calendar-nav">
+      <a class="btn-nav"
+         href="?year={{ prev_year }}&month={{ prev_month }}">« Mois précédent</a>
+      <a class="btn-nav"
+         href="?year={{ next_year }}&month={{ next_month }}">Mois suivant »</a>
+    </div>
+  </div>
+
+  <div class="calendar-legend">
+    <span class="legend legend-today">● Irrigation aujourd’hui</span>
+    <span class="legend legend-upcoming">● Irrigation à venir</span>
+    <span class="legend legend-past">● Irrigation passée</span>
+  </div>
+
+  <table class="calendar-table">
+    <thead>
+      <tr>
+        <th>Lun</th>
+        <th>Mar</th>
+        <th>Mer</th>
+        <th>Jeu</th>
+        <th>Ven</th>
+        <th>Sam</th>
+        <th>Dim</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for week in weeks %}
+        <tr>
+          {% for day in week %}
+            <td class="
+                {% if not day.in_month %}other-month{% endif %}
+                {% if day.status == 'today' %} status-today{% endif %}
+                {% if day.status == 'upcoming' %} status-upcoming{% endif %}
+                {% if day.status == 'past' %} status-past{% endif %}
+            ">
+              <div class="day-number">
+                {{ day.date.day }}
+              </div>
+
+              {% if day.cultures %}
+                <div class="events">
+                  {% for c in day.cultures %}
+                    <div class="event-card">
+                      <strong>{{ c.name }}</strong><br>
+                      <small>Type : {{ c.type }}</small><br>
+                      <small>Eau : {{ c.besoin_base_l_j }} L/j</small><br>
+                      <small>Fréquence : {{ c.frequency_days }} j</small>
+                    </div>
+                  {% endfor %}
+                </div>
+              {% endif %}
+            </td>
+          {% endfor %}
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<style>
+.btn-back {
+    padding: 6px 12px;
+    border-radius: 999px;
+    border: 1px solid rgba(154, 205, 50, 0.5);
+    background: #f4f8e8;
+    color: #2f4f1f;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.btn-back:hover {
+    background: #e6f1cd;
+}
+
+/* Conteneur principal */
+.calendar-wrapper {
+    max-width: 1100px;
+    margin: 0 auto;
+    background: #ffffff;
+    padding: 20px 24px;
+    border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+}
+
+/* Header */
+.calendar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+
+.calendar-header h2 {
+    font-size: 24px;
+    color: #2d5016;
+    margin: 0;
+}
+
+/* Navigation mois */
+.calendar-nav .btn-nav {
+    margin-left: 8px;
+    padding: 8px 14px;
+    border-radius: 8px;
+    border: 1px solid rgba(154, 205, 50, 0.4);
+    background: rgba(154, 205, 50, 0.08);
+    color: #47682c;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.calendar-nav .btn-nav:hover {
+    background: rgba(154, 205, 50, 0.2);
+    border-color: rgba(154, 205, 50, 0.7);
+}
+
+/* Légende */
+.calendar-legend {
+    margin-bottom: 10px;
+    font-size: 13px;
+    color: #555;
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.calendar-legend .legend::before {
+    content: '●';
+    margin-right: 4px;
+}
+
+/* couleurs des points de légende */
+.calendar-legend .legend-today::before {
+    color: #22c55e; /* vert */
+}
+
+.calendar-legend .legend-upcoming::before {
+    color: #eab308; /* jaune */
+}
+
+.calendar-legend .legend-past::before {
+    color: #ef4444; /* rouge */
+}
+
+/* Tableau */
+.calendar-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+.calendar-table th {
+    background: rgba(154, 205, 50, 0.12);
+    padding: 10px 0;
+    font-size: 13px;
+    text-transform: uppercase;
+    color: #47682c;
+    border-bottom: 1px solid rgba(154, 205, 50, 0.4);
+}
+
+.calendar-table td {
+    height: 120px;
+    vertical-align: top;
+    border: 1px solid #f1f1f1;
+    padding: 6px;
+    background: #fff;
+    position: relative;
+    transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+/* Jours en dehors du mois courant */
+.calendar-table td.other-month {
+    background: #fafafa;
+    color: #bbb;
+}
+
+/* Couleurs intelligentes */
+.calendar-table td.status-today {
+    background: #dcfce7;
+    border-color: #22c55e;
+}
+
+.calendar-table td.status-upcoming {
+    background: #fef9c3;
+    border-color: #eab308;
+}
+
+.calendar-table td.status-past {
+    background: #fee2e2;
+    border-color: #ef4444;
+}
+
+/* Numéro du jour */
+.day-number {
+    font-size: 12px;
+    font-weight: 600;
+    color: #555;
+    margin-bottom: 4px;
+}
+
+/* Liste des événements (cultures) */
+.events {
+    margin-top: 2px;
+    max-height: 95px;
+    overflow-y: auto;
+}
+
+/* Carte d'événement */
+.event-card {
+    background: rgba(39, 174, 96, 0.07);
+    border-left: 3px solid #27ae60;
+    border-radius: 6px;
+    padding: 4px 6px;
+    margin-bottom: 4px;
+    font-size: 11px;
+    color: #2c3e50;
+}
+</style>
+
+{% endblock %}

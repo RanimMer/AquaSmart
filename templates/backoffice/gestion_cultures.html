@@ -14,10 +14,56 @@
 {% block content %}
 <div class="card">
   <div class="card-body">
-    <div style="margin-bottom:20px;">
-      <a href="{% url 'ajouter_culture' %}" class="btn-add-plantation">
+    <!-- Section d'actions principales -->
+    <div class="action-section">
+      <button onclick="window.location.href='{% url 'ajouter_culture' %}'" class="btn-add-culture">
+        <span class="btn-icon">🌱</span>
         Ajouter une culture
-      </a>
+      </button>
+      
+      <div class="action-buttons-group">
+        <a href="{% url 'stats_cultures' %}" class="btn-stats">
+          <span class="btn-icon">📊</span>
+          Statistiques
+        </a>
+        <a href="{% url 'export_cultures_pdf' %}" class="btn-export">
+          <span class="btn-icon">📄</span>
+          Export PDF
+        </a>
+      </div>
+    </div>
+
+    <!-- Barre de filtre / recherche -->
+    <div class="filter-section">
+      <form method="get" class="filter-form">
+        <div class="filter-group">
+          <input type="text"
+                 name="q"
+                 value="{{ q }}"
+                 class="search-input"
+                 placeholder="🔍 Rechercher par nom de culture...">
+          
+          <select name="tri" class="filter-select">
+            <option value="">Tri par défaut</option>
+            <option value="besoin_asc"  {% if tri == "besoin_asc" %}selected{% endif %}>
+              Besoin en eau ↑
+            </option>
+            <option value="besoin_desc" {% if tri == "besoin_desc" %}selected{% endif %}>
+              Besoin en eau ↓
+            </option>
+            <option value="semis_asc"   {% if tri == "semis_asc" %}selected{% endif %}>
+              Date de semis ↑
+            </option>
+            <option value="semis_desc"  {% if tri == "semis_desc" %}selected{% endif %}>
+              Date de semis ↓
+            </option>
+          </select>
+          
+          <button type="submit" class="btn-apply">
+            Appliquer les filtres
+          </button>
+        </div>
+      </form>
     </div>
 
     {% if messages %}
@@ -29,6 +75,7 @@
       {% endfor %}
     {% endif %}
 
+    <!-- TABLEAU DES CULTURES (EXACTEMENT COMME AVANT) -->
     <table class="tableau-elegant">
       <thead>
         <tr>
@@ -100,28 +147,154 @@
 </div>
 
 <style>
-/* Bouton Ajouter une culture - Style smooth */
-.btn-add-plantation {
-    background-color: rgba(154, 205, 50, 0.1);
-    color: #9ACD32;
-    padding: 12px 24px;
-    border-radius: 10px;
-    text-decoration: none;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    border: 2px solid rgba(154, 205, 50, 0.3);
-    display: inline-block;
+/* Section d'actions principales */
+.action-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.action-buttons-group {
+    display: flex;
+    gap: 12px;
+}
+
+/* Bouton principal Ajouter une culture */
+.btn-add-culture {
+    background: linear-gradient(135deg, #9ACD32, #32CD32);
+    color: white;
+    padding: 14px 28px;
+    border-radius: 12px;
+    border: none;
+    font-weight: 600;
     font-size: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 4px 15px rgba(154, 205, 50, 0.3);
+    text-decoration: none;
 }
 
-.btn-add-plantation:hover {
-    background-color: rgba(154, 205, 50, 0.2);
-    border-color: rgba(154, 205, 50, 0.5);
+.btn-add-culture:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(154, 205, 50, 0.4);
+    background: linear-gradient(135deg, #32CD32, #9ACD32);
+    color: white;
+}
+
+/* Boutons secondaires */
+.btn-stats, .btn-export {
+    background: white;
+    color: #333;
+    padding: 12px 20px;
+    border-radius: 10px;
+    border: 2px solid #e9ecef;
+    font-weight: 500;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+}
+
+.btn-stats:hover {
+    background: #f8f9fa;
+    border-color: #9ACD32;
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(154, 205, 50, 0.2);
+    color: #2d5016;
 }
 
-/* Tableau élégant */
+.btn-export:hover {
+    background: #f8f9fa;
+    border-color: #6c757d;
+    transform: translateY(-2px);
+    color: #495057;
+}
+
+/* Section filtres */
+.filter-section {
+    background: #f8fff0;
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    border: 1px solid rgba(154, 205, 50, 0.2);
+}
+
+.filter-form {
+    width: 100%;
+}
+
+.filter-group {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.search-input {
+    flex: 1;
+    min-width: 250px;
+    padding: 12px 16px;
+    border: 2px solid #e9ecef;
+    border-radius: 10px;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+.search-input:focus {
+    border-color: #9ACD32;
+    box-shadow: 0 0 0 3px rgba(154, 205, 50, 0.1);
+    outline: none;
+}
+
+.filter-select {
+    min-width: 180px;
+    padding: 12px 16px;
+    border: 2px solid #e9ecef;
+    border-radius: 10px;
+    font-size: 14px;
+    background: white;
+    transition: all 0.3s ease;
+}
+
+.filter-select:focus {
+    border-color: #9ACD32;
+    box-shadow: 0 0 0 3px rgba(154, 205, 50, 0.1);
+    outline: none;
+}
+
+.btn-apply {
+    background: #9ACD32;
+    color: white;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.btn-apply:hover {
+    background: #32CD32;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(154, 205, 50, 0.3);
+}
+
+/* Icônes */
+.btn-icon {
+    font-size: 16px;
+}
+
+/* STYLES DU TABLEAU (GARDÉS IDENTIQUES À L'ANCIEN) */
 .tableau-elegant {
     width: 100%;
     border-collapse: separate;
@@ -173,7 +346,6 @@
     border-bottom: none;
 }
 
-/* Image du tableau */
 .table-image {
     width: 65px;
     height: 65px;
@@ -195,7 +367,6 @@
     border: 1px solid #e9ecef;
 }
 
-/* Données stylisées */
 .culture-name {
     font-size: 14px;
     color: #333;
@@ -236,7 +407,6 @@
     min-width: 60px;
 }
 
-/* Conteneur pour les dates avec séparation */
 .date-container {
     display: flex;
     justify-content: center;
@@ -245,35 +415,34 @@
     padding: 4px 0;
 }
 
-/* Dates bien séparées avec cadres ajustés */
 .date-semis {
     font-size: 13px;
     color: #555;
     font-weight: 500;
-    padding: 8px 14px; /* Padding horizontal augmenté */
+    padding: 8px 14px;
     background: rgba(149, 165, 166, 0.1);
     border-radius: 6px;
     display: inline-block;
     white-space: nowrap;
     border: 1px solid rgba(149, 165, 166, 0.3);
     text-align: center;
-    min-width: 110px; /* Largeur minimale augmentée */
-    box-sizing: border-box; /* Pour inclure padding et border dans la largeur */
+    min-width: 110px;
+    box-sizing: border-box;
 }
 
 .date-recolte {
     font-size: 13px;
     color: #555;
     font-weight: 500;
-    padding: 8px 14px; /* Padding horizontal augmenté */
+    padding: 8px 14px;
     background: rgba(155, 89, 182, 0.1);
     border-radius: 6px;
     display: inline-block;
     white-space: nowrap;
     border: 1px solid rgba(155, 89, 182, 0.3);
     text-align: center;
-    min-width: 110px; /* Largeur minimale augmentée */
-    box-sizing: border-box; /* Pour inclure padding et border dans la largeur */
+    min-width: 110px;
+    box-sizing: border-box;
 }
 
 .eau-data {
@@ -288,7 +457,6 @@
     min-width: 70px;
 }
 
-/* Message pas de données */
 .no-data {
     text-align: center;
     color: #6c757d;
@@ -305,7 +473,6 @@
     font-size: 16px;
 }
 
-/* Boutons d'action */
 .btn {
     padding: 8px 12px;
     border-radius: 8px;
@@ -349,7 +516,6 @@
     justify-content: center;
 }
 
-/* Tooltip personnalisé - EN HAUT */
 .btn[data-title] {
     position: relative;
 }
@@ -384,5 +550,29 @@
     z-index: 1000;
 }
 
+/* Responsive */
+@media (max-width: 768px) {
+    .action-section {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .action-buttons-group {
+        justify-content: center;
+    }
+    
+    .filter-group {
+        flex-direction: column;
+    }
+    
+    .search-input, .filter-select {
+        min-width: 100%;
+    }
+    
+    .btn-add-culture, .btn-stats, .btn-export {
+        justify-content: center;
+        text-align: center;
+    }
+}
 </style>
 {% endblock %}

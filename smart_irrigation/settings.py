@@ -22,6 +22,11 @@ INSTALLED_APPS = [
     'sols',
     'serre',
     'station_meteo',
+    'django.contrib.staticfiles',
+    'channels',
+    'rest_framework',
+    'esp32_data',
+    
     # tes apps viendront ici (ex: 'accounts', ...)
 ]
 
@@ -55,13 +60,15 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'smart_irrigation.wsgi.application'
+ASGI_APPLICATION = 'smart_irrigation.asgi.application'
 
+CHANNEL_LAYERS = {
+    'default': {}}
 # Base de données par défaut (on garde sqlite pour le Sprint 1)
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+        'BACKEND': 'channels.layers.InMemoryChannelLayer'
+        }
 }
 
 AUTH_PASSWORD_VALIDATORS = [

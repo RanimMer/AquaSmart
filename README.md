@@ -8,7 +8,7 @@ L’objectif principal est de **réduire le gaspillage d’eau**, optimiser la p
 
 ## 🎯 Objectifs du Projet
 
-- Faciliter la **gestion des cultures** (semis, arrosage, récoltes, image).
+- Faciliter la **gestion des cultures** (semis, arrosage, récoltes, images).
 - Assurer le **suivi météorologique** via une station connectée.
 - Permettre l’analyse du **sol** et ajuster l’irrigation automatiquement.
 - Gérer les **serres** (ventilation, humidité, température).

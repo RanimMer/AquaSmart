@@ -1,0 +1,124 @@
+{% extends 'base_front.html' %}
+
+{% block content %}
+<div class="form-container">
+    <h1 class="form-title">Aqua Smart</h1>
+    <h2 class="form-subtitle">Créer un compte</h2>
+    
+    <form method="post" autocomplete="off">
+        {% csrf_token %}
+        {% if form.non_field_errors %}
+            <div class="non-field-errors">
+                {% for err in form.non_field_errors %}
+                    <div>{{ err }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+
+        <div class="form-group">
+            <label for="first_name">Prénom</label>
+            <input type="text" id="first_name" name="first_name" placeholder="Votre prénom">
+            {% if form.first_name.errors %}
+                <div class="field-error">{{ form.first_name.errors.0 }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="last_name">Nom</label>
+            <input type="text" id="last_name" name="last_name" placeholder="Votre nom">
+            {% if form.last_name.errors %}
+                <div class="field-error">{{ form.last_name.errors.0 }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="username">Nom d'utilisateur</label>
+            <input type="text" id="username" name="username" placeholder="Votre identifiant" autocomplete="new-username">
+            <div class="help-text">150 caractères maximum. Lettres, chiffres et @/./+/-/_ uniquement.</div>
+            {% if form.username.errors %}
+                <div class="field-error">{{ form.username.errors.0 }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" placeholder="votre@email.com" value="{{ form.email.value|default_if_none:'' }}" autocomplete="new-email">
+            {% if form.email.errors %}
+                <div class="field-error">{{ form.email.errors.0 }}</div>
+            {% endif %}
+        </div>
+        
+        <div class="form-group">
+            <label for="password1">Mot de passe</label>
+            <input type="password" id="password1" name="password1" placeholder="......" autocomplete="new-password">
+            {% if form.password1.errors %}
+                <div class="field-error">{{ form.password1.errors.0 }}</div>
+            {% endif %}
+        </div>
+        
+        <div class="form-group">
+            <label for="password2">Confirmation</label>
+            <input type="password" id="password2" name="password2" placeholder="Confirmez votre mot de passe" autocomplete="new-password">
+            {% if form.password2.errors %}
+                <div class="field-error">{{ form.password2.errors.0 }}</div>
+            {% endif %}
+        </div>
+        
+        <div class="form-group">
+            <label for="role">Type de compte</label>
+            <select id="role" name="role" autocomplete="off">
+                <option value="">Sélectionnez votre type de compte</option>
+                <option value="ADMIN">Agriculteur Propriétaire</option>
+                <option value="TECH">Employé</option>
+            </select>
+            <div class="help-text">Choisissez "Agriculteur Propriétaire" si vous êtes le propriétaire de l'exploitation</div>
+            {% if form.role.errors %}
+                <div class="field-error">{{ form.role.errors.0 }}</div>
+            {% endif %}
+        </div>
+
+
+        <div class="form-group" id="farm-group" style="display: none;">
+            <label for="farm">Ferme </label>
+            <select id="farm" name="farm">
+                <option value="">Sélectionnez la ferme à laquelle vous appartenez</option>
+                {% for f in farms %}
+                    <option value="{{ f.id }}">{{ f.name }}</option>
+                {% endfor %}
+
+            </select>
+            <div class="help-text">Ce champ est obligatoire si vous êtes un employé.</div>
+            {% if form.farm.errors %}
+                <div class="field-error">{{ form.farm.errors.0 }}</div>
+            {% endif %}
+        </div>
+
+        
+        <button type="submit" class="btn btn-custom">S'inscrire</button>
+
+        
+        <div class="form-links">
+            <a href="{% url 'login' %}">Déjà un compte ? Se connecter</a>
+        </div>
+    </form>
+    <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const roleSelect = document.getElementById("role");
+        const farmGroup = document.getElementById("farm-group");
+
+        function toggleFarmField() {
+            if (roleSelect.value === "TECH") {
+                farmGroup.style.display = "block";
+            } else {
+                farmGroup.style.display = "none";
+            }
+        }
+
+        toggleFarmField();
+        roleSelect.addEventListener("change", toggleFarmField);
+    });
+    </script>
+
+</div>
+{% endblock %}

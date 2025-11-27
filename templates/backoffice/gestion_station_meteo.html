@@ -1,0 +1,301 @@
+{% extends 'backoffice/base.html' %}
+{% load static %}
+
+{% block title %}Gestion des Stations Météo - Backoffice{% endblock %}
+
+{% block page_title %}
+<div style="text-align:left; margin-bottom:14px;">
+    <span style="font-size:32px; font-weight:400; color:#9ACD32;">
+        Gestion des stations météo
+    </span>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="card-body">
+    <div style="margin-bottom:20px;">
+      <a href="{% url 'ajouter_station_meteo' %}" class="btn-add-plantation">
+        Ajouter une station météo
+      </a>
+    </div>
+
+    {% if messages %}
+      {% for message in messages %}
+      <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+      {% endfor %}
+    {% endif %}
+
+    <table class="tableau-elegant">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nom</th>
+          <th>Emplacement</th>
+          <th>Date installation</th>
+          <th>Statut</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for station in stations %}
+        <tr>
+          <td><strong class="data-id">#{{ station.id_station }}</strong></td>
+          <td>
+            <span class="station-name">{{ station.nom_station }}</span>
+          </td>
+          <td>
+            <span class="location-data">{{ station.emplacement }}</span>
+          </td>
+          <td>
+            <span class="date-data">{{ station.date_installation|date:"d/m/Y" }}</span>
+          </td>
+          <td>
+            {% if station.actif %}
+              <span class="status-badge status-active">Actif</span>
+            {% else %}
+              <span class="status-badge status-inactive">Inactif</span>
+            {% endif %}
+          </td>
+          <td class="actions-cell">
+            <a href="{% url 'modifier_station_meteo' station.pk %}" class="btn btn-edit" data-title="Modifier">✏️</a>
+            <a href="{% url 'supprimer_station_meteo' station.pk %}" class="btn btn-delete" data-title="Supprimer">🗑️</a>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="6" class="no-data">
+            <div class="empty-state">
+              <h6 class="text-muted">Aucune station météo enregistrée</h6>
+              <a href="{% url 'ajouter_station_meteo' %}" class="btn-add-plantation mt-2">
+                Créer une station
+              </a>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<style>
+/* Bouton Ajouter une station - Style smooth */
+.btn-add-plantation {
+    background-color: rgba(154, 205, 50, 0.1);
+    color: #9ACD32;
+    padding: 12px 24px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    border: 2px solid rgba(154, 205, 50, 0.3);
+    display: inline-block;
+    font-size: 15px;
+}
+
+.btn-add-plantation:hover {
+    background-color: rgba(154, 205, 50, 0.2);
+    border-color: rgba(154, 205, 50, 0.5);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(154, 205, 50, 0.2);
+}
+
+/* Tableau élégant */
+.tableau-elegant {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin-top: 10px;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    background: white;
+}
+
+.tableau-elegant th {
+    background-color: rgba(154, 205, 50, 0.08);
+    color: #2d5016;
+    padding: 16px 12px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 14px;
+    border-bottom: 1px solid rgba(154, 205, 50, 0.2);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.tableau-elegant td {
+    padding: 16px 12px;
+    text-align: left;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 14px;
+    color: #555;
+}
+
+.tableau-elegant tbody tr {
+    background-color: white;
+    transition: all 0.2s ease;
+}
+
+.tableau-elegant tbody tr:hover {
+    background-color: rgba(154, 205, 50, 0.03);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.tableau-elegant tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* Données agrandies pour meilleure lisibilité */
+.data-id {
+    font-size: 15px;
+    color: #333;
+    font-weight: 600;
+}
+
+.station-name {
+    font-size: 15px;
+    color: #333;
+    font-weight: 600;
+    padding: 8px 12px;
+    background: rgba(52, 152, 219, 0.1);
+    border-radius: 6px;
+    display: inline-block;
+}
+
+.location-data {
+    font-size: 14px;
+    color: #555;
+    font-weight: 500;
+    padding: 8px 12px;
+    background: rgba(149, 165, 166, 0.1);
+    border-radius: 6px;
+    display: inline-block;
+}
+
+.date-data {
+    font-size: 14px;
+    color: #555;
+    font-weight: 500;
+    padding: 8px 12px;
+    background: rgba(155, 89, 182, 0.1);
+    border-radius: 6px;
+    display: inline-block;
+}
+
+.status-badge {
+    padding: 8px 12px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 13px;
+    border: 1px solid;
+    display: inline-block;
+}
+
+.status-active {
+    background: rgba(39, 174, 96, 0.1);
+    color: #27ae60;
+    border-color: rgba(39, 174, 96, 0.3);
+}
+
+.status-inactive {
+    background: rgba(231, 76, 60, 0.1);
+    color: #e74c3c;
+    border-color: rgba(231, 76, 60, 0.3);
+}
+
+/* Message pas de données */
+.no-data {
+    text-align: center;
+    color: #6c757d;
+    font-style: italic;
+    padding: 40px !important;
+}
+
+.empty-state {
+    padding: 20px;
+}
+
+.empty-state h6 {
+    margin-bottom: 15px;
+    font-size: 16px;
+}
+
+/* Boutons d'action */
+.btn {
+    padding: 10px 14px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    color: white;
+    display: inline-block;
+    font-size: 14px;
+    position: relative;
+}
+
+.btn-edit {
+    background-color: #ffc107;
+}
+.btn-edit:hover {
+    background-color: #e0a800;
+    transform: scale(1.1);
+}
+
+.btn-delete {
+    background-color: #dc3545;
+}
+.btn-delete:hover {
+    background-color: #c82333;
+    transform: scale(1.1);
+}
+
+.actions-cell {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Tooltip personnalisé - EN HAUT */
+.btn[data-title] {
+    position: relative;
+}
+
+.btn[data-title]:hover::after {
+    content: attr(data-title);
+    position: absolute;
+    top: -40px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: white;
+    color: #333;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    white-space: nowrap;
+    z-index: 1000;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    border: 1px solid #e0e0e0;
+    font-weight: 500;
+}
+
+.btn[data-title]:hover::before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 5px;
+    border-style: solid;
+    border-color: white transparent transparent transparent;
+    z-index: 1000;
+}
+
+</style>
+{% endblock %}

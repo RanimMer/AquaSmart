@@ -1,0 +1,385 @@
+{% extends 'index.html' %}
+{% load static %}
+
+{% block content %}
+<!-- Page Header Start -->
+<div class="container-fluid page-header py-5 mb-5 wow fadeIn" data-wow-delay="0.1s">
+    <div class="container text-center py-5">
+        <h1 class="display-3 text-white mb-4 animated slideInDown">Détails de l'Analyse</h1>
+        <nav aria-label="breadcrumb animated slideInDown">
+            <ol class="breadcrumb justify-content-center mb-0">
+                <li class="breadcrumb-item active text-white" aria-current="page">
+                    Analyse #{{ sol.id_analyse }} — {{ sol.pin_surface }}
+                </li>
+            </ol>
+        </nav>
+    </div>
+</div>
+<!-- Page Header End -->
+
+<!-- Analysis Details Start -->
+<div class="container-xxl py-5">
+    <div class="container">
+        <div class="row g-4 justify-content-center">
+            <div class="col-lg-10">
+                <div class="analyse-card">
+                    <!-- En-tête -->
+                    <div class="analyse-header">
+                        <div class="service-icon mb-4">
+                            <i class="fas fa-flask fa-3x"></i>
+                        </div>
+                        <h2 class="analyse-title">Analyse #{{ sol.id_analyse }}</h2>
+                        <span class="analyse-badge badge-{{ sol.qualite_sol|lower }}">
+                            {{ sol.qualite_sol|title }}
+                        </span>
+                    </div>
+
+                    <!-- Informations principales en ligne -->
+                    <div class="row mb-5">
+                        <div class="col-md-4 text-center">
+                            <div class="info-item">
+                                <i class="fas fa-calendar fa-2x text-success mb-2"></i>
+                                <h6>Date</h6>
+                                <p class="mb-0">{{ sol.date_analyse }}</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4 text-center">
+                            <div class="info-item">
+                                <i class="fas fa-ruler-combined fa-2x text-success mb-2"></i>
+                                <h6>Surface</h6>
+                                <p class="mb-0">{{ sol.surface }} ha</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4 text-center">
+                            <div class="info-item">
+                                <i class="fas fa-map-marker-alt fa-2x text-success mb-2"></i>
+                                <h6>Région</h6>
+                                <p class="mb-0">{{ sol.total_region }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Paramètres chimiques -->
+                    <div class="row mb-5">
+                        <div class="col-12">
+                            <h4 class="section-title-main mb-4">
+                                <i class="fas fa-flask me-2"></i>
+                                Paramètres Chimiques
+                            </h4>
+                            <div class="row">
+                                <div class="col-md-3 col-6 text-center mb-3">
+                                    <div class="chemical-param">
+                                        <div class="ph-value-large {% if sol.ph < 6.0 %}ph-acide{% elif sol.ph > 7.5 %}ph-alcalin{% else %}ph-optimal{% endif %}">
+                                            {{ sol.ph }}
+                                        </div>
+                                        <small class="text-muted">pH</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-6 text-center mb-3">
+                                    <div class="chemical-param">
+                                        <div class="param-value-large">
+                                            {{ sol.azote }}
+                                        </div>
+                                        <small class="text-muted">Azote (mg/kg)</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-6 text-center mb-3">
+                                    <div class="chemical-param">
+                                        <div class="param-value-large">
+                                            {{ sol.phosphore }}
+                                        </div>
+                                        <small class="text-muted">Phosphore (mg/kg)</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-6 text-center mb-3">
+                                    <div class="chemical-param">
+                                        <div class="param-value-large">
+                                            {{ sol.potassium }}
+                                        </div>
+                                        <small class="text-muted">Potassium (mg/kg)</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sections verticales pour Composition et Recommandations -->
+                    <div class="vertical-sections">
+                        <!-- Composition -->
+                        {% if sol.bundles_composition %}
+                        <div class="vertical-section mb-4">
+                            <div class="section-header">
+                                <i class="fas fa-seedling me-2"></i>
+                                <h5 class="mb-0">Composition</h5>
+                            </div>
+                            <div class="section-content">
+                                <p class="mb-0">{{ sol.bundles_composition }}</p>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <!-- Recommandations -->
+                        <div class="vertical-section mb-4">
+                            <div class="section-header">
+                                <i class="fas fa-lightbulb me-2"></i>
+                                <h5 class="mb-0">Recommandations</h5>
+                            </div>
+                            <div class="section-content">
+                                <p class="mb-0">
+                                    {% if sol.recommandations %}
+                                        {{ sol.recommandations }}
+                                    {% else %}
+                                        Aucune recommandation spécifique.
+                                    {% endif %}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bouton Retour -->
+                    <div class="text-center mt-5">
+                        <a href="{% url 'liste_sols_front' %}" class="btn-details">
+                            <i class="fa fa-arrow-left me-2"></i>Retour à la liste
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Analysis Details End -->
+
+<style>
+    .page-header {
+        background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), 
+                    url('{% static "img/carousel-1.jpg" %}') center center no-repeat;
+        background-size: cover;
+    }
+
+    .analyse-card {
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+        border: 1px solid #f0f0f0;
+        padding: 2rem 1.5rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .analyse-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(135deg, #9ACD32, #7ec01f);
+    }
+
+    .analyse-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 30px rgba(154, 205, 50, 0.15);
+        border-color: #9ACD32;
+    }
+
+    .analyse-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .analyse-title {
+        color: #1a6b3b;
+        font-weight: 600;
+        font-size: 1.8rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .service-icon {
+        width: 100px;
+        height: 100px;
+        background: linear-gradient(135deg, #9ACD32, #7ec01f);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
+        transition: all 0.3s ease;
+    }
+
+    .service-icon i {
+        color: white;
+        font-size: 2.5rem;
+    }
+
+    .analyse-badge {
+        display: inline-block;
+        padding: 0.5rem 1.5rem;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: white;
+    }
+
+    .badge-excellente { background: linear-gradient(135deg, #9ACD32, #7ec01f); }
+    .badge-bonne { background: linear-gradient(135deg, #5dade2, #3498db); }
+    .badge-moyenne { background: linear-gradient(135deg, #f39c12, #f1c40f); }
+    .badge-critique { background: linear-gradient(135deg, #e74c3c, #ec7063); }
+
+    /* Informations principales */
+    .info-item {
+        padding: 1rem;
+        border-radius: 8px;
+        background: #f8f9fa;
+        transition: all 0.3s ease;
+    }
+
+    .info-item:hover {
+        background: rgba(154, 205, 50, 0.1);
+        transform: translateY(-2px);
+    }
+
+    .info-item h6 {
+        color: #1a6b3b;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+    /* Paramètres chimiques */
+    .section-title-main {
+        color: #1a6b3b;
+        font-weight: 600;
+        font-size: 1.3rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .chemical-param {
+        padding: 1rem;
+    }
+
+    .param-value-large {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #1a6b3b;
+        margin-bottom: 0.25rem;
+    }
+
+    .ph-value-large {
+        font-size: 1.8rem;
+        font-weight: 700;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        margin-bottom: 0.25rem;
+    }
+
+    .ph-acide { 
+        background: rgba(231, 76, 60, 0.1); 
+        color: #e74c3c; 
+        border: 1px solid rgba(231, 76, 60, 0.2);
+    }
+    .ph-optimal { 
+        background: rgba(154, 205, 50, 0.1); 
+        color: #1a6b3b; 
+        border: 1px solid rgba(154, 205, 50, 0.2);
+    }
+    .ph-alcalin { 
+        background: rgba(52, 152, 219, 0.1); 
+        color: #2980b9; 
+        border: 1px solid rgba(52, 152, 219, 0.2);
+    }
+
+    /* Sections verticales */
+    .vertical-sections {
+        margin-top: 2rem;
+    }
+
+    .vertical-section {
+        border-left: 4px solid #9ACD32;
+        background: rgba(154, 205, 50, 0.05);
+        border-radius: 0 8px 8px 0;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .vertical-section:hover {
+        background: rgba(154, 205, 50, 0.08);
+        transform: translateX(5px);
+    }
+
+    .section-header {
+        background: rgba(154, 205, 50, 0.1);
+        padding: 1rem 1.5rem;
+        display: flex;
+        align-items: center;
+        color: #1a6b3b;
+        font-weight: 600;
+    }
+
+    .section-content {
+        padding: 1.5rem;
+        line-height: 1.6;
+    }
+
+    .btn-details {
+        background-color: #ffffff;
+        color: #9ACD32;
+        border: 2px solid #9ACD32;
+        border-radius: 4px;
+        padding: 0.75rem 2rem;
+        font-weight: 600;
+        font-size: 1rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+    .btn-details:hover {
+        background-color: #9ACD32;
+        color: #ffffff;
+        transform: translateY(-1px);
+        box-shadow: 0 3px 6px rgba(154, 205, 50, 0.3);
+        text-decoration: none;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .analyse-card {
+            padding: 1.5rem 1rem;
+        }
+        
+        .analyse-title {
+            font-size: 1.5rem;
+        }
+        
+        .service-icon {
+            width: 80px;
+            height: 80px;
+        }
+        
+        .service-icon i {
+            font-size: 2rem;
+        }
+        
+        .param-value-large,
+        .ph-value-large {
+            font-size: 1.5rem;
+        }
+        
+        .section-header {
+            padding: 0.75rem 1rem;
+        }
+        
+        .section-content {
+            padding: 1rem;
+        }
+    }
+</style>
+{% endblock %}

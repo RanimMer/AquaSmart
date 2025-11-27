@@ -1,0 +1,92 @@
+{% extends 'backoffice/base.html' %}
+{% load static %}
+
+{% block title %}Nouvelle Analyse de Sol - Backoffice{% endblock %}
+{% block page_title %}Nouvelle Analyse de Sol{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="card-body">
+    
+    <form method="post" novalidate>
+      {% csrf_token %}
+
+      {% if form.non_field_errors %}
+      <div class="alert alert-danger">
+        {% for error in form.non_field_errors %}
+          {{ error }}
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      <div class="form-container">
+
+        <!-- PIN Surface -->
+        <div class="form-group mb-3">
+          <label class="form-label"><strong>PIN Surface</strong></label>
+          <select name="pin_surface" class="form-control" required>
+            <option value="argileux">Argileux</option>
+            <option value="sableux">Sableux</option>
+            <option value="limoneux">Limoneux</option>
+            <option value="humifere">Humifère</option>
+          </select>
+        </div>
+
+        <!-- Surface -->
+        <div class="form-group mb-3">
+          <label class="form-label"><strong>Surface (hectares)</strong></label>
+          <input type="number" step="0.01" class="form-control" name="surface" required>
+        </div>
+
+        <!-- Région -->
+        <div class="form-group mb-3">
+          <label class="form-label"><strong>Région</strong></label>
+          <input type="text" class="form-control" name="total_region" required>
+        </div>
+
+        <!-- Localisation -->
+        <div class="form-group mb-3">
+          <label class="form-label"><strong>Localisation précise</strong></label>
+          <input type="text" class="form-control" name="localisation" required>
+        </div>
+
+        <!-- pH -->
+        <div class="form-group mb-3">
+          <label class="form-label"><strong>Niveau de pH</strong></label>
+          <input type="number" min="0" max="14" step="0.1" class="form-control" name="ph" required>
+        </div>
+
+        <!-- Azote -->
+        <div class="form-group mb-3">
+          <label class="form-label"><strong>Azote (mg/kg)</strong></label>
+          <input type="number" step="0.01" class="form-control" name="azote" required>
+        </div>
+
+        <!-- Phosphore -->
+        <div class="form-group mb-3">
+          <label class="form-label"><strong>Phosphore (mg/kg)</strong></label>
+          <input type="number" step="0.01" class="form-control" name="phosphore" required>
+        </div>
+
+        <!-- Potassium -->
+        <div class="form-group mb-3">
+          <label class="form-label"><strong>Potassium (mg/kg)</strong></label>
+          <input type="number" step="0.01" class="form-control" name="potassium" required>
+        </div>
+
+        <!-- Observations -->
+        <div class="form-group mb-3">
+          <label class="form-label"><strong>Observations / Composition</strong></label>
+          <textarea class="form-control" name="bundles_composition" rows="3"></textarea>
+        </div>
+
+      </div>
+
+      <button type="submit" class="btn btn-primary mt-3">Créer l'analyse</button>
+      <a href="{% url 'liste_sols_back' %}" class="btn btn-secondary mt-3">Annuler</a>
+
+    </form>
+
+  </div>
+</div>
+{% endblock %}

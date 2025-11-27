@@ -26,10 +26,11 @@ from calendar import monthrange
 from django.utils import timezone
 import calendar
 import json
-
+from cultures.services_notifications import envoyer_notifications_cultures_pour_aujourdhui
 
 
 def dashboard(request):
+    nb_fermes = envoyer_notifications_cultures_pour_aujourdhui()
     return render(request, 'backoffice/dashboard.html')
 
 
@@ -63,6 +64,8 @@ def _cultures_for_user(user):
       - TECH  : uniquement celles de sa ferme
       - ADMIN : toutes les cultures de ses fermes
     """
+   
+    
     if not user.is_authenticated:
         return Culture.objects.none()
 
@@ -82,6 +85,7 @@ def _cultures_for_user(user):
 
 
 def gestion_cultures(request):
+    nb_fermes = envoyer_notifications_cultures_pour_aujourdhui()
     """Liste des cultures + recherche + tri."""
     cultures_qs = _cultures_for_user(request.user)
 
@@ -252,6 +256,9 @@ def enregistrer_utilisation_produit(request, culture_id):
     })
 
 def cultures(request):
+    if request.user.is_authenticated:
+        envoyer_notifications_cultures_pour_aujourdhui() 
+        
     if request.user.is_authenticated:
         items = _cultures_for_user(request.user)
     else:

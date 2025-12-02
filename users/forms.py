@@ -2,6 +2,9 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from .models import UserProfile, Farm
+import random
+import string
+from django.contrib.auth.forms import AuthenticationForm
 
 class UserCreateForm(UserCreationForm):
     email = forms.EmailField(required=True)
@@ -109,7 +112,6 @@ class UserSignupForm(UserCreationForm):
         help_text="Choisissez 'Agriculteur Propriétaire' si vous êtes le propriétaire de l'exploitation"
     )
     email = forms.EmailField(required=True)
-
     # 👇 nouveaux champs
     first_name = forms.CharField(label="Prénom", required=True)
     last_name  = forms.CharField(label="Nom", required=True)
@@ -210,3 +212,39 @@ class FrontUserProfileForm(forms.ModelForm):
         else:
             self.fields['farm'].queryset = Farm.objects.none()
 
+class LoginWithCaptchaForm(AuthenticationForm):
+    captcha = forms.CharField(
+        label="Recopiez le code ci-dessous",
+        required=True,
+    )
+
+    def __init__(self, request=None, *args, **kwargs):
+        super().__init__(request, *args, **kwargs)
+        self.request = request
+
+        if request:
+            # Si GET → on génère un nouveau code
+            if request.method == "GET":
+                chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"  # pas de 0/O, 1/I
+                code = "".join(random.choice(chars) for _ in range(5))
+                request.session["captcha_text"] = code
+                request.session["captcha_answer"] = code.lower()
+
+            # Label du champ
+            self.fields["captcha"].label = "Recopiez le code de sécurité"
+
+        # Styles pour intégrer dans ton design
+        for name, field in self.fields.items():
+            if name in ["username", "password", "captcha"]:
+                existing = field.widget.attrs.get("class", "")
+                field.widget.attrs["class"] = (existing + " form-control").strip()
+
+    def clean_captcha(self):
+        data = self.cleaned_data.get("captcha", "").strip().lower()
+        expected = None
+        if self.request:
+            expected = self.request.session.get("captcha_answer")
+
+        if not expected or data != expected:
+            raise forms.ValidationError("Code de sécurité incorrect, réessayez.")
+        return data

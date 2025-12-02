@@ -15,7 +15,11 @@ from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404, redirect, render
 from django.db.models import Case, When, Value, IntegerField, Q
 from .forms import FrontUserUpdateForm, FrontUserProfileForm
-
+from django.http import JsonResponse
+from django.core.paginator import Paginator
+import csv
+from django.template.loader import render_to_string
+from .forms import LoginWithCaptchaForm
 
 
 
@@ -33,30 +37,30 @@ def is_admin_or_superuser(user):
 admin_required = user_passes_test(is_admin_or_superuser, login_url="login")
 
 
+from django.core.paginator import Paginator
+from django.db.models import Q, Case, When, Value, IntegerField
+
 @login_required
 @admin_required
 def users_list(request):
     me = request.user
 
-    # Les fermes de l’admin connecté
+    # Fermes de l’admin connecté
     my_farms = Farm.objects.filter(owner=me)
 
-    # Tous les comptes visibles pour cet admin :
-    # - lui-même
-    # - ses employés (rattachés à ses fermes)
+    search = request.GET.get("search", "").strip()
+
     qs = (
         User.objects.select_related("profile")
-        .filter(Q(pk=me.pk) | Q(profile__farm__in=my_farms))
+        .filter(Q(pk=me.pk) | Q(profile__farm__in=my_farms) , is_active=True)
         .exclude(is_superuser=True)
         .distinct()
-        # --- clé de tri : l'admin connecté en 1er, puis le reste
         .annotate(
             sort_owner=Case(
-                When(pk=me.pk, then=Value(0)),  # l'admin loggé en tout premier
+                When(pk=me.pk, then=Value(0)),
                 default=Value(1),
                 output_field=IntegerField(),
             ),
-            # (optionnel) met les autres admins après toi mais avant les TECH
             sort_role=Case(
                 When(profile__role="ADMIN", then=Value(0)),
                 default=Value(1),
@@ -66,7 +70,185 @@ def users_list(request):
         .order_by("sort_owner", "sort_role", "username")
     )
 
-    return render(request, "backoffice/users/users_list.html", {"users": qs})
+    # 🔍 filtre serveur sur TOUT le queryset
+    if search:
+        qs = qs.filter(
+            Q(username__icontains=search)
+            | Q(email__icontains=search)
+            | Q(first_name__icontains=search)
+            | Q(last_name__icontains=search)
+        )
+
+    # 📄 pagination APRES filtrage
+    paginator = Paginator(qs, 5)  # ex : 5 users / page
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, "backoffice/users/users_list.html", {
+        "users": page_obj,
+        "page_obj": page_obj,
+        "search": search,
+    })
+
+
+@login_required
+@admin_required
+def users_archived_list(request):
+    me = request.user
+    my_farms = Farm.objects.filter(owner=me)
+
+    search = request.GET.get("search", "").strip()
+
+    qs = (
+        User.objects.select_related("profile")
+        .filter(Q(profile__farm__in=my_farms))
+        .exclude(is_superuser=True)
+        .filter(is_active=False)  # 🔹 que les comptes archivés
+        .distinct()
+        .order_by("username")
+    )
+
+    if search:
+        qs = qs.filter(
+            Q(username__icontains=search) |
+            Q(email__icontains=search) |
+            Q(first_name__icontains=search) |
+            Q(last_name__icontains=search)
+        )
+
+    return render(request, "backoffice/users/users_archived_list.html", {
+        "users": qs,
+        "search": search,
+    })
+
+
+@login_required
+@admin_required
+def user_archive(request, pk):
+    me = request.user
+
+    # On récupère un user que cet admin a le droit de voir (même logique que users_list)
+    my_farms = Farm.objects.filter(owner=me)
+
+    user = get_object_or_404(
+        User.objects.select_related("profile")
+        .filter(
+            Q(pk=me.pk) | Q(profile__farm__in=my_farms)
+        )
+        .exclude(is_superuser=True)
+        .distinct(),
+        pk=pk,
+    )
+
+    # Option : empêcher d'archiver soi-même
+    if user == me:
+        messages.error(request, "Vous ne pouvez pas archiver votre propre compte.")
+        return redirect("users_list")
+
+    # On fait l’archivage
+    user.is_active = False
+    user.save()
+
+    #messages.success(request, f"Le compte « {user.username} » a été archivé (désactivé).")
+    return redirect("users_list")
+
+@login_required
+@admin_required
+def user_unarchive(request, pk):
+    me = request.user
+    my_farms = Farm.objects.filter(owner=me)
+
+    user = get_object_or_404(
+        User.objects.select_related("profile")
+        .filter(profile__farm__in=my_farms)
+        .exclude(is_superuser=True),
+        pk=pk,
+    )
+
+    if request.method == "POST":
+        user.is_active = True
+        user.save()
+        #messages.success(request, f"Le compte « {user.username} » a été désarchivé.")
+        return redirect("users_archived_list")
+
+    # si quelqu’un appelle la route en GET → on redirige gentiment
+    return redirect("users_archived_list")
+
+
+@login_required
+@admin_required
+def users_export_csv(request):
+    me = request.user
+
+    # Les fermes visibles par cet admin
+    my_farms = Farm.objects.filter(owner=me)
+
+    qs = (
+        User.objects.select_related("profile")
+        .filter(Q(pk=me.pk) | Q(profile__farm__in=my_farms))
+        .exclude(is_superuser=True)
+        .order_by("username")
+    )
+
+    # Réponse HTTP = un fichier CSV téléchargeable
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="utilisateurs.csv"'
+
+    writer = csv.writer(response)
+    writer.writerow([
+        "Username", "Email", "Prénom", "Nom",
+        "Rôle", "Ferme", "Actif"
+    ])
+
+    for u in qs:
+        writer.writerow([
+            u.username,
+            u.email,
+            u.first_name,
+            u.last_name,
+            "ADMIN" if u.profile.role == "ADMIN" else "Employé",
+            u.profile.farm.name if u.profile.farm else "",
+            "Oui" if u.is_active else "Non",
+        ])
+
+    return response
+
+
+@login_required
+@admin_required
+def users_live_search(request):
+    search = request.GET.get("search", "").strip()
+    me = request.user
+    my_farms = Farm.objects.filter(owner=me)
+
+    qs = (
+        User.objects.select_related("profile")
+        .filter(Q(pk=me.pk) | Q(profile__farm__in=my_farms))
+        .exclude(is_superuser=True)
+        .distinct()
+        .order_by("username")
+    )
+
+    if search:
+        qs = qs.filter(
+            Q(username__icontains=search) |
+            Q(email__icontains=search) |
+            Q(first_name__icontains=search) |
+            Q(last_name__icontains=search)
+        )
+
+    data = []
+    for u in qs:
+        data.append({
+            "username": u.username,
+            "email": u.email,
+            "role": u.profile.role,
+            "farm": str(u.profile.farm),
+            "edit_url": f"/backoffice/utilisateurs/{u.id}/edit/",
+            "delete_url": f"/backoffice/utilisateurs/{u.id}/delete/",
+        })
+
+    return JsonResponse({"users": data})
 
 
 @login_required
@@ -190,10 +372,13 @@ def profile_view(request):
             form_user.save()
             form_profile.save()
             messages.success(request, "Profil mis à jour.")
-            return redirect("profile_view")
+            return redirect("bo_dashboard")
     else:
         form_user = UserUpdateForm(instance=user)
         form_profile = UserProfileForm(instance=profile, user=request.user)
+        print("USER ERRORS:", form_user.errors)
+        print("PROFILE ERRORS:", form_profile.errors)
+        messages.error(request, "Veuillez corriger les erreurs dans le formulaire.")
 
     return render(request, "backoffice/users/my_profile.html", {
         "form_user": form_user,
@@ -201,10 +386,6 @@ def profile_view(request):
         "title": "Mon profil",
         "submit_label": "Enregistrer",
     })
-
-#@login_required
-#def profile_view(request):
-    #return profile_view(request)
 
 @login_required
 def profile_edit(request):
@@ -337,17 +518,23 @@ from django.contrib.auth.views import LoginView
 
 class CustomLoginView(LoginView):
     template_name = 'registration/login.html'
-    
+    authentication_form = LoginWithCaptchaForm
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx["captcha_text"] = self.request.session.get("captcha_text", "")
+        return ctx
+
     def get_success_url(self):
         storage = messages.get_messages(self.request)
         for _ in storage:
             pass
-        # Redirection selon le rôle après connexion
+
         user = self.request.user
-        if user.is_superuser or hasattr(user, 'profile') and user.profile.role == "ADMIN":
-            return reverse('bo_dashboard')  # Backoffice pour admin
+        if user.is_superuser or hasattr(user, "profile") and user.profile.role == "ADMIN":
+            return reverse("bo_dashboard")
         else:
-            return reverse('index')  # Frontoffice pour employés
+            return reverse("index")
         
 
 def index(request):

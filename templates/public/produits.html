@@ -646,70 +646,130 @@
   </div>
   <!-- Page Header End -->
 
-  <!-- 🌾 BARRE DE RECHERCHE + BOUTON RÉINITIALISER 🌾 -->
-<div style="text-align: center; margin-top: 60px; margin-bottom: 20px;">
-  <h2 style="
-      font-size: 26px;
-      color: #9ACD32;
-      font-weight: bold;
-  ">
-    Rechercher nos produits par type :
-  </h2>
+<!-- 🌾 BARRE DE RECHERCHE CENTRÉE 🌾 -->
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-12">
+      <h2 class="search-title">Rechercher nos produits par type :</h2>
+    </div>
+  </div>
 </div>
 
-<div style="width: 100%; margin: 40px 0;">
-  <form method="get" action="{% url 'produits' %}" 
-        style="display: flex; align-items: center; justify-content: center; width: 100%; gap: 10px; padding: 0 20px;">
-        
-    <input type="text" name="type_produit" 
-           placeholder="Rechercher les produits que vous voulez..." 
-           value="{{ query_type }}" 
-           style="
-              flex: 1;            /* prend tout l'espace disponible */
-              min-width: 0;       /* nécessaire pour flexbox */
-              padding: 15px 20px;
-              border: 2px solid #2d8c5a;
-              border-radius: 50px;
-              outline: none;
-              font-size: 16px;
-              background-color: #fff;
-              color: #000;
-           ">
+<div class="search-section">
+  <div class="search-container">
+    <form method="get" action="{% url 'produits' %}" class="search-form">
+      <input type="text" name="type_produit" 
+             placeholder="Rechercher les produits que vous voulez..." 
+             value="{{ query_type }}" 
+             class="search-input">
 
-    <button type="submit" 
-            style="
-              background-color: #2d8c5a;
-              color: white;
-              border: none;
-              padding: 15px 25px;
-              border-radius: 50px;
-              font-weight: 600;
-              cursor: pointer;
-              transition: 0.3s;
-           ">
-      🔍
-    </button>
+      <button type="submit" class="search-btn" style="color:white;">
+    🔍
+</button>
 
-    <a href="{% url 'produits' %}" 
-       style="
-          background-color: #9ACD32;
-          color: white;
-          border: none;
-          padding: 15px 25px;
-          border-radius: 50px;
-          font-weight: 600;
-          cursor: pointer;
-          text-decoration: none;
-          transition: 0.3s;
-       "
-       onmouseover="this.style.backgroundColor='#17a43d';"
-       onmouseout="this.style.backgroundColor='#1db942';">
-       <span style="color:red;">✖</span>
-    </a>
 
-  </form>
+      <a href="{% url 'produits' %}" class="reset-btn">
+        ✖
+      </a>
+    </form>
+  </div>
 </div>
 
+
+<style>
+.search-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    margin: 40px 0;
+}
+
+.search-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 600px;
+    gap: 10px;
+}
+
+.search-form {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    gap: 10px;
+}
+
+.search-input {
+    flex: 1;
+    min-width: 0;
+    padding: 15px 20px;
+    border: 2px solid #2d8c5a;
+    border-radius: 50px;
+    outline: none;
+    font-size: 16px;
+    background-color: #fff;
+    color: #000;
+    transition: all 0.3s ease;
+}
+
+.search-input:focus {
+    border-color: #9ACD32;
+    box-shadow: 0 0 10px rgba(154, 205, 50, 0.3);
+}
+
+.search-btn {
+    background-color: #9ACD32;
+    color: white;
+    border: none;
+    padding: 15px 25px;
+    border-radius: 50px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.search-btn:hover {
+    background-color: #7ec01f;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(154, 205, 50, 0.4);
+}
+
+.reset-btn {
+    background-color: #9ACD32;
+    color: white;
+    border: none;
+    padding: 15px 25px;
+    border-radius: 50px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.reset-btn:hover {
+    background-color: #7ec01f;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(154, 205, 50, 0.4);
+    color: white;
+    text-decoration: none;
+}
+
+.search-title {
+    font-size: 26px;
+    color: #9ACD32;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 20px;
+}
+</style>
 
 
   <!-- SECTION PRODUITS -->

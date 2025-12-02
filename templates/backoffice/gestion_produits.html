@@ -19,13 +19,14 @@
 </audio>
 
 <!-- Zone de notifications en haut de l'écran -->
+<!-- Zone de notifications en haut de l'écran -->
 {% if messages %}
 <div id="notification-area" class="notification-area">
     {% for message in messages %}
-    <div class="notification-item {% if 'insuffisante' in message|lower %}notification-warning{% else %}notification-info{% endif %}">
+    <div class="notification-item {% if 'insuffisant' in message.tags or 'warning' in message.tags %}notification-warning{% else %}notification-info{% endif %}">
         <div class="notification-content">
             <span class="notification-icon">
-                {% if 'insuffisante' in message|lower %}⚠️{% else %}ℹ️{% endif %}
+                {% if 'insuffisant' in message.tags or 'warning' in message.tags %}⚠️{% else %}ℹ️{% endif %}
             </span>
             <span class="notification-text">{{ message }}</span>
         </div>
@@ -35,45 +36,45 @@
 </div>
 {% endif %}
 
-<!-- Conteneur boutons avec fond blanc et boutons centrés -->
-<div style="display:flex; justify-content:center; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:15px; background:white; padding:15px; border-radius:10px; box-shadow:0 2px 8px rgba(0,0,0,0.05);">
-    <a href="{% url 'ajouter_produit' %}" class="btn btn-vert">+ Ajouter un produit</a>
-    <a href="{% url 'statistiques_produits' %}" class="btn btn-vert">📈 Voir les statistiques</a>
-    <a href="{% url 'export_pdf_produits' %}" class="btn btn-vert">📄 Exporter en PDF</a>
-    <a href="?sort=asc" class="btn btn-vert">⬆ Trier par quantité</a>
-    <a href="?sort=desc" class="btn btn-vert">⬇ Trier par quantité</a> 
+<!-- Conteneur principal sans fond -->
+<div style="padding:15px; border-radius:10px; display:flex; flex-direction:column; gap:15px;">
 
-    <!-- Bouton Notifications -->
-    <div style="position:relative;">
-        <button class="btn btn-vert" id="notif-btn">
-            🔔 Notifications 
-            <span id="notif-count">{% if messages %}{{ messages|length }}{% else %}(0){% endif %}</span>
-        </button>
-        <div id="notif-dropdown" style="display:none; position:absolute; top:40px; right:0; background:white; min-width:250px; max-height:300px; overflow-y:auto; border-radius:8px; box-shadow:0 4px 15px rgba(0,0,0,0.2); z-index:1000;">
-            {% if messages %}
-                {% for message in messages %}
-                    <div style="padding:10px; border-bottom:1px solid #ddd;">{{ message }}</div>
-                {% endfor %}
-            {% else %}
-                <div style="padding:10px;">Aucune notification</div>
-            {% endif %}
-        </div>
-    </div>
+    <!-- Ligne supérieure : Ajouter seulement -->
+<div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+    <!-- Bouton Ajouter à gauche -->
+    <a href="{% url 'ajouter_produit' %}" class="btn btn-vert" style="margin-right:20px;">+ Ajouter un produit</a>
 </div>
 
-<!-- Barre de recherche-->
-<form method="get" action="{% url 'gestion_produits' %}" style="display:flex;gap:10px;margin-bottom:15px;width:100%;">
+<!-- Ligne barre de recherche + boutons Rechercher/Retour + Statistiques/PDF/Notifications -->
+<form method="get" action="{% url 'gestion_produits' %}" style="display:flex; gap:10px; align-items:center; flex-wrap:wrap; width:100%;">
+    <!-- Barre de recherche -->
     <input type="text" name="query" placeholder="Rechercher un produit..." 
            value="{{ query|default:'' }}" 
-           style="flex:1;padding:10px;border:1px solid #9ACD32;border-radius:5px;">
-    <button type="submit" style="background:#9ACD32;color:white;border:none;padding:10px 16px;border-radius:5px;cursor:pointer;">
-        🔍
-    </button>
-    <a href="{% url 'gestion_produits' %}" 
-   style="background:#9ACD32; color:white; padding:10px 16px; border-radius:5px; text-decoration:none; font-weight:bold;">
-    <span style="color:red;">X</span>
-</a>
+           style="padding:10px; border:1px solid #9ACD32; border-radius:5px; width:420px;">
+
+    <!-- Boutons Rechercher et Retour -->
+    <button type="submit" class="btn btn-vert">Rechercher</button>
+    <a href="{% url 'gestion_produits' %}" class="btn btn-vert">Retour</a>
+
+    <!-- Boutons Statistiques, PDF et Notifications alignés à droite -->
+    <div style="display:flex; gap:10px; margin-left:auto;">
+        <button id="open-stats" class="btn btn-vert">📈 Statistiques</button>
+        <a href="{% url 'export_pdf_produits' %}" class="btn btn-vert">📄 Exporter PDF</a>
+        
+        <!-- Bouton Notifications -->
+        <!-- Bouton Notifications (sans dropdown) -->
+<button class="btn btn-vert" id="notif-btn">
+    🔔  
+    <span id="notif-count">{% if messages %}{{ messages|length }}{% else %}(0){% endif %}</span>
+</button>
+    </div>
 </form>
+
+</div>
+
+
+
+
 
 <table class="tableau-elegant">
   <thead>
@@ -82,7 +83,12 @@
       <th style="width: 140px;">Nom</th>
       <th style="width: 120px;">Type</th>
       <th style="width: 200px;">Description</th>
-      <th style="width: 100px;">Quantité</th>
+      <th style="width: 100px; text-align:center;">
+    Quantité
+    <a href="?sort=asc" style="text-decoration:none; color:#9ACD32;">⬆</a>
+    <a href="?sort=desc" style="text-decoration:none; color:#9ACD32;">⬇</a>
+</th>
+
       <th style="width: 120px;">Date ajout</th>
       <th style="width: 120px;">Actions</th>
     </tr>
@@ -150,16 +156,135 @@
     <p class="fw-bold" id="modal-produit-nom"></p>
     <div class="d-flex justify-content-center gap-3 mt-3">
       <!-- Bouton Annuler -->
-      <button type="button" id="btn-annuler" class="btn btn-green-outline">❌ Annuler</button>
+      <button type="button" id="btn-annuler" class="btn btn-green-outline">Annuler</button>
 
       <!-- Bouton Valider -->
       <form id="modal-delete-form" method="post" style="display:inline;">
         {% csrf_token %}
-        <button type="submit" class="btn btn-green-outline">✅ Valider</button>
+        <button type="submit" class="btn btn-green-outline">Valider</button>
       </form>
     </div>
   </div>
 </div>
+
+<!-- Modal Statistiques -->
+<div id="modal-stats" class="modal-overlay" style="display:none;">
+    <div class="modal-content modal-stats-small modal-green-border">
+        <div class="modal-header">
+            <h3>Statistiques des Produits</h3>
+            
+        </div>
+        <div class="modal-body">
+            <img id="stats-graph" src="data:image/png;base64,{{ graph }}" 
+                 alt="Statistiques des produits" class="stats-image">
+        </div>
+        <div class="modal-footer">
+            <button id="close-stats" class="btn btn-green-outline">Fermer</button>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Modal Statistiques Plus Petit avec Contour Vert */
+.modal-stats-small {
+    max-width: 600px !important;
+    width: 90% !important;
+    padding: 0 !important;
+    border-radius: 15px;
+    overflow: hidden;
+    border: 3px solid #9ACD32 !important; /* Contour vert */
+    box-shadow: 0 8px 25px rgba(154, 205, 50, 0.3) !important;
+}
+
+.modal-stats-small .modal-header {
+    background: rgba(154, 205, 50, 0.15);
+    padding: 15px 20px;
+    border-bottom: 2px solid #9ACD32;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-stats-small .modal-header h3 {
+    margin: 0;
+    color: #2d5016;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.modal-stats-small .modal-body {
+    padding: 25px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: white;
+    min-height: 300px;
+}
+
+.modal-stats-small .stats-image {
+    width: 100%;
+    max-width: 500px;
+    height: auto;
+    border-radius: 8px;
+    border: 2px solid rgba(154, 205, 50, 0.3);
+}
+
+.modal-stats-small .modal-footer {
+    padding: 15px 20px;
+    background: #f8f9fa;
+    border-top: 1px solid #e9ecef;
+    text-align: center;
+}
+
+.btn-close-modal {
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: #9ACD32;
+    cursor: pointer;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    font-weight: bold;
+}
+
+.btn-close-modal:hover {
+    background: rgba(154, 205, 50, 0.2);
+    transform: scale(1.1);
+}
+
+/* Style pour le contour vert du modal */
+.modal-green-border {
+    border: 3px solid #9ACD32 !important;
+    box-shadow: 0 8px 25px rgba(154, 205, 50, 0.3) !important;
+}
+
+/* Adaptation responsive */
+@media (max-width: 768px) {
+    .modal-stats-small {
+        max-width: 95% !important;
+        width: 95% !important;
+        margin: 10px;
+    }
+    
+    .modal-stats-small .modal-header h3 {
+        font-size: 16px;
+    }
+    
+    .modal-stats-small .modal-body {
+        padding: 15px;
+        min-height: 250px;
+    }
+    
+    .modal-stats-small .stats-image {
+        max-width: 100%;
+    }
+}
+</style>
 
 <style>
 /* Zone de notifications */
@@ -541,15 +666,15 @@
 }
 
 .modal-overlay {
-  display: none;
-  position: fixed;
-  top:0; left:0;
-  width:100%; height:100%;
-  background-color: rgba(0,0,0,0.5);
-  justify-content:center;
-  align-items:center;
-  z-index: 9999;
+    display: none; /* caché par défaut */
+    position: fixed;
+    top:0; left:0; right:0; bottom:0;
+    background: rgba(0,0,0,0.6);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
 }
+
 .modal-content {
   background: white;
   padding: 30px;
@@ -559,17 +684,7 @@
   margin: auto;
 }
 
-/* Overlay modal */
-.modal-overlay {
-  display: none;
-  position: fixed;
-  top:0; left:0;
-  width:100%; height:100%;
-  background-color: rgba(0,0,0,0.5);
-  justify-content:center;
-  align-items:center;
-  z-index: 9999;
-}
+
 
 /* Contenu modal avec bordure verte */
 .modal-content.modal-green-border {
@@ -679,54 +794,69 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-// Fonction pour ajouter une notification dynamiquement (si nécessaire plus tard)
-function addNotification(message, type = 'info') {
-    const notificationArea = document.getElementById('notification-area');
-    const notificationSound = document.getElementById('notification-sound');
-    
-    // Créer la notification
-    const notification = document.createElement('div');
-    notification.className = `notification-item notification-${type}`;
-    notification.innerHTML = `
-        <div class="notification-content">
-            <span class="notification-icon">${type === 'warning' ? '⚠️' : 'ℹ️'}</span>
-            <span class="notification-text">${message}</span>
-        </div>
-        <button class="notification-close" onclick="this.parentElement.style.display='none'">×</button>
-    `;
-    
-    // Ajouter à la zone de notifications
-    if (!notificationArea) {
-        // Créer la zone si elle n'existe pas
-        const newArea = document.createElement('div');
-        newArea.id = 'notification-area';
-        newArea.className = 'notification-area';
-        newArea.appendChild(notification);
-        document.body.insertBefore(newArea, document.body.firstChild);
-    } else {
-        notificationArea.appendChild(notification);
-    }
-    
-    // Jouer le son
-    if (notificationSound) {
-        notificationSound.currentTime = 0;
-        notificationSound.play().catch(e => {
-            console.log("Lecture automatique du son bloquée:", e);
-        });
-    }
-    
-    // Auto-dismiss
-    setTimeout(() => {
-        if (notification.parentElement) {
-            notification.style.opacity = '0';
-            notification.style.transform = 'translateX(100%)';
-            setTimeout(() => {
-                if (notification.parentElement) {
-                    notification.parentElement.removeChild(notification);
-                }
-            }, 300);
+document.addEventListener('DOMContentLoaded', () => {
+    const notifBtn = document.getElementById('notif-btn');
+    const notifDropdown = document.getElementById('notif-dropdown');
+
+    // Toggle dropdown notifications
+    notifBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        notifDropdown.classList.toggle('show'); // ajoute/enlève la classe 'show'
+    });
+
+    // Fermer le dropdown si clic ailleurs
+    document.addEventListener('click', (e) => {
+        if (!notifBtn.contains(e.target) && !notifDropdown.contains(e.target)) {
+            notifDropdown.classList.remove('show');
         }
-    }, 5000);
-}
+    });
+});
+
+
+document.addEventListener('DOMContentLoaded', () => {
+    const openStatsBtn = document.getElementById('open-stats');
+    const statsModal = document.getElementById('modal-stats');
+    const closeStatsBtn = document.getElementById('close-stats');
+    const closeStatsBottom = document.getElementById('close-stats-bottom');
+    const btnCloseModal = document.querySelector('.btn-close-modal');
+
+    // Ouvrir le modal
+    openStatsBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        statsModal.style.display = 'flex';
+        document.body.style.overflow = 'hidden'; // Empêche le scroll
+    });
+
+    // Fonction pour fermer le modal
+    function closeStatsModal() {
+        statsModal.style.display = 'none';
+        document.body.style.overflow = ''; // Réactive le scroll
+    }
+
+    // Fermer avec les différents boutons
+    closeStatsBtn.addEventListener('click', closeStatsModal);
+    closeStatsBottom.addEventListener('click', closeStatsModal);
+    btnCloseModal.addEventListener('click', closeStatsModal);
+
+    // Fermer en cliquant sur le fond
+    statsModal.addEventListener('click', (e) => {
+        if (e.target === statsModal) {
+            closeStatsModal();
+        }
+    });
+
+    // Fermer avec la touche Échap
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && statsModal.style.display === 'flex') {
+            closeStatsModal();
+        }
+    });
+});
+
+
+
+
+
 </script>
 {% endblock %}

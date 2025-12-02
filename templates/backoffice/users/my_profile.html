@@ -37,21 +37,41 @@
                         <div class="col-md-6">
                             <label class="form-label">Nom d'utilisateur</label>
                             {{ form_user.username }}
+                            {% if form_user.username.errors %}
+        <div class="text-danger small">
+            {{ form_user.username.errors.0 }}
+        </div>
+    {% endif %}
                         </div>
 
                         <div class="col-md-6">
                             <label class="form-label">Email</label>
                             {{ form_user.email }}
+                            {% if form_user.email.errors %}
+        <div class="text-danger small">
+            {{ form_user.email.errors.0 }}
+        </div>
+    {% endif %}
                         </div>
 
                         <div class="col-md-6">
                             <label class="form-label">Prénom</label>
                             {{ form_user.first_name }}
+                            {% if form_user.first_name.errors %}
+        <div class="text-danger small">
+            {{ form_user.first_name.errors.0 }}
+        </div>
+    {% endif %}
                         </div>
 
                         <div class="col-md-6">
                             <label class="form-label">Nom</label>
                             {{ form_user.last_name }}
+                            {% if form_user.last_name.errors %}
+        <div class="text-danger small">
+            {{ form_user.last_name.errors.0 }}
+        </div>
+    {% endif %}
                         </div>
 
                         <div class="col-12 mt-2">
@@ -70,11 +90,21 @@
                         <div class="col-md-6">
                             <label class="form-label">Téléphone</label>
                             {{ form_profile.phone }}
+                            {% if form_profile.phone.errors %}
+        <div class="text-danger small">
+            {{ form_profile.phone.errors.0 }}
+        </div>
+    {% endif %}
                         </div>
 
                         <div class="col-md-6">
                             <label class="form-label">Ferme</label>
                             {{ form_profile.farm }}
+                            {% if form_profile.farm.errors %}
+        <div class="text-danger small">
+            {{ form_profile.farm.errors.0 }}
+        </div>
+    {% endif %}
                         </div>
 
                         <div class="col-md-6">
@@ -96,7 +126,9 @@
                     <!-- Boutons -->
                     <div class="form-actions">
                         <a href="{% url 'users_list' %}" class="btn btn-secondary">Retour</a>
-                        <button type="submit" class="btn btn-success">Enregistrer</button>
+                        <button type="submit" class="btn btn-success">
+                            Enregistrer
+                        </button>
                     </div>
 
                 </form>

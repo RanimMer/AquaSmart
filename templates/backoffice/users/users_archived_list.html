@@ -1,0 +1,528 @@
+{% extends "backoffice/base.html" %}
+{% load static %}
+
+{% block title %}Utilisateurs archivés - Backoffice{% endblock %}
+
+{% block page_title %}
+<div style="text-align:left; margin-bottom:14px;">
+    <span style="font-size:32px; font-weight:400; color:#9ACD32;">
+        Utilisateurs archivés
+    </span>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="card-body">
+
+    {% if messages %}
+      {% for message in messages %}
+      <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+      {% endfor %}
+    {% endif %}
+
+    <form class="mb-3 d-flex align-items-center" style="gap: 10px; width: 100%;">
+        <input type="text"
+         id="search-archived-input"
+         name="search"
+         value="{{ search }}"
+         class="form-control"
+         placeholder="Rechercher utilisateur archivé...">
+
+  <!-- ne pas soumettre le form -->
+  <button type="button" class="btn-add-plantation ms-2" id="btn-search-archived">
+    Rechercher
+  </button>
+
+  <!-- reset côté JS, donc pas de window.location ici -->
+  <button type="button" class="btn-add-plantation ms-2" id="btn-reset-archived">
+    Réinitialiser
+  </button>
+
+  <!-- simple redirection vers la liste active -->
+  <button type="button"
+          class="btn-return" "btn-link-reset"
+          onclick="window.location.href='{% url 'users_list' %}'">
+    Retour aux actifs
+  </button>
+</form>
+
+
+    <table class="tableau-elegant">
+      <thead>
+        <tr>
+          <th>Avatar</th>
+          <th>Username</th>
+          <th>Email</th>
+          <th>Prénom</th>
+          <th>Nom</th>
+          <th>Rôle</th>
+          <th>Ferme</th>
+          <th>Actif</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="users-table-body">
+        {% for u in users %}
+        <tr class="user-row">
+          <td>
+            {% if u.profile.avatar %}
+              <img src="{{ u.profile.avatar.url }}" alt="avatar" class="user-avatar">
+            {% else %}
+              <img src="{% static 'img/undraw_profile.svg' %}" alt="avatar" class="user-avatar">
+            {% endif %}
+          </td>
+          <td><span class="username-data">{{ u.username }}</span></td>
+          <td><span class="email-data">{{ u.email }}</span></td>
+          <td><span class="name-data">{{ u.first_name|default:"-" }}</span></td>
+          <td><span class="name-data">{{ u.last_name|default:"-" }}</span></td>
+          <td>
+            {% if u.profile.role == 'ADMIN' %}
+              <span class="role-badge role-admin">👑 Propriétaire</span>
+            {% else %}
+              <span class="role-badge role-employee">Employé agricole</span>
+            {% endif %}
+          </td>
+          <td><span class="farm-data">{{ u.profile.farm|default:"-" }}</span></td>
+          <td>
+            <span class="status-badge status-inactive">Non</span>
+          </td>
+          <td class="actions-cell">
+            <form method="post" action="{% url 'user_unarchive' u.id %}" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-archive" data-title="Désarchiver">
+                    🔁
+                </button>
+            </form>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="9" class="no-data">
+            <div class="empty-state">
+              <h6 class="text-muted">Aucun utilisateur archivé</h6>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+  </div>
+</div>
+<style>
+  .btn-archive {
+      background-color: #b3d1ecff;
+      color: #ffffff;
+      border-radius: 8px;
+      padding: 8px 12px;
+      border: none;
+      cursor: pointer;
+  }
+  .btn-archive:hover {
+      background-color: #5495a0ff;
+      transform: scale(1.1);
+  }
+/* Même style que la liste principale */
+
+  .pagination-container {
+    margin-top: 20px;
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .pagination-custom {
+      list-style: none;
+      display: flex;
+      gap: 6px;
+      padding: 0;
+      margin: 0;
+  }
+
+  .pagination-custom li a,
+  .pagination-custom li span {
+      display: inline-block;
+      padding: 6px 12px;
+      border-radius: 8px;
+      border: 1px solid rgba(154, 205, 50, 0.4);
+      font-size: 13px;
+      color: #4b4b4b;
+      background-color: #ffffff;
+      text-decoration: none;
+      transition: all 0.2s ease;
+  }
+
+  .pagination-custom li a:hover {
+      background-color: rgba(154, 205, 50, 0.12);
+      color: #1f5f1f;
+  }
+
+  .pagination-custom li.active span {
+      background-color: #9ACD32;
+      color: #ffffff;
+      border-color: #9ACD32;
+      font-weight: 600;
+  }
+
+  .pagination-custom li.disabled span {
+      opacity: 0.5;
+      cursor: default;
+  }
+
+  .btn-add-plantation {
+      background-color: rgba(154, 205, 50, 0.1);
+      color: #9ACD32;
+      padding: 12px 24px;
+      border-radius: 10px;
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      border: 2px solid rgba(154, 205, 50, 0.3);
+      display: inline-block;
+      font-size: 15px;
+      width: 140px;
+      text-align: center;
+      white-space: nowrap;
+  }
+
+  .btn-add-plantation:hover {
+      background-color: rgba(154, 205, 50, 0.2);
+      border-color: rgba(154, 205, 50, 0.5);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(154, 205, 50, 0.2);
+  }
+
+  .btn-return {
+      background-color: rgba(154, 205, 50, 0.1);
+      color: #9ACD32;
+      padding: 12px 24px;
+      border-radius: 10px;
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      border: 2px solid rgba(154, 205, 50, 0.3);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      width: 160px;
+      text-align: center;
+      white-space: nowrap;
+  }
+
+  .btn-return:hover {
+      background-color: rgba(154, 205, 50, 0.2);
+      border-color: rgba(154, 205, 50, 0.5);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(154, 205, 50, 0.2);
+  }
+
+  /* Tableau élégant */
+  .tableau-elegant {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      margin-top: 10px;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      background: white;
+      table-layout: fixed;
+  }
+
+  .tableau-elegant th {
+      background-color: rgba(154, 205, 50, 0.08);
+      color: #2d5016;
+      padding: 14px 8px;
+      text-align: left;
+      font-weight: 600;
+      font-size: 13px;
+      border-bottom: 1px solid rgba(154, 205, 50, 0.2);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+  }
+
+  .tableau-elegant td {
+      padding: 12px 8px;
+      text-align: left;
+      border-bottom: 1px solid #f0f0f0;
+      font-size: 13px;
+      color: #555;
+      vertical-align: middle;
+  }
+
+  .tableau-elegant tbody tr {
+      background-color: white;
+      transition: all 0.2s ease;
+  }
+
+  .tableau-elegant tbody tr:hover {
+      background-color: rgba(154, 205, 50, 0.03);
+      transform: translateY(-1px);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  }
+
+  .tableau-elegant tbody tr:last-child td {
+      border-bottom: none;
+  }
+
+  .admin-row {
+      background-color: rgba(255, 193, 7, 0.05) !important;
+      border-left: 3px solid #ffc107;
+  }
+
+  .admin-row:hover {
+      background-color: rgba(255, 193, 7, 0.08) !important;
+  }
+
+  .user-avatar {
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #f0f0f0;
+  }
+
+  .username-data {
+      font-size: 14px;
+      color: #333;
+      font-weight: 600;
+      padding: 6px 10px;
+      background: rgba(52, 152, 219, 0.1);
+      border-radius: 6px;
+      display: inline-block;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100%;
+  }
+
+  .email-data {
+      font-size: 13px;
+      color: #555;
+      font-weight: 500;
+      padding: 6px 10px;
+      background: rgba(149, 165, 166, 0.1);
+      border-radius: 6px;
+      display: inline-block;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100%;
+  }
+
+  .name-data {
+      font-size: 13px;
+      color: #333;
+      font-weight: 500;
+      padding: 6px 10px;
+      background: rgba(39, 174, 96, 0.1);
+      border-radius: 6px;
+      display: inline-block;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100%;
+  }
+
+  .farm-data {
+      font-size: 13px;
+      color: #555;
+      font-weight: 500;
+      padding: 6px 10px;
+      background: rgba(155, 89, 182, 0.1);
+      border-radius: 6px;
+      display: inline-block;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100%;
+  }
+
+  .role-badge {
+      padding: 6px 10px;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 11px;
+      border: 1px solid;
+      display: inline-block;
+      text-align: center;
+      min-width: 100px;
+  }
+
+  .role-admin {
+      background: rgba(255, 193, 7, 0.1);
+      color: #856404;
+      border-color: rgba(255, 193, 7, 0.3);
+  }
+
+  .role-employee {
+      background: rgba(39, 174, 96, 0.1);
+      color: #155724;
+      border-color: rgba(39, 174, 96, 0.3);
+  }
+
+  .status-badge {
+      padding: 6px 10px;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 11px;
+      border: 1px solid;
+      display: inline-block;
+      text-align: center;
+      min-width: 50px;
+  }
+
+  .status-active {
+      background: rgba(39, 174, 96, 0.1);
+      color: #155724;
+      border-color: rgba(39, 174, 96, 0.3);
+  }
+
+  .status-inactive {
+      background: rgba(220, 53, 69, 0.1);
+      color: #721c24;
+      border-color: rgba(220, 53, 69, 0.3);
+  }
+
+  .no-data {
+      text-align: center;
+      color: #6c757d;
+      font-style: italic;
+      padding: 40px !important;
+  }
+
+  .empty-state {
+      padding: 20px;
+  }
+
+  .empty-state h6 {
+      margin-bottom: 15px;
+      font-size: 16px;
+  }
+
+  .btn {
+      padding: 8px 12px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      color: white;
+      display: inline-block;
+      font-size: 13px;
+      position: relative;
+  }
+
+  .actions-cell {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      justify-content: center;
+  }
+
+  .btn[data-title] {
+      position: relative;
+  }
+
+  .btn[data-title]:hover::after {
+      content: attr(data-title);
+      position: absolute;
+      top: -40px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: white;
+      color: #333;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      white-space: nowrap;
+      z-index: 1000;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      border: 1px solid #e0e0e0;
+      font-weight: 500;
+  }
+
+  .btn[data-title]:hover::before {
+      content: '';
+      position: absolute;
+      top: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-width: 5px;
+      border-style: solid;
+      border-color: white transparent transparent transparent;
+      z-index: 1000;
+  }
+</style>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const input = document.getElementById("search-archived-input");
+    const rows = Array.from(document.querySelectorAll("#users-table-body tr.user-row"));
+    const btnSearch = document.getElementById("btn-search-archived");
+    const btnReset  = document.getElementById("btn-reset-archived");
+
+    // Ligne "Aucun résultat" (cachée par défaut)
+    let noResultRow = document.createElement("tr");
+    noResultRow.id = "no-result-row-archived";
+    noResultRow.style.display = "none";
+    noResultRow.innerHTML = `
+        <td colspan="9" class="no-data">
+            <div class="empty-state">
+                <h6 class="text-muted">
+                    Aucun utilisateur archivé ne correspond à cette recherche
+                </h6>
+            </div>
+        </td>
+    `;
+    document.getElementById("users-table-body").appendChild(noResultRow);
+
+    function applyFilter() {
+        const q = input.value.trim().toLowerCase();
+        let visibleCount = 0;
+
+        rows.forEach(row => {
+            const text = row.textContent.toLowerCase();
+            if (!q || text.includes(q)) {
+                row.style.display = "";
+                visibleCount++;
+            } else {
+                row.style.display = "none";
+            }
+        });
+
+        // Affiche / cache la ligne "aucun résultat"
+        noResultRow.style.display = (visibleCount === 0) ? "" : "none";
+    }
+
+    // Filtrage dynamique pendant la saisie
+    input.addEventListener("keyup", applyFilter);
+
+    // Bouton "Rechercher" : applique le filtre sans recharger
+    if (btnSearch) {
+        btnSearch.addEventListener("click", function (e) {
+            e.preventDefault();
+            applyFilter();
+        });
+    }
+
+    // Bouton "Réinitialiser" : vide le champ + réaffiche tout
+    if (btnReset) {
+        btnReset.addEventListener("click", function (e) {
+            e.preventDefault();
+            input.value = "";
+            applyFilter();
+        });
+    }
+});
+</script>
+
+
+
+{% endblock %}

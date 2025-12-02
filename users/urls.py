@@ -7,6 +7,11 @@ urlpatterns = [
     #path('utilisateurs/create/', views.user_create, name='user_create'),
     path('utilisateurs/<int:pk>/edit/', views.user_edit, name='user_edit'),  # Changé user_id en pk
     path('utilisateurs/<int:user_id>/delete/', views.user_delete, name='user_delete'),
+    path('utilisateurs/live-search/', views.users_live_search, name='users_live_search'),
+    path('utilisateurs/export/csv/', views.users_export_csv, name='users_export_csv'),
+    path('utilisateurs/archives/', views.users_archived_list, name='users_archived_list'),
+    path('utilisateurs/<int:pk>/archive/', views.user_archive, name='user_archive'),
+    path('utilisateurs/<int:pk>/unarchive/', views.user_unarchive, name='user_unarchive'),
 
     # FERMES (backoffice)
     path('fermes/', views.farm_list, name='farm_list'),

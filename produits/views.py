@@ -73,7 +73,7 @@ def gestion_produits(request):
     sort = request.GET.get('sort', '')
     query = request.GET.get('query', '').strip()
 
-    produits = _produits_for_user(request.user)  # ✅ CORRIGÉ
+    produits = _produits_for_user(request.user)
 
     # Recherche
     if query:
@@ -94,7 +94,7 @@ def gestion_produits(request):
     elif sort == 'desc':
         produits.sort(key=lambda p: extract_number(p.quantite_stock), reverse=True)
 
-    # Seuils et notifications (logique d'origine)
+    # Seuils et notifications
     seuils = {
         'Graines': 50,
         'Médicaments': 50,
@@ -113,11 +113,31 @@ def gestion_produits(request):
                     f"Quantité insuffisante : {p.nom_produit} ({p.type_produit}) → {quantite} < {seuil}"
                 )
 
+    # === Génération du graphique pour le modal statistique ===
+    stats = Produit.objects.filter(id__in=[p.id for p in produits]) \
+                          .values('type_produit') \
+                          .annotate(total=Count('id'))
+    labels = [item['type_produit'] for item in stats]
+    values = [item['total'] for item in stats]
+
+    graph = None
+    if values:
+        fig, ax = plt.subplots()
+        ax.pie(values, labels=labels, autopct='%1.1f%%')
+        buffer = BytesIO()
+        plt.savefig(buffer, format='png')
+        buffer.seek(0)
+        image_png = buffer.getvalue()
+        buffer.close()
+        graph = base64.b64encode(image_png).decode('utf-8')
+
     return render(request, 'backoffice/gestion_produits.html', {
         'produits': produits,
         'query': query,
-        'sort': sort
+        'sort': sort,
+        'graph': graph  # 🟢 envoyer au template
     })
+
 
 
 def ajouter_produit(request):
@@ -165,24 +185,6 @@ def supprimer_produit(request, pk):
 
     return render(request, 'backoffice/supprimer_produit.html', {'produit': produit})
 
-
-def statistiques_produits(request):
-    produits = _produits_for_user(request.user)  # ✅ CORRIGÉ
-    stats = produits.values('type_produit').annotate(total=Count('id'))
-
-    labels = [item['type_produit'] for item in stats]
-    values = [item['total'] for item in stats]
-
-    # si matplotlib est commenté, n'appelle pas cette vue (le lien doit rester commenté).
-    fig, ax = plt.subplots()  # type: ignore[name-defined]
-    ax.pie(values, labels=labels, autopct='%1.1f%%')
-    buffer = BytesIO()
-    plt.savefig(buffer, format='png')  # type: ignore[name-defined]
-    buffer.seek(0)
-    image_png = buffer.getvalue()
-    buffer.close()
-    graph = base64.b64encode(image_png).decode('utf-8')
-    return render(request, 'backoffice/statistiques_produits.html', {'graph': graph})
 
 
 def export_pdf_produits(request):

@@ -1,17 +1,47 @@
 {% extends 'backoffice/base.html' %}
+{% load static %}
+
+{% block title %}{{ action }} un Produit - Backoffice{% endblock %}
+
+{% block page_title %}
+<div style="text-align:left; margin-bottom:14px;">
+    <span style="font-size:32px; font-weight:400; color:#9ACD32;">
+        {{ action }} un produit
+    </span>
+</div>
+{% endblock %}
 
 {% block content %}
-<h2 style="color: black;">{{ action }} Produit</h2>
-
 <div class="form-card">
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="btn-submit">Enregistrer</button>
+        
+        <!-- Affichage amélioré du formulaire -->
+        <div class="form-fields">
+            {% for field in form %}
+                <div class="form-field">
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.help_text %}
+                        <small class="help-text">{{ field.help_text }}</small>
+                    {% endif %}
+                    {% if field.errors %}
+                        <div class="error-list">
+                            {% for error in field.errors %}
+                                <span class="error">{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn-submit">Enregistrer</button>
+            <a href="{% url 'gestion_produits' %}" class="btn-cancel">Annuler</a>
+        </div>
     </form>
 </div>
-
-
 
 <style>
 /* Card autour du formulaire */
@@ -24,6 +54,25 @@
     margin: 20px auto;
 }
 
+/* Conteneur des champs */
+.form-fields {
+    margin-bottom: 25px;
+}
+
+/* Champs individuels */
+.form-field {
+    margin-bottom: 20px;
+}
+
+/* Labels du formulaire */
+.form-field label {
+    font-weight: 600;
+    margin-bottom: 8px;
+    display: block;
+    color: #333;
+    font-size: 14px;
+}
+
 /* Champs du formulaire */
 .form-card input[type="text"],
 .form-card input[type="number"],
@@ -31,34 +80,117 @@
 .form-card select,
 .form-card textarea {
     width: 100%;
-    padding: 10px 15px;
-    margin-bottom: 15px;
-    border: 1px solid #ccc;
+    padding: 12px 15px;
+    border: 1px solid #ddd;
     border-radius: 8px;
     font-size: 14px;
+    box-sizing: border-box;
+    transition: border-color 0.3s;
 }
 
-/* Bouton moderne */
+.form-card input:focus,
+.form-card select:focus,
+.form-card textarea:focus {
+    border-color: #9ACD32;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(154, 205, 50, 0.2);
+}
+
+/* Textarea spécifique */
+.form-card textarea {
+    min-height: 100px;
+    resize: vertical;
+    font-family: inherit;
+}
+
+/* Boutons */
+.form-actions {
+    display: flex;
+    gap: 15px;
+    justify-content: flex-start;
+}
+
 .btn-submit {
-    background-color: #9ACD32; /* vert */
+    background-color: #9ACD32;
     color: white;
     border: none;
-    padding: 10px 25px;
+    padding: 12px 30px;
     font-size: 16px;
     border-radius: 8px;
     cursor: pointer;
     transition: background 0.3s;
-}
-.btn-submit:hover {
-    background-color: #9ACD32;
+    font-weight: 500;
 }
 
-/* Labels du formulaire */
-.form-card label {
-    font-weight: 600;
-    margin-bottom: 5px;
+.btn-submit:hover {
+    background-color: #7cb305;
+    transform: translateY(-1px);
+}
+
+.btn-cancel {
+    background-color: #f8f9fa;
+    color: #6c757d;
+    border: 1px solid #ddd;
+    padding: 12px 25px;
+    font-size: 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.3s;
+    font-weight: 500;
+    display: inline-block;
+    text-align: center;
+}
+
+.btn-cancel:hover {
+    background-color: #e9ecef;
+    color: #495057;
+    transform: translateY(-1px);
+}
+
+/* Messages d'aide */
+.help-text {
+    color: #6c757d;
+    font-size: 12px;
+    margin-top: 5px;
     display: block;
-    color: #333;
+}
+
+/* Messages d'erreur */
+.error-list {
+    margin-top: 5px;
+}
+
+.error {
+    color: #dc3545;
+    font-size: 12px;
+    display: block;
+}
+
+/* Mode sombre */
+body.dark-mode .form-card {
+    background: #1e1e1e;
+    color: white;
+}
+
+body.dark-mode .form-field label {
+    color: #e9ecef;
+}
+
+body.dark-mode .form-card input[type="text"],
+body.dark-mode .form-card input[type="number"],
+body.dark-mode .form-card input[type="file"],
+body.dark-mode .form-card select,
+body.dark-mode .form-card textarea {
+    background: #2d2d2d;
+    border-color: #444;
+    color: white;
+}
+
+body.dark-mode .btn-cancel {
+    background-color: #2d2d2d;
+    color: #e9ecef;
+    border-color: #444;
 }
 </style>
 {% endblock %}

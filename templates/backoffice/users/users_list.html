@@ -1,0 +1,585 @@
+{% extends "backoffice/base.html" %}
+{% load static %}
+
+{% block title %}Gestion des Utilisateurs - Backoffice{% endblock %}
+
+{% block page_title %}
+<div style="text-align:left; margin-bottom:14px;">
+    <span style="font-size:32px; font-weight:400; color:#9ACD32;">
+        Gestion des utilisateurs
+    </span>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="card-body">
+    {% if messages %}
+      {% for message in messages %}
+      <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+      {% endfor %}
+    {% endif %}
+
+    <form method="get" class="mb-3 d-flex align-items-center" style="gap: 10px; width: 100%;">
+      <input type="text" id="search-input" name="search" value="{{ search }}" class="form-control"
+           placeholder="Rechercher utilisateur...">
+
+      <button type="submit" class="btn-add-plantation ms-2">Rechercher</button>
+
+      <button type="button" class="btn-add-plantation" onclick="window.location.href='{% url 'users_list' %}'">
+        Retour
+      </button>
+
+      <button type="button" class="btn-add-plantation" onclick="window.location.href='{% url 'users_export_csv' %}'">
+        Exporter CSV
+      </button>
+
+      <button type="button" class="btn-add-plantation" onclick="window.location.href='{% url 'users_archived_list' %}'">
+        Voir archivés
+      </button>
+
+
+    </form>
+
+
+    <table class="tableau-elegant">
+      <thead>
+        <tr>
+          <th style="width: 70px;">Avatar</th>
+          <th style="width: 120px;">Username</th>
+          <th style="width: 160px;">Email</th>
+          <th style="width: 100px;">Prénom</th>
+          <th style="width: 100px;">Nom</th>
+          <th style="width: 120px;">Rôle</th>
+          <th style="width: 120px;">Ferme</th>
+          <th style="width: 80px;">Actif</th>
+          <th style="width: 160px;">Actions</th>
+        </tr>
+      </thead>
+      <tbody id="users-table-body">
+        {% for u in users %}
+        <tr class="user-row {% if u.profile.role == 'ADMIN' %}admin-row{% endif %}">
+
+          <td>
+            {% if u.profile.avatar %}
+              <img src="{{ u.profile.avatar.url }}" alt="avatar" class="user-avatar">
+            {% else %}
+              <img src="{% static 'img/undraw_profile.svg' %}" alt="avatar" class="user-avatar">
+            {% endif %}
+          </td>
+          <td>
+            <span class="username-data">{{ u.username }}</span>
+          </td>
+          <td>
+            <span class="email-data">{{ u.email }}</span>
+          </td>
+          <td>
+            <span class="name-data">{{ u.first_name|default:"-" }}</span>
+          </td>
+          <td>
+            <span class="name-data">{{ u.last_name|default:"-" }}</span>
+          </td>
+          <td>
+            {% if u.profile.role == 'ADMIN' %}
+              <span class="role-badge role-admin">👑 Propriétaire</span>
+            {% else %}
+              <span class="role-badge role-employee">Employé agricole</span>
+            {% endif %}
+          </td>
+          <td>
+            <span class="farm-data">{{ u.profile.farm|default:"-" }}</span>
+          </td>
+          <td>
+            {% if u.is_active %}
+              <span class="status-badge status-active">Oui</span>
+            {% else %}
+              <span class="status-badge status-inactive">Non</span>
+            {% endif %}
+          </td>
+          <td class="actions-cell">
+            <a href="{% url 'user_edit' u.id %}" class="btn btn-edit" data-title="Éditer">✏️</a>
+
+            <!-- Bouton Archiver -->
+            {% if u.is_active %}
+            <form method="post" action="{% url 'user_archive' u.id %}" style="display:inline;">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-archive" data-title="Archiver">
+                  📦
+              </button>
+            </form>
+            {% endif %}
+            <!--<button 
+            class="btn btn-delete btn-modal" 
+            data-title="Supprimer" 
+            data-produit-id="{{ produit.pk }}" 
+            data-produit-nom="{{ produit.nom_produit }}">
+            🗑️
+        </button>-->
+            <a href="{% url 'user_delete' u.id %}" class="btn btn-delete" data-title="Supprimer">🗑️</a>
+          </td>
+
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="9" class="no-data">
+            <div class="empty-state">
+              <h6 class="text-muted">Aucun utilisateur enregistré</h6>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% if page_obj.has_other_pages %}
+    <nav class="pagination-container">
+      <ul class="pagination-custom">
+        {% if page_obj.has_previous %}
+          <li>
+            <a href="?page={{ page_obj.previous_page_number }}">« Précédent</a>
+          </li>
+        {% else %}
+          <li class="disabled"><span>« Précédent</span></li>
+        {% endif %}
+
+        {% for num in page_obj.paginator.page_range %}
+          {% if page_obj.number == num %}
+            <li class="active"><span>{{ num }}</span></li>
+          {% else %}
+            <li><a href="?page={{ num }}">{{ num }}</a></li>
+          {% endif %}
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+          <li>
+            <a href="?page={{ page_obj.next_page_number }}">Suivant »</a>
+          </li>
+        {% else %}
+          <li class="disabled"><span>Suivant »</span></li>
+        {% endif %}
+      </ul>
+    </nav>
+    {% endif %}
+  </div>
+</div>
+
+<style>
+  .btn-archive {
+    background-color: #9ac0e2ff;           /* gris neutre */
+    color: #ffffff;
+    border-radius: 8px;
+    padding: 8px 12px;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-archive:hover {
+    background-color: #427095ff;
+    transform: scale(1.1);
+}
+
+  .pagination-container {
+    margin-top: 20px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.pagination-custom {
+    list-style: none;
+    display: flex;
+    gap: 6px;
+    padding: 0;
+    margin: 0;
+}
+
+.pagination-custom li a,
+.pagination-custom li span {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 8px;
+    border: 1px solid rgba(154, 205, 50, 0.4);
+    font-size: 13px;
+    color: #4b4b4b;
+    background-color: #ffffff;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.pagination-custom li a:hover {
+    background-color: rgba(154, 205, 50, 0.12);
+    color: #1f5f1f;
+}
+
+.pagination-custom li.active span {
+    background-color: #9ACD32;
+    color: #ffffff;
+    border-color: #9ACD32;
+    font-weight: 600;
+}
+
+.pagination-custom li.disabled span {
+    opacity: 0.5;
+    cursor: default;
+}
+
+.btn-add-plantation {
+    background-color: rgba(154, 205, 50, 0.1);
+    color: #9ACD32;
+    padding: 12px 24px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    border: 2px solid rgba(154, 205, 50, 0.3);
+    display: inline-block;
+    font-size: 15px;
+    width: 140px;    /* même largeur que les autres */
+    text-align: center;
+    white-space: nowrap;
+}
+
+.btn-add-plantation:hover {
+    background-color: rgba(154, 205, 50, 0.2);
+    border-color: rgba(154, 205, 50, 0.5);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(154, 205, 50, 0.2);
+}
+
+
+/* Tableau élégant */
+.tableau-elegant {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin-top: 10px;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    background: white;
+    table-layout: fixed;
+}
+
+.tableau-elegant th {
+    background-color: rgba(154, 205, 50, 0.08);
+    color: #2d5016;
+    padding: 14px 8px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 13px;
+    border-bottom: 1px solid rgba(154, 205, 50, 0.2);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.tableau-elegant td {
+    padding: 12px 8px;
+    text-align: left;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 13px;
+    color: #555;
+    vertical-align: middle;
+}
+
+.tableau-elegant tbody tr {
+    background-color: white;
+    transition: all 0.2s ease;
+}
+
+.tableau-elegant tbody tr:hover {
+    background-color: rgba(154, 205, 50, 0.03);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.tableau-elegant tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* Ligne spéciale pour l'admin (propriétaire) */
+.admin-row {
+    background-color: rgba(255, 193, 7, 0.05) !important; /* Jaune très léger */
+    border-left: 3px solid #ffc107;
+}
+
+.admin-row:hover {
+    background-color: rgba(255, 193, 7, 0.08) !important;
+}
+
+/* Avatar utilisateur */
+.user-avatar {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #f0f0f0;
+}
+
+/* Données stylisées */
+.username-data {
+    font-size: 14px;
+    color: #333;
+    font-weight: 600;
+    padding: 6px 10px;
+    background: rgba(52, 152, 219, 0.1);
+    border-radius: 6px;
+    display: inline-block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+
+.email-data {
+    font-size: 13px;
+    color: #555;
+    font-weight: 500;
+    padding: 6px 10px;
+    background: rgba(149, 165, 166, 0.1);
+    border-radius: 6px;
+    display: inline-block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+
+.name-data {
+    font-size: 13px;
+    color: #333;
+    font-weight: 500;
+    padding: 6px 10px;
+    background: rgba(39, 174, 96, 0.1);
+    border-radius: 6px;
+    display: inline-block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+
+.farm-data {
+    font-size: 13px;
+    color: #555;
+    font-weight: 500;
+    padding: 6px 10px;
+    background: rgba(155, 89, 182, 0.1);
+    border-radius: 6px;
+    display: inline-block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+
+/* Badges de rôle */
+.role-badge {
+    padding: 6px 10px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 11px;
+    border: 1px solid;
+    display: inline-block;
+    text-align: center;
+    min-width: 100px;
+}
+
+.role-admin {
+    background: rgba(255, 193, 7, 0.1);
+    color: #856404;
+    border-color: rgba(255, 193, 7, 0.3);
+}
+
+.role-employee {
+    background: rgba(39, 174, 96, 0.1);
+    color: #155724;
+    border-color: rgba(39, 174, 96, 0.3);
+}
+
+/* Badges de statut */
+.status-badge {
+    padding: 6px 10px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 11px;
+    border: 1px solid;
+    display: inline-block;
+    text-align: center;
+    min-width: 50px;
+}
+
+.status-active {
+    background: rgba(39, 174, 96, 0.1);
+    color: #155724;
+    border-color: rgba(39, 174, 96, 0.3);
+}
+
+.status-inactive {
+    background: rgba(220, 53, 69, 0.1);
+    color: #721c24;
+    border-color: rgba(220, 53, 69, 0.3);
+}
+
+/* Message pas de données */
+.no-data {
+    text-align: center;
+    color: #6c757d;
+    font-style: italic;
+    padding: 40px !important;
+}
+
+.empty-state {
+    padding: 20px;
+}
+
+.empty-state h6 {
+    margin-bottom: 15px;
+    font-size: 16px;
+}
+
+/* Boutons d'action */
+.btn {
+    padding: 8px 12px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    color: white;
+    display: inline-block;
+    font-size: 13px;
+    position: relative;
+}
+
+.btn-edit {
+    background-color: #ffc107;
+}
+.btn-edit:hover {
+    background-color: #e0a800;
+    transform: scale(1.1);
+}
+
+.btn-delete {
+    background-color: #e03e3e; /* rouge vif comme sur la photo */
+    border: none;
+    width: 48px;
+    height: 48px;
+    color: white !important;
+    font-size: 24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 12px;
+    padding: 0;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    text-decoration: none;
+}
+
+.btn-delete:hover {
+    background-color: #b73131; /* rouge plus foncé au hover */
+    transform: scale(1.1);
+}
+
+.actions-cell {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Tooltip personnalisé - EN HAUT */
+.btn[data-title] {
+    position: relative;
+}
+
+.btn[data-title]:hover::after {
+    content: attr(data-title);
+    position: absolute;
+    top: -40px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: white;
+    color: #333;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    white-space: nowrap;
+    z-index: 1000;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    border: 1px solid #e0e0e0;
+    font-weight: 500;
+}
+
+.btn[data-title]:hover::before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 5px;
+    border-style: solid;
+    border-color: white transparent transparent transparent;
+    z-index: 1000;
+}
+
+</style>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const input = document.getElementById("search-input");
+    const rows = Array.from(document.querySelectorAll("#users-table-body tr.user-row"));
+
+    // Création d'une ligne "Aucun résultat" (cachée par défaut)
+    let noResultRow = document.createElement("tr");
+    noResultRow.id = "no-result-row";
+    noResultRow.style.display = "none";
+    noResultRow.innerHTML = `
+        <td colspan="9" class="no-data">
+            <div class="empty-state">
+                <h6 class="text-muted">Aucun utilisateur ne correspond à cette recherche</h6>
+            </div>
+        </td>
+    `;
+    document.getElementById("users-table-body").appendChild(noResultRow);
+
+    function applyFilter() {
+        const q = input.value.trim().toLowerCase();
+        let visibleCount = 0;
+
+        rows.forEach(row => {
+            const text = row.textContent.toLowerCase();
+            if (!q || text.includes(q)) {
+                row.style.display = "";
+                visibleCount++;
+            } else {
+                row.style.display = "none";
+            }
+        });
+
+        // Affiche / cache la ligne "aucun résultat"
+        if (visibleCount === 0) {
+            noResultRow.style.display = "";
+        } else {
+            noResultRow.style.display = "none";
+        }
+    }
+
+    // Filtrage dynamique au fur et à mesure de la saisie
+    input.addEventListener("keyup", applyFilter);
+
+    // Bouton "Retour" : on vide le champ et on réaffiche tout sans recharger
+    const backBtn = document.getElementById("back-btn");
+    if (backBtn) {
+        backBtn.addEventListener("click", function (e) {
+            e.preventDefault();
+            input.value = "";
+            applyFilter();
+        });
+    }
+});
+</script>
+
+{% endblock %}

@@ -1,0 +1,441 @@
+{% extends 'backoffice/base.html' %}
+{% load static %}
+
+{% block title %}Gestion des Serres - Backoffice{% endblock %}
+
+{% block page_title %}
+<div style="text-align:left; margin-bottom:14px;">
+    <span style="font-size:32px; font-weight:400; color:#9ACD32;">
+        Gestion des serres
+    </span>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="card-body">
+    <div class="table-responsive-custom">
+
+    <div style="margin-bottom:20px;">
+      <a href="{% url 'plantation_create' %}" class="btn-add-plantation">
+        Ajouter une plantation
+      </a>
+    </div>
+
+    {% if messages %}
+      {% for message in messages %}
+      <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+      {% endfor %}
+    {% endif %}
+
+    <table class="tableau-elegant">
+      <thead>
+        <tr>
+          <th style="width: 80px;">Image</th>
+          <th style="width: 70px;">ID</th>
+          <th style="width: 120px;">Serre</th>
+          <th style="width: 120px;">Culture</th>
+          <th style="width: 100px;">Variété</th>
+          <th style="width: 90px;">Plantes</th>
+          <th style="width: 100px;">État</th>
+          <th style="width: 100px;">Semis</th>
+          <th style="width: 100px;">Récolte</th>
+          <th style="width: 120px;">Dernier arrosage</th>
+          <th style="width: 140px;">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in plantations %}
+          <tr>
+            <td>
+              {% if p.image %}
+                <img src="{{ p.image.url }}" alt="{{ p.nomCulture }}" class="table-image">
+              {% else %}
+                <div class="no-image">
+                  <small>Aucune image</small>
+                </div>
+              {% endif %}
+            </td>
+            <td><strong class="data-id">#{{ p.idSerre }}</strong></td>
+            <td>
+              <span class="serre-name">{{ p.nomSerre }}</span>
+            </td>
+            <td>
+              <span class="culture-data">{{ p.nomCulture }}</span>
+            </td>
+            <td>
+              <span class="variete-data">{{ p.variete }}</span>
+            </td>
+            <td>
+              <span class="plantes-data">{{ p.nombrePlantes }}</span>
+            </td>
+            <td>
+              {% if p.etat == 'Semée' %}
+                <span class="badge badge-secondary">{{ p.etat }}</span>
+              {% elif p.etat == 'Croissance' %}
+                <span class="badge badge-info">{{ p.etat }}</span>
+              {% elif p.etat == 'Floraison' %}
+                <span class="badge badge-warning">{{ p.etat }}</span>
+              {% elif p.etat == 'Maturité' %}
+                <span class="badge badge-success">{{ p.etat }}</span>
+              {% elif p.etat == 'Récoltée' %}
+                <span class="badge badge-dark">{{ p.etat }}</span>
+              {% else %}
+                <span class="badge badge-danger">{{ p.etat }}</span>
+              {% endif %}
+            </td>
+            <td>
+              <span class="date-data">{{ p.dateSemis|date:"d/m/Y" }}</span>
+            </td>
+            <td>
+              <span class="date-data">{{ p.dateRecoltePrevue|date:"d/m/Y" }}</span>
+            </td>
+            <td>
+              {% if p.datesIrrigation %}
+                {% with dernier_arrosage=p.datesIrrigation.strip.split|last %}
+                  <span class="arrosage-data">{{ dernier_arrosage|default:"" }}</span>
+                {% endwith %}
+              {% else %}
+                <span class="text-muted">-</span>
+              {% endif %}
+            </td>
+            <td class="actions-cell">
+              <a href="{% url 'plantation_update' p.idSerre %}" class="btn btn-edit" data-title="Modifier">✏️</a>
+              <a href="{% url 'plantation_delete' p.idSerre %}" class="btn btn-delete" data-title="Supprimer">🗑️</a>
+              {% if p.deja_arrose_aujourdhui %}
+                  <span class="btn btn-arrose-disabled" data-title="Déjà arrosée aujourd'hui">✅</span>
+              {% else %}
+                  <a href="{% url 'confirmer_arrosage' p.idSerre %}" class="btn btn-arrose" data-title="Arroser" onclick="return confirm('Confirmer l\\'arrosage de {{ p.nomCulture }} aujourd\\'hui ?')">💧</a>
+              {% endif %}
+            </td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="11" class="no-data">Aucune plantation.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  </div>
+</div>
+
+<style>
+  .table-responsive-custom {
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-bottom: 10px;
+    scrollbar-width: thin; /* Firefox */
+}
+
+/* Style de scrollbar moderne */
+.table-responsive-custom::-webkit-scrollbar {
+    height: 6px;
+}
+
+.table-responsive-custom::-webkit-scrollbar-track {
+    background: #e9ecef;
+    border-radius: 10px;
+}
+
+.table-responsive-custom::-webkit-scrollbar-thumb {
+    background: #9ACD32;
+    border-radius: 10px;
+}
+
+.table-responsive-custom::-webkit-scrollbar-thumb:hover {
+    background: #7cad28;
+}
+
+/* Bouton Ajouter une plantation - Style smooth */
+.btn-add-plantation {
+    background-color: rgba(154, 205, 50, 0.1);
+    color: #9ACD32;
+    padding: 12px 24px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    border: 2px solid rgba(154, 205, 50, 0.3);
+    display: inline-block;
+    font-size: 15px;
+}
+
+.btn-add-plantation:hover {
+    background-color: rgba(154, 205, 50, 0.2);
+    border-color: rgba(154, 205, 50, 0.5);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(154, 205, 50, 0.2);
+}
+
+/* Tableau élégant */
+.tableau-elegant {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin-top: 10px;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    background: white;
+    table-layout: fixed; /* Pour respecter les largeurs définies */
+}
+
+.tableau-elegant th {
+    background-color: rgba(154, 205, 50, 0.08);
+    color: #2d5016;
+    padding: 14px 8px; /* Padding réduit */
+    text-align: left;
+    font-weight: 600;
+    font-size: 13px; /* Taille réduite */
+    border-bottom: 1px solid rgba(154, 205, 50, 0.2);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.tableau-elegant td {
+    padding: 12px 8px; /* Padding réduit */
+    text-align: left;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 13px; /* Taille réduite */
+    color: #555;
+    vertical-align: middle;
+}
+
+.tableau-elegant tbody tr {
+    background-color: white;
+    transition: all 0.2s ease;
+}
+
+.tableau-elegant tbody tr:hover {
+    background-color: rgba(154, 205, 50, 0.03);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.tableau-elegant tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* Image du tableau - AGRANDIE */
+.table-image {
+    width: 65px; /* Agrandie */
+    height: 65px; /* Agrandie */
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid #f0f0f0;
+}
+
+.no-image {
+    width: 65px; /* Agrandie */
+    height: 65px; /* Agrandie */
+    background: #f8f9fa;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #6c757d;
+    font-size: 10px; /* Légèrement réduit */
+    border: 1px solid #e9ecef;
+}
+
+/* Données avec taille légèrement réduite */
+.data-id {
+    font-size: 14px; /* Légèrement réduit */
+    color: #333;
+    font-weight: 600;
+}
+
+.serre-name {
+    font-size: 13px; /* Légèrement réduit */
+    color: #333;
+    font-weight: 600;
+    padding: 6px 10px; /* Légèrement réduit */
+    background: rgba(52, 152, 219, 0.1);
+    border-radius: 6px;
+    display: inline-block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+
+.culture-data {
+    font-size: 13px; /* Légèrement réduit */
+    color: #333;
+    font-weight: 500;
+    padding: 6px 10px; /* Légèrement réduit */
+    background: rgba(39, 174, 96, 0.1);
+    border-radius: 6px;
+    display: inline-block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+
+.variete-data {
+    font-size: 13px; /* Légèrement réduit */
+    color: #555;
+    font-weight: 500;
+    padding: 6px 10px; /* Légèrement réduit */
+    background: rgba(155, 89, 182, 0.1);
+    border-radius: 6px;
+    display: inline-block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+
+.plantes-data {
+    font-size: 13px; /* Légèrement réduit */
+    color: #333;
+    font-weight: 600;
+    padding: 6px 10px; /* Légèrement réduit */
+    background: rgba(243, 156, 18, 0.1);
+    border-radius: 6px;
+    display: inline-block;
+    text-align: center;
+    min-width: 35px; /* Légèrement réduit */
+}
+
+.date-data {
+    font-size: 13px; /* Légèrement réduit */
+    color: #555;
+    font-weight: 500;
+    padding: 6px 10px; /* Légèrement réduit */
+    background: rgba(149, 165, 166, 0.1);
+    border-radius: 6px;
+    display: inline-block;
+    white-space: nowrap;
+}
+
+.arrosage-data {
+    color: #28a745;
+    font-weight: 600;
+    font-size: 13px; /* Légèrement réduit */
+    padding: 6px 10px; /* Légèrement réduit */
+    background: rgba(39, 174, 96, 0.1);
+    border-radius: 6px;
+    display: inline-block;
+    white-space: nowrap;
+}
+
+/* Badges élégants */
+.badge {
+    padding: 6px 10px; /* Légèrement réduit */
+    border-radius: 6px;
+    font-size: 11px; /* Légèrement réduit */
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.badge-secondary { background-color: #6c757d; color: white; }
+.badge-info { background-color: #17a2b8; color: white; }
+.badge-warning { background-color: #ffc107; color: #212529; }
+.badge-success { background-color: #28a745; color: white; }
+.badge-dark { background-color: #343a40; color: white; }
+.badge-danger { background-color: #dc3545; color: white; }
+
+/* Message pas de données */
+.no-data {
+    text-align: center;
+    color: #6c757d;
+    font-style: italic;
+    padding: 40px !important;
+}
+
+/* Boutons d'action */
+.btn {
+    padding: 8px 12px; /* Légèrement réduit */
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    color: white;
+    display: inline-block;
+    font-size: 13px; /* Légèrement réduit */
+    position: relative;
+}
+
+.btn-edit {
+    background-color: #ffc107;
+}
+.btn-edit:hover {
+    background-color: #e0a800;
+    transform: scale(1.1);
+}
+
+.btn-delete {
+    background-color: #dc3545;
+}
+.btn-delete:hover {
+    background-color: #c82333;
+    transform: scale(1.1);
+}
+
+.btn-arrose {
+    background-color: #17a2b8;
+}
+.btn-arrose:hover {
+    background-color: #138496;
+    transform: scale(1.1);
+}
+
+.btn-arrose-disabled {
+    background-color: #6c757d;
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+.actions-cell {
+    display: flex;
+    gap: 6px; /* Légèrement réduit */
+    align-items: center;
+    justify-content: center;
+}
+
+/* Tooltip personnalisé - EN HAUT */
+.btn[data-title] {
+    position: relative;
+}
+
+.btn[data-title]:hover::after {
+    content: attr(data-title);
+    position: absolute;
+    top: -40px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: white;
+    color: #333;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    white-space: nowrap;
+    z-index: 1000;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    border: 1px solid #e0e0e0;
+    font-weight: 500;
+}
+
+.btn[data-title]:hover::before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 5px;
+    border-style: solid;
+    border-color: white transparent transparent transparent;
+    z-index: 1000;
+}
+
+</style>
+{% endblock %}

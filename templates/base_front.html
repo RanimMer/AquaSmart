@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aqua Smart</title>
+    {% load static %}
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Police par défaut pour le texte */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), 
+                        url('{% static "img/carousel-1.jpg" %}') !important;
+            background-size: cover !important;
+            background-position: center !important;
+            background-attachment: fixed !important;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* TOPBAR VERTE - COMME LE PROTOTYPE */
+        .topbar-green {
+            background-color: #9ACD32 !important;
+            color: white !important;
+            padding: 0.75rem 0 !important;
+        }
+
+        .topbar-green .fa-envelope,
+        .topbar-green .fa-phone-alt {
+            margin-right: 0.5rem !important;
+            color: white !important;
+        }
+
+        .topbar-green span {
+            color: white !important;
+            font-size: 0.9rem !important;
+        }
+
+        .topbar-green .text-light {
+            color: white !important;
+            text-decoration: none !important;
+            padding: 0.25rem 0.5rem !important;
+        }
+
+        .topbar-green .text-light:hover {
+            color: #e8f5e8 !important;
+        }
+
+        /* NAVBAR - COMME LE PROTOTYPE */
+        .custom-nav {
+            background: white !important;
+            padding: 0 !important;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1) !important;
+        }
+
+        .navbar-brand {
+            padding: 0.5rem 1rem !important;
+        }
+
+        .nav-link {
+            color: #333 !important;
+            font-weight: 500 !important;
+            padding: 1rem 1.5rem !important;
+            text-decoration: none !important;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: #9ACD32 !important;
+        }
+
+        .logout-container {
+            display: flex;
+            align-items: center;
+            margin-right: 40px;
+        }
+
+        .logout-btn {
+            background-color: #ffffff;
+            color: #9ACD32;
+            border: 2px solid #9ACD32;
+            border-radius: 4px;
+            padding: 6px 16px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .logout-btn:hover {
+            background-color: #9ACD32;
+            color: #ffffff;
+            transform: translateY(-1px);
+            box-shadow: 0 3px 6px rgba(154, 205, 50, 0.3);
+        }
+
+        /* CONTENU PRINCIPAL */
+        .main-content {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+        }
+
+        .form-container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 2.5rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 450px;
+            backdrop-filter: blur(10px);
+        }
+
+        .form-title {
+            color: #1a6b3b;
+            text-align: center;
+            margin-bottom: 0.5rem;
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+
+        .form-subtitle {
+            color: #666;
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 1.2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #9ACD32;
+            box-shadow: 0 0 0 0.2rem rgba(154, 205, 50, 0.25);
+        }
+
+        .help-text {
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 0.25rem;
+        }
+
+        .btn-custom {
+            width: 100%;
+            padding: 0.75rem;
+            background: #9ACD32;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-custom:hover {
+            background: #7ec01f;
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        .form-links {
+            text-align: center;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #e1e5e9;
+        }
+
+        .form-links a {
+            color: #1a6b3b;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .form-links a:hover {
+            text-decoration: underline;
+        }
+
+        /* FOOTER - COMME LE PROTOTYPE */
+        .footer-custom {
+            background: linear-gradient(135deg, #1a6b3b 0%, #2d8c5a 50%, #1a6b3b 100%) !important;
+            border-top: 5px solid #9ACD32;
+        }
+
+        .footer-title {
+            color: #9ACD32 !important;
+            font-weight: 700;
+            font-size: 1.3rem;
+            border-bottom: 2px solid #9ACD32;
+            padding-bottom: 10px;
+            display: inline-block;
+        }
+
+        .footer-text {
+            color: #e8f5e8 !important;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .footer-text:hover {
+            color: #ffffff !important;
+            transform: translateX(5px);
+        }
+
+        .footer-icon {
+            color: #9ACD32 !important;
+            width: 20px;
+        }
+
+        .footer-link {
+            color: #e8f5e8 !important;
+            text-decoration: none;
+            display: block;
+            margin-bottom: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            padding: 5px 0;
+            border-bottom: 1px solid rgba(154, 205, 50, 0.2);
+        }
+
+        .footer-link:hover {
+            color: #9ACD32 !important;
+            transform: translateX(8px);
+            text-decoration: none;
+            border-bottom-color: #9ACD32;
+        }
+
+        .copyright {
+            background: #1a6b3b !important;
+            color: #e8f5e8 !important;
+        }
+
+        .copyright a {
+            color: #9ACD32 !important;
+            text-decoration: none;
+        }
+
+        .copyright a:hover {
+            color: #ffffff !important;
+        }
+
+        .field-error {
+            color: #b00020;
+            font-size: 0.85rem;
+            margin-top: 4px;
+        }
+        .non-field-errors {
+            color: #b00020;
+            margin-bottom: 10px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .footer-custom {
+                text-align: center;
+            }
+            
+            .footer-link:hover {
+                transform: translateX(0);
+            }
+            
+            .footer-text:hover {
+                transform: translateX(0);
+            }
+            
+            .nav-link {
+                padding: 0.5rem 1rem !important;
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <!-- Topbar Start - COMME LE PROTOTYPE -->
+    <div class="container-fluid topbar-green text-light py-3 px-4">
+        <div class="d-flex justify-content-between align-items-center small">
+            <div>
+                <i class="fa fa-envelope me-2"></i> AquaSmart@gmail.com
+                <span class="mx-3">|</span>
+                <i class="fa fa-phone-alt me-2"></i> +216 26 102 035
+            </div>
+            <div>
+                <a href="#" class="text-light me-4"><i class="fab fa-facebook-f"></i></a>
+                <a href="#" class="text-light me-4"><i class="fab fa-instagram"></i></a>
+            </div>
+        </div>
+    </div>
+    <!-- Topbar End -->
+
+    <!-- Navbar Start - COMME LE PROTOTYPE -->
+    <nav class="navbar navbar-expand-lg bg-white navbar-light sticky-top p-0 custom-nav">
+        <a href="{% url 'index' %}" class="navbar-brand d-flex align-items-center px-4">
+            <img src="{% static 'img/Gemini_Generated_Image_uiawfquiawfquiaw-removebg-preview.png' %}" alt="logo" style="width:120px; height:100px;">
+        </a>
+
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav mx-auto">
+                <li class="nav-item"><a href="{% url 'index' %}" class="nav-link active">Accueil</a></li>
+                <li class="nav-item"><a href="{% url 'apropos' %}" class="nav-link">À propos</a></li>
+                <li class="nav-item"><a href="{% url 'contact' %}" class="nav-link">Contact</a></li>
+                <li class="nav-item"><a href="{% url 'produits' %}" class="nav-link">Produits</a></li>
+                <li class="nav-item"><a href="{% url 'cultures' %}" class="nav-link">Cultures</a></li>
+                <li class="nav-item"><a href="{% url 'serres' %}" class="nav-link">Serres</a></li>
+                <li class="nav-item"><a href="{% url 'station_meteo' %}" class="nav-link">Météo</a></li>
+                <li class="nav-item"><a href="{% url 'liste_sols_front' %}" class="nav-link">Analyses Sol</a></li>
+            </ul>
+
+            <div class="logout-container">
+                <a href="{% url 'login' %}" class="logout-btn">
+                    Se connecter <i class="fa fa-arrow-right ms-2"></i>
+                </a>
+            </div>
+        </div>
+    </nav>
+    <!-- Navbar End -->
+
+    <!-- Main Content -->
+    <div class="main-content">
+        {% block content %}
+        <!-- LE CONTENU DES AUTRES PAGES VIENT ICI -->
+        {% endblock %}
+    </div>
+
+    <!-- Footer Start - COMME LE PROTOTYPE -->
+    <div class="container-fluid footer-custom text-light footer mt-5 py-5">
+        <div class="container py-5">
+            <div class="row g-5">
+                <div class="col-lg-4 col-md-6">
+                    <h4 class="footer-title mb-4">Notre bureau</h4>
+                    <p class="mb-3 footer-text"><i class="fa fa-map-marker-alt me-3 footer-icon"></i>Avenue Hbib Bourguiba, Tunis</p>
+                    <p class="mb-3 footer-text"><i class="fa fa-phone-alt me-3 footer-icon"></i>+216 26 102 035</p>
+                    <p class="mb-3 footer-text"><i class="fa fa-envelope me-3 footer-icon"></i>AquaSmart@gmail.com</p>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <h4 class="footer-title mb-4">Nos services</h4>
+                    <a class="footer-link" href="{% url 'liste_sols_front' %}">Analyse du sol</a>
+                    <a class="footer-link" href="{% url 'cultures' %}">Gestion des cultures</a>
+                    <a class="footer-link" href="{% url 'serres' %}">Gestion des serres</a>
+                    <a class="footer-link" href="{% url 'station_meteo' %}">Analyse météo</a>
+                    <a class="footer-link" href="{% url 'produits' %}">Gestion des produits</a>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <h4 class="footer-title mb-4">Navigation</h4>
+                    <a class="footer-link" href="{% url 'index' %}">Accueil</a>
+                    <a class="footer-link" href="{% url 'apropos' %}">À propos</a>
+                    <a class="footer-link" href="{% url 'contact' %}">Contact</a>
+                   
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Footer End -->
+
+    <div class="container-fluid copyright py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
+                    &copy; <a class="border-bottom" href="#">Aqua Smart</a>, All Right Reserved.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

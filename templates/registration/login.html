@@ -1,0 +1,119 @@
+{% extends 'base_front.html' %}
+
+{% block content %}
+<div class="form-container">
+    <h1 class="form-title">Aqua Smart</h1>
+    <h2 class="form-subtitle">Connexion</h2>
+    
+    <form method="post" autocomplete="off">
+        {% csrf_token %}
+        {% if form.non_field_errors %}
+            <div class="non-field-errors">
+                {% for err in form.non_field_errors %}
+                    <div>{{ err }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <div class="form-group">
+            <label for="username">Nom d'utilisateur</label>
+            <input type="text" id="username" name="username" placeholder="Votre identifiant" value="{{ form.username.value|default_if_none:'' }}" autocomplete="new-username">
+            {% if form.username.errors %}
+                <div class="field-error">{{ form.username.errors.0 }}</div>
+            {% endif %}
+
+        </div>
+        
+        <div class="form-group">
+            <label for="password">Mot de passe</label>
+            <input type="password" id="password" name="password" placeholder="......" autocomplete="new-password">
+            {% if form.password.errors %}
+                <div class="field-error">{{ form.password.errors.0 }}</div>
+            {% endif %}
+
+        </div>
+
+        {# 🔐 CAPTCHAAAA #}
+        <div class="form-group">
+            <label for="{{ form.captcha.id_for_label }}">Vérification de sécurité</label>
+
+            <div class="captcha-wrapper">
+                <div class="captcha-box">
+                    <span class="captcha-text">
+                        {{ captcha_text }}
+                    </span>
+                </div>
+                <button type="button" class="captcha-refresh" onclick="window.location.reload()">
+                    ↻
+                </button>
+            </div>
+
+            {{ form.captcha }}
+            {% if form.captcha.errors %}
+                <div class="field-error">{{ form.captcha.errors.0 }}</div>
+            {% endif %}
+            <div class="help-text">
+                Recopiez exactement le code affiché ci-dessus.
+            </div>
+        </div>   
+
+        
+        <button type="submit" class="btn btn-custom">Se connecter</button>
+
+        
+        <div class="form-links">
+            <a href="{% url 'signup' %}">Créer un compte</a> | 
+            <a href="{% url 'password_reset' %}">Mot de passe oublié ?</a>
+        </div>
+    </form>
+</div>
+<style>
+    .captcha-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 8px;
+    }
+
+    .captcha-box {
+        background: #f4f4f4;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        padding: 10px 18px;
+        display: inline-block;
+        min-width: 120px;
+        text-align: center;
+    }
+
+    .captcha-text {
+        font-family: "Courier New", monospace;
+        letter-spacing: 4px;
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #333;
+        text-shadow: 1px 1px 0 #ddd;
+    }
+
+    .captcha-refresh {
+        background-color: #ffffff;
+        color: #9ACD32;
+        border: 2px solid #9ACD32;
+        border-radius: 6px;
+        padding: 6px 10px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+        cursor: pointer;
+    }
+
+    .captcha-refresh:hover {
+        background-color: #9ACD32;
+        color: #ffffff;
+        transform: translateY(-1px);
+        box-shadow: 0 3px 6px rgba(154, 205, 50, 0.3);
+    }
+</style>
+{% endblock %}

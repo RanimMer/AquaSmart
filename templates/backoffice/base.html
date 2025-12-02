@@ -1,0 +1,577 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>{% block title %}Backoffice{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'css/sb-admin-2.min.css' %}">
+  <link rel="icon" type="image/png" href="{% static 'img/logo1.png' %}">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Bootstrap CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<!-- Font Awesome pour les icônes -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<!-- Bootstrap JS Bundle -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+  <style>
+    :root {
+      --vert: #9ACD32;  /* Nouveau vert pour les boutons actifs */
+      --vert-dark: #7cb305;
+      --vert-light: #b3e75c;
+      --sidebar-bg: #ffffff;
+      --sidebar-text: #333333;
+      --sidebar-hover: #f5f5f5;
+     --fond-clair: #f1f3f7;
+
+      --fond-sombre: #121212;
+      --texte-blanc: #fff;
+      --texte-noir: #222;
+      --sidebar-width: 240px;
+      --transition: all 0.3s ease;
+    }
+
+    html, body {
+      height: 100%;
+      margin: 0;
+      font-family: 'Poppins', system-ui, -apple-system, sans-serif;
+    }
+
+    body {
+      background: var(--fond-clair);
+      color: var(--texte-noir);
+      transition: background var(--transition), color var(--transition);
+    }
+
+    body.dark-mode {
+      background: var(--fond-sombre);
+      color: var(--texte-blanc);
+    }
+
+    /* Sidebar blanc - CORRIGÉ */
+    .sidebar {
+      position: fixed;
+      left: 0;
+      top: 0;
+      height: 100vh;
+      width: var(--sidebar-width);
+      background: var(--sidebar-bg);
+      color: var(--sidebar-text);
+      display: flex;
+      flex-direction: column;
+      padding: 8px 8px;
+      box-sizing: border-box;
+      z-index: 1000;
+      border-right: 1px solid #e0e0e0;
+      box-shadow: 2px 0 10px rgba(0,0,0,0.05);
+      overflow-y: auto;
+    }
+
+    /* Logo centré et AGRANDI */
+    .sidebar .logo1 {
+      width: 180px !important; /* Logo AGRANDI */
+      height: auto !important;
+      margin: 10px auto 12px auto !important; /* Espace ajusté */
+      display: block !important;
+      padding: 0 !important;
+      box-sizing: border-box !important;
+      object-fit: contain;
+    }
+
+    .sidebar ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      width: 100%;
+      flex-grow: 1;
+    }
+
+    .sidebar li {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 18px 20px; /* Padding augmenté pour agrandir */
+      color: var(--sidebar-text);
+      cursor: pointer;
+      border-radius: 10px;
+      margin: 8px 8px; /* Espace augmenté entre les modules */
+      transition: all 0.3s ease;
+      position: relative;
+      min-height: 55px; /* Hauteur légèrement augmentée */
+    }
+
+    .sidebar li:hover {
+      background: var(--sidebar-hover);
+      transform: translateX(5px);
+    }
+
+    /* Bouton actif en vert */
+    .sidebar li.active {
+      background: var(--vert);
+      color: var(--texte-blanc);
+    }
+
+    .sidebar li.active:before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
+      width: 5px;
+      background: var(--vert-dark);
+      border-radius: 0 3px 3px 0;
+    }
+
+    .sidebar li + li {
+      border-top: 1px solid #f0f0f0;
+    }
+
+    .sidebar a {
+      color: inherit;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+      font-size: 15px;
+      font-weight: 500;
+    }
+
+    .small-label {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-weight: 600;
+    }
+
+    /* Mode sombre pour le sidebar */
+    body.dark-mode .sidebar {
+      background: #1e1e1e;
+      color: var(--texte-blanc);
+      border-right-color: #333;
+    }
+
+    body.dark-mode .sidebar li {
+      color: var(--texte-blanc);
+    }
+
+    body.dark-mode .sidebar li:hover {
+      background: #2a2a2a;
+    }
+
+    body.dark-mode .sidebar li.active {
+      background: var(--vert);
+      color: var(--texte-blanc);
+    }
+
+    body.dark-mode .sidebar li + li {
+      border-top-color: #333;
+    }
+
+    /* Top bar */
+    .top-bar {
+      position: fixed;
+      left: var(--sidebar-width);
+      top: 0;
+      right: 0;
+      height: 60px;
+      background: white;
+      color: var(--texte-noir);
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding: 0 24px;
+      box-shadow: 0 2px 10px rgba(0,0,0,.05);
+      transition: left var(--transition), background var(--transition), color var(--transition);
+      z-index: 900;
+    }
+
+    body.dark-mode .top-bar {
+      background: #1e1e1e;
+      color: var(--texte-blanc);
+      box-shadow: 0 2px 10px rgba(255,255,255,.1);
+    }
+
+    .top-bar .btn-dark {
+      background: transparent;
+      border: 2px solid var(--vert);
+      color: var(--vert);
+      padding: 6px 12px;
+      border-radius: 20px;
+      cursor: pointer;
+      margin-right: 20px;
+      transition: background var(--transition), color var(--transition);
+    }
+
+    .top-bar .btn-dark:hover {
+      background: var(--vert);
+      color: white;
+    }
+
+    body.dark-mode .top-bar .btn-dark {
+      border-color: var(--texte-blanc);
+      color: var(--texte-blanc);
+    }
+
+    body.dark-mode .top-bar .btn-dark:hover {
+      background: var(--texte-blanc);
+      color: var(--vert);
+    }
+
+    .main {
+      margin-left: var(--sidebar-width);
+      padding: 90px 28px 28px;
+      min-height: 100vh;
+      box-sizing: border-box;
+    }
+
+    .card {
+      background: var(--texte-blanc);
+      border-radius: 10px;
+      padding: 26px;
+      box-shadow: 0 6px 18px rgba(0,0,0,.06);
+      color: var(--texte-noir);
+      transition: background var(--transition), color var(--transition);
+    }
+
+    body.dark-mode .card {
+      background: #1e1e1e;
+      color: var(--texte-blanc);
+      box-shadow: 0 6px 18px rgba(0,0,0,.3);
+    }
+
+    .page-title {
+      color: var(--vert);
+      font-size: 28px;
+      margin: 6px 0 18px;
+    }
+
+    @media (max-width: 900px) {
+      .sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        height: 100vh;
+      }
+      .main {
+        margin-left: var(--sidebar-width);
+      }
+      .top-bar {
+        left: var(--sidebar-width);
+      }
+    }
+
+    /* Tableau par défaut */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    table th, table td {
+      padding: 8px 12px;
+      border: 1px solid #ddd;
+      color: var(--texte-noir);
+    }
+
+    /* Mode sombre */
+    body.dark-mode table th,
+    body.dark-mode table td {
+      color: var(--texte-blanc);
+      border-color: rgba(255,255,255,0.2);
+    }
+
+    /* Titres des colonnes du tableau en vert */
+    table th {
+      background-color: #f4f4f4;
+      color: var(--vert);
+    }
+
+    body.dark-mode table th {
+      background-color: #2c2c2c;
+      color: var(--vert);
+    }
+
+    table td {
+      background-color: #fff;
+    }
+
+    body.dark-mode table td {
+      background-color: #1e1e1e;
+    }
+
+    /* User menu */
+    .user-menu {
+      position: relative;
+    }
+
+    .avatar-btn {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: transparent;
+      border: 1px solid rgba(0,0,0,.08);
+      padding: 6px 10px;
+      border-radius: 20px;
+      cursor: pointer;
+    }
+
+    .avatar-btn img {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .avatar-btn .chevron {
+      font-size: 12px;
+      opacity: .7;
+    }
+
+    .dropdown {
+      position: absolute;
+      right: 0;
+      top: 46px;
+      min-width: 200px;
+      background: #fff;
+      border: 1px solid #e9ecef;
+      border-radius: 10px;
+      box-shadow: 0 10px 24px rgba(0,0,0,.12);
+      padding: 6px;
+      display: none;
+      z-index: 1001;
+    }
+
+    .dropdown.show {
+      display: block;
+    }
+
+    .dropdown-item {
+      display: block;
+      padding: 10px 12px;
+      border-radius: 8px;
+      color: #222;
+      text-decoration: none;
+    }
+
+    .dropdown-item:hover {
+      background: #f3f4f6;
+    }
+
+    .dropdown-divider {
+      height: 1px;
+      background: #eee;
+      margin: 6px 0;
+    }
+
+    /* Mode sombre */
+    body.dark-mode .dropdown {
+      background: #1f1f1f;
+      border-color: #2a2a2a;
+    }
+
+    body.dark-mode .dropdown-item {
+      color: #fff;
+    }
+
+    body.dark-mode .dropdown-item:hover {
+      background: #2c2c2c;
+    }
+
+    body.dark-mode .avatar-btn {
+      border-color: rgba(255,255,255,0.1);
+    }
+      /* --- Amélioration subtile de la sidebar --- */
+
+/* Légère transparence + glass effect */
+.sidebar {
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  background: rgba(255, 255, 255, 0.9); /* + visible mais reste blanc */
+}
+
+/* Hover plus doux et plus visible */
+.sidebar li:hover {
+  background: rgba(154, 205, 50, 0.12);
+  transform: translateX(6px);
+  box-shadow: 0 2px 8px rgba(154, 205, 50, 0.25);
+}
+
+/* Texte légèrement plus foncé pour lisibilité */
+.sidebar a {
+  font-weight: 600;
+  color: #2a2a2a;
+}
+
+/* Séparateurs plus légers */
+.sidebar li + li {
+  border-top: 1px solid rgba(0,0,0,0.06);
+}
+
+/* Active item + effet glow */
+.sidebar li.active {
+  background: var(--vert);
+  color: white !important;
+  box-shadow: 0 3px 10px rgba(154, 205, 50, 0.45);
+}
+
+/* Icônes et texte plus contrastés */
+.sidebar li i {
+  opacity: .9;
+}
+
+/* Mode sombre – meilleure lisibilité */
+body.dark-mode .sidebar {
+  background: rgba(30, 30, 30, 0.85);
+  backdrop-filter: blur(6px);
+}
+
+body.dark-mode .sidebar li:hover {
+  background: rgba(255,255,255,0.08);
+  box-shadow: 0 2px 8px rgba(255,255,255,0.15);
+}
+
+body.dark-mode .sidebar a {
+  color: #eee;
+  font-weight: 500;
+}
+
+  </style>
+
+
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <img src="{% static 'img\61ef771f-f249-4b81-9394-1fadbf7a254a.jpg' %}" alt="Logo1" class="logo1">
+    <ul>
+      <li><a href="{% url 'users_list' %}" class="small-label">Utilisateurs</a></li>
+      <li><a href="{% url 'farm_list' %}" class="small-label">Fermes</a></li>
+      <li><a href="{% url 'gestion_produits' %}" class="small-label">Produits</a></li>
+      <li><a href="{% url 'gestion_cultures' %}" class="small-label">Cultures</a></li>
+      <li><a href="{% url 'liste_sols_back' %}" class="small-label">Sols</a></li>
+      <li><a href="{% url 'plantation_list' %}" class="small-label">Serres</a></li>
+      <li><a href="{% url 'gestion_station_meteo' %}" class="small-label">Météo</a></li>
+    </ul>
+  </aside>
+
+  <!-- Top bar -->
+  <header class="top-bar">
+    <button class="btn-dark" id="darkToggle">🌙 Mode sombre</button>
+
+    <div class="user-menu" id="userMenu">
+      <button class="avatar-btn" id="avatarBtn" aria-haspopup="true" aria-expanded="false">
+        <img src="{% static 'img/undraw_profile.svg' %}" alt="avatar">
+        <span class="username">
+          {{ request.user.get_full_name|default:request.user.username }}
+        </span>
+        <span class="chevron">▾</span>
+      </button>
+
+      <div class="dropdown" id="avatarDropdown" role="menu" aria-hidden="true">
+        <!-- Lien vers le profil -->
+        <a href="{% url 'profile_view' %}" class="dropdown-item">Mon profil</a>
+
+        <!-- Bouton de déconnexion en POST -->
+        <form action="{% url 'logout' %}" method="post" class="dropdown-item p-0 m-0">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-link p-0 m-0">Se déconnecter</button>
+        </form>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main content -->
+  <main class="main">
+    <h2 class="page-title">{% block page_title %}Bienvenue dans l'espace gestion des produits:{% endblock %}</h2>
+    <section>
+      {% block content %}{% endblock %}
+    </section>
+  </main>
+
+  <script>
+    // Gestion du mode sombre
+    (function(){
+      const darkBtn = document.getElementById('darkToggle');
+      const body = document.body;
+      if(localStorage.getItem('back_dark_mode')==='1'){
+        body.classList.add('dark-mode');
+        darkBtn.textContent='☀️ Mode clair';
+      }
+      darkBtn.addEventListener('click',function(){
+        body.classList.toggle('dark-mode');
+        const dark=body.classList.contains('dark-mode');
+        darkBtn.textContent=dark?'☀️ Mode clair':'🌙 Mode sombre';
+        localStorage.setItem('back_dark_mode',dark?'1':'0');
+      });
+    })();
+
+    // Gestion des boutons actifs dans le sidebar
+    document.addEventListener('DOMContentLoaded', function() {
+      const sidebarItems = document.querySelectorAll('.sidebar li');
+      
+      // Fonction pour définir l'élément actif basé sur l'URL
+      function setActiveItem() {
+        const currentUrl = window.location.href;
+        
+        sidebarItems.forEach(item => {
+          const link = item.querySelector('a');
+          if (link) {
+            const href = link.getAttribute('href');
+            // Vérifier si l'URL actuelle contient le chemin du lien
+            if (currentUrl.includes(href) && href !== '/') {
+              item.classList.add('active');
+            } else {
+              item.classList.remove('active');
+            }
+          }
+        });
+      }
+      
+      // Définir l'élément actif au chargement
+      setActiveItem();
+      
+      // Gérer les clics sur les éléments du sidebar
+      sidebarItems.forEach(item => {
+        item.addEventListener('click', function() {
+          sidebarItems.forEach(i => i.classList.remove('active'));
+          this.classList.add('active');
+        });
+      });
+    });
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    // Gestion du menu utilisateur
+    (function () {
+      const btn = document.getElementById('avatarBtn');
+      const menu = document.getElementById('avatarDropdown');
+
+      function closeAll(e){
+        if(!menu.contains(e.target) && !btn.contains(e.target)){
+          menu.classList.remove('show');
+          btn.setAttribute('aria-expanded','false');
+        }
+      }
+
+      btn.addEventListener('click', function(e){
+        e.stopPropagation();
+        const open = menu.classList.toggle('show');
+        btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      });
+
+      document.addEventListener('click', closeAll);
+      window.addEventListener('blur', () => menu.classList.remove('show'));
+    })();
+  </script>
+
+  
+
+  {% block extra_scripts %}{% endblock %}
+</body>
+</html>

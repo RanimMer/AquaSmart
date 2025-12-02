@@ -1,7 +1,7 @@
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 from asgiref.sync import sync_to_async
-from backoffice.models import StationMeteo
+from station_meteo.models import StationMeteo
 from django.utils import timezone
 import asyncio
 

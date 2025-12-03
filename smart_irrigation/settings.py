@@ -22,7 +22,6 @@ INSTALLED_APPS = [
     'sols',
     'serre',
     'station_meteo',
-    'django.contrib.staticfiles',
     'channels',
     'rest_framework',
     'esp32_data',

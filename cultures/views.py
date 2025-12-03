@@ -7,11 +7,6 @@ from .forms import CultureForm
 from produits.models import Produit
 from sols.models import AnalyseSol
 from users.models import Farm
-<<<<<<< HEAD
-
-
-def dashboard(request):
-=======
 from django.db.models import Sum
 from reportlab.pdfgen import canvas  
 from django.http import HttpResponse
@@ -40,7 +35,6 @@ def dashboard(request):
     nb_fermes = envoyer_notifications_cultures_pour_aujourdhui()
     if nb_fermes > 0:
             messages.success(request, "📩 Emails envoyés aux agriculteurs de votre ferme.")
->>>>>>> origin/IntegrationAvecCultureMetiers
     return render(request, 'backoffice/dashboard.html')
 
 
@@ -74,11 +68,8 @@ def _cultures_for_user(user):
       - TECH  : uniquement celles de sa ferme
       - ADMIN : toutes les cultures de ses fermes
     """
-<<<<<<< HEAD
-=======
    
     
->>>>>>> origin/IntegrationAvecCultureMetiers
     if not user.is_authenticated:
         return Culture.objects.none()
 
@@ -98,10 +89,6 @@ def _cultures_for_user(user):
 
 
 def gestion_cultures(request):
-<<<<<<< HEAD
-    cultures = _cultures_for_user(request.user)
-    return render(request, 'backoffice/gestion_cultures.html', {'cultures': cultures})
-=======
     nb_fermes = envoyer_notifications_cultures_pour_aujourdhui()
     if nb_fermes > 0:
             messages.success(request, "📩 Emails envoyés aux agriculteurs de votre ferme.")
@@ -137,7 +124,6 @@ def gestion_cultures(request):
     )
 
 
->>>>>>> origin/IntegrationAvecCultureMetiers
 
 
 def ajouter_culture(request):
@@ -215,11 +201,7 @@ def supprimer_culture(request, pk):
         culture.delete()
         return redirect('gestion_cultures')
 
-<<<<<<< HEAD
-    return render(request, 'backoffice/supprimer_culture.html', {'culture': culture})
-=======
     return render(request, 'backoffice/gestion_culture.html', {'culture': culture})
->>>>>>> origin/IntegrationAvecCultureMetiers
 
 
 @transaction.atomic
@@ -280,9 +262,6 @@ def enregistrer_utilisation_produit(request, culture_id):
     })
 
 def cultures(request):
-<<<<<<< HEAD
-    if request.user.is_authenticated:
-=======
     """
     Page front-office :
       - Liste des cultures (cartes)
@@ -298,16 +277,10 @@ def cultures(request):
         if nb_fermes > 0:
             messages.success(request, "📩 Emails envoyés aux agriculteurs de votre ferme.")
 
->>>>>>> origin/IntegrationAvecCultureMetiers
         items = _cultures_for_user(request.user)
     else:
         items = Culture.objects.none()
 
-<<<<<<< HEAD
-    return render(request, 'public/cultures.html', {
-        'cultures': items,
-        'active_page': 'cultures',
-=======
     # 📸 PARTIE IA : analyse d'image de plante
     if request.method == "POST" and request.FILES.get("image"):
         img_file = request.FILES["image"]
@@ -326,14 +299,10 @@ def cultures(request):
         'active_page': 'cultures',
         'label': label,
         'confidence': confidence,
->>>>>>> origin/IntegrationAvecCultureMetiers
     })
 
 
 
-<<<<<<< HEAD
-    
-=======
 def stats_cultures(request):
     """
     Statistiques avec répartition par type et détails par culture
@@ -783,7 +752,6 @@ def add_recolte_dates_to_events(cultures, events_by_date, year, month):
                     events_by_date[date_key] = [culture_for_event]
 
 
->>>>>>> origin/IntegrationAvecCultureMetiers
 def index(request):
     """Page d'accueil"""
     return render(request, 'public/index.html')

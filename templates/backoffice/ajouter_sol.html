@@ -80,6 +80,14 @@
           <textarea class="form-control" name="bundles_composition" rows="3"></textarea>
         </div>
 
+        <!-- Qualité du sol (lecture seule, seulement pour modification) -->
+        {% if sol %}
+        <div class="form-group mb-3">
+          <label class="form-label"><strong>Qualité du sol</strong></label>
+          <input type="text" class="form-control" value="{{ sol.qualite_sol }}" readonly>
+        </div>
+        {% endif %}
+
       </div>
 
       <button type="submit" class="btn btn-primary mt-3">Créer l'analyse</button>

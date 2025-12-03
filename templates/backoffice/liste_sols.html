@@ -12,112 +12,312 @@
 {% endblock %}
 
 {% block content %}
-<div class="card">
-  <div class="card-body">
-    <div style="margin-bottom:20px;">
-      <a href="{% url 'ajouter_sol_back' %}" class="btn-add-plantation">
-        Ajouter une analyse
-      </a>
+
+<!-- Conteneur principal SANS CARD -->
+<div style="padding:15px; border-radius:10px; display:flex; flex-direction:column; gap:15px;">
+
+    <!-- Ligne 1 : UNIQUEMENT le bouton Ajouter -->
+    <div style="display:flex; align-items:center;">
+        <!-- Bouton Ajouter SEUL sur la première ligne -->
+        <a href="{% url 'ajouter_sol_back' %}" class="btn btn-vert" style="margin-right:20px;">+ Ajouter une analyse</a>
     </div>
 
-    {% if messages %}
-      {% for message in messages %}
-      <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
-        {{ message }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-      </div>
-      {% endfor %}
+    <!-- FORMULAIRE PRINCIPAL - TOUT DEDANS -->
+    <form method="get" action="{% url 'liste_sols_back' %}" id="mainFilterForm">
+       
+            <!-- Bouton Statistiques aligné à droite -->
+            <div style="display:flex; gap:10px; margin-left:auto;">
+                <a href="{% url 'statistiques_sols' %}" class="btn btn-vert">📊 Statistiques</a>
+            </div>
+        </div>
+
+        <!-- Ligne 3 : Les filtres principaux -->
+        <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:15px;">
+            <!-- Filtre Région -->
+            <select name="region" 
+                    style="padding:10px; border:1px solid #9ACD32; border-radius:5px; background:white; min-width:180px; font-size:14px;"
+                    onchange="this.form.submit()">
+                <option value="">Toutes les régions</option>
+                {% for region in regions_uniques %}
+                <option value="{{ region }}" {% if request.GET.region == region %}selected{% endif %}>{{ region }}</option>
+                {% endfor %}
+            </select>
+
+            <!-- Filtre Qualité -->
+            <select name="qualite" 
+                    style="padding:10px; border:1px solid #9ACD32; border-radius:5px; background:white; min-width:180px; font-size:14px;"
+                    onchange="this.form.submit()">
+                <option value="">Toutes les qualités</option>
+                <option value="excellente" {% if request.GET.qualite == 'excellente' %}selected{% endif %}>Excellente</option>
+                <option value="bonne" {% if request.GET.qualite == 'bonne' %}selected{% endif %}>Bonne</option>
+                <option value="moyenne" {% if request.GET.qualite == 'moyenne' %}selected{% endif %}>Moyenne</option>
+                <option value="mauvaise" {% if request.GET.qualite == 'mauvaise' %}selected{% endif %}>Mauvaise</option>
+                <option value="critique" {% if request.GET.qualite == 'critique' %}selected{% endif %}>Critique</option>
+            </select>
+
+            <!-- Filtre Niveau de pH -->
+            <select name="niveau_ph" 
+                    style="padding:10px; border:1px solid #9ACD32; border-radius:5px; background:white; min-width:180px; font-size:14px;"
+                    onchange="this.form.submit()">
+                <option value="">Tous les pH</option>
+                <option value="acide" {% if request.GET.niveau_ph == 'acide' %}selected{% endif %}>Acide (pH < 6)</option>
+                <option value="optimal" {% if request.GET.niveau_ph == 'optimal' %}selected{% endif %}>Optimal (6-7.5)</option>
+                <option value="alcalin" {% if request.GET.niveau_ph == 'alcalin' %}selected{% endif %}>Alcalin (pH > 7.5)</option>
+            </select>
+
+            <!-- Filtre Azote -->
+            <select name="azote" 
+                    style="padding:10px; border:1px solid #9ACD32; border-radius:5px; background:white; min-width:180px; font-size:14px;"
+                    onchange="this.form.submit()">
+                <option value="">Tous les niveaux d'azote</option>
+                <option value="faible" {% if request.GET.azote == 'faible' %}selected{% endif %}>Faible (< 20 mg/kg)</option>
+                <option value="moyen" {% if request.GET.azote == 'moyen' %}selected{% endif %}>Moyen (20-40 mg/kg)</option>
+                <option value="eleve" {% if request.GET.azote == 'eleve' %}selected{% endif %}>Élevé (> 40 mg/kg)</option>
+            </select>
+        </div>
+
+        <!-- Ligne 4 : Filtres supplémentaires -->
+        <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+            <!-- Filtre Plage de surface -->
+            <select name="plage_surface" 
+                    style="padding:10px; border:1px solid #9ACD32; border-radius:5px; background:white; min-width:180px; font-size:14px;"
+                    onchange="this.form.submit()">
+                <option value="">Toutes surfaces</option>
+                <option value="petite" {% if request.GET.plage_surface == 'petite' %}selected{% endif %}>Petite (< 5 ha)</option>
+                <option value="moyenne" {% if request.GET.plage_surface == 'moyenne' %}selected{% endif %}>Moyenne (5-20 ha)</option>
+                <option value="grande" {% if request.GET.plage_surface == 'grande' %}selected{% endif %}>Grande (> 20 ha)</option>
+            </select>
+
+            <!-- Filtre Tri principal -->
+            <select name="tri_principal" 
+                    style="padding:10px; border:1px solid #9ACD32; border-radius:5px; background:white; min-width:180px; font-size:14px;"
+                    onchange="this.form.submit()">
+                <option value="">Trier par...</option>
+                <option value="date_recent" {% if request.GET.tri_principal == 'date_recent' %}selected{% endif %}>Date (plus récent)</option>
+                <option value="date_ancien" {% if request.GET.tri_principal == 'date_ancien' %}selected{% endif %}>Date (plus ancien)</option>
+                <option value="surface_croissant" {% if request.GET.tri_principal == 'surface_croissant' %}selected{% endif %}>Surface (croissant)</option>
+                <option value="surface_decroissant" {% if request.GET.tri_principal == 'surface_decroissant' %}selected{% endif %}>Surface (décroissant)</option>
+                <option value="ph_croissant" {% if request.GET.tri_principal == 'ph_croissant' %}selected{% endif %}>pH (croissant)</option>
+                <option value="ph_decroissant" {% if request.GET.tri_principal == 'ph_decroissant' %}selected{% endif %}>pH (décroissant)</option>
+            </select>
+
+            <!-- Filtre Ordre d'affichage -->
+            <select name="ordre" 
+                    style="padding:10px; border:1px solid #9ACD32; border-radius:5px; background:white; min-width:180px; font-size:14px;"
+                    onchange="this.form.submit()">
+                <option value="desc" {% if request.GET.ordre == 'desc' or not request.GET.ordre %}selected{% endif %}>Ordre: Décroissant</option>
+                <option value="asc" {% if request.GET.ordre == 'asc' %}selected{% endif %}>Ordre: Croissant</option>
+            </select>
+        </div>
+    </form>
+
+    <!-- Indicateur de tri actif -->
+    {% if request.GET %}
+    <div style="background: rgba(52, 152, 219, 0.1); border: 1px solid rgba(52, 152, 219, 0.2); border-radius: 8px; padding: 10px 15px; margin-bottom: 15px;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <span style="font-weight: 600; color: #2980b9; margin-right: 10px;">
+                    <i class="fas fa-filter"></i> Filtres actifs:
+                </span>
+                {% for key, value in request.GET.items %}
+                    {% if value and key != 'ordre' and key != 'page' %}
+                        <span style="background: rgba(52, 152, 219, 0.2); color: #2980b9; padding: 4px 8px; border-radius: 6px; font-size: 12px; margin: 0 4px;">
+                            {{ key }}: {{ value }}
+                        </span>
+                    {% endif %}
+                {% endfor %}
+            </div>
+            <a href="{% url 'liste_sols_back' %}" style="color: #6c757d; text-decoration: none; padding: 4px 8px; border-radius: 4px; transition: all 0.3s ease;">
+                <i class="fas fa-times"></i> Effacer tous
+            </a>
+        </div>
+    </div>
     {% endif %}
 
-    <table class="tableau-elegant">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Référence</th>
-          <th>Surface</th>
-          <th>pH</th>
-          <th>Azote</th>
-          <th>Qualité</th>
-          <th>Date</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for sol in sols %}
-        <tr>
-          <td><strong class="data-id">#{{ forloop.counter }}</strong></td>
-          <td>
-            <div class="reference-data">
-              <strong class="d-block">{{ sol.pin_surface }}</strong>
-              <small class="text-muted">{{ sol.total_region }}</small>
-            </div>
-          </td>
-          <td>
-            <span class="surface-data">{{ sol.surface }} ha</span>
-          </td>
-          <td>
-            <span class="ph-data {% if sol.ph < 6.0 %}ph-acidic
-                {% elif sol.ph > 7.5 %}ph-alkaline
-                {% else %}ph-optimal{% endif %}">
-                {{ sol.ph }}
-            </span>
-          </td>
-          <td>
-            <span class="azote-data">N:{{ sol.azote|default:"0"|floatformat:1 }}</span>
-          </td>
-          <td>
-            <span class="quality-data quality-moyenne">
-                À calculer
-            </span>
-          </td>
-          <td>
-            <span class="date-data">{{ sol.date_analyse|date:"d/m/Y" }}</span>
-          </td>
-          <td class="actions-cell">
-            <a href="{% url 'modifier_sol_back' sol.id_analyse %}" class="btn btn-edit" data-title="Modifier">✏️</a>
-            <a href="{% url 'supprimer_sol_back' sol.id_analyse %}" class="btn btn-delete" data-title="Supprimer">🗑️</a>
-          </td>
-        </tr>
-        {% empty %}
-        <tr>
-          <td colspan="8" class="no-data">
-            <div class="empty-state">
-              <h6 class="text-muted">Aucune analyse enregistrée</h6>
-              <a href="{% url 'ajouter_sol_back' %}" class="btn-add-plantation mt-2">
-                Créer une analyse
-              </a>
-            </div>
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
 </div>
 
+<!-- TABLEAU DES ANALYSES DE SOL -->
+<table class="tableau-elegant">
+  <thead>
+    <tr>
+      <th style="width: 60px;">ID</th>
+      <th style="width: 200px;">Référence & Région</th>
+      <th style="width: 100px;">Surface</th>
+      <th style="width: 100px;">pH</th>
+      <th style="width: 100px;">Azote (N)</th>
+      <th style="width: 120px;">Qualité</th>
+      <th style="width: 120px;">Date analyse</th>
+      <th style="width: 150px;">Actions</th>
+    </tr>
+  </thead>
+  
+  <tbody>
+    {% for sol in sols %}
+      <tr>
+        <td>
+          <span style="font-size:14px; color:#333; font-weight:600; padding:8px 12px; background:rgba(52, 152, 219, 0.1); border-radius:6px; display:inline-block; text-align:center; min-width:40px;">
+            #{{ forloop.counter }}
+          </span>
+        </td>
+        <td>
+          <div>
+            <div style="font-size:14px; color:#333; font-weight:600; margin-bottom:4px;">
+              {{ sol.pin_surface }}
+            </div>
+            <div style="font-size:12px; color:#6c757d;">
+              {{ sol.total_region }}
+            </div>
+          </div>
+        </td>
+        <td>
+          <span style="font-size:14px; color:#2980b9; font-weight:600; padding:8px 12px; background:rgba(52, 152, 219, 0.1); border-radius:6px; display:inline-block; text-align:center; min-width:70px;">
+            {{ sol.surface }} ha
+          </span>
+        </td>
+        <td>
+          {% if sol.ph < 6.0 %}
+            <span style="font-size:14px; color:#d35400; font-weight:600; padding:8px 12px; background:rgba(243, 156, 18, 0.1); border-radius:6px; display:inline-block; text-align:center; min-width:60px; border:1px solid rgba(243, 156, 18, 0.2);">
+              {{ sol.ph }}
+            </span>
+          {% elif sol.ph > 7.5 %}
+            <span style="font-size:14px; color:#2980b9; font-weight:600; padding:8px 12px; background:rgba(52, 152, 219, 0.1); border-radius:6px; display:inline-block; text-align:center; min-width:60px; border:1px solid rgba(52, 152, 219, 0.2);">
+              {{ sol.ph }}
+            </span>
+          {% else %}
+            <span style="font-size:14px; color:#27ae60; font-weight:600; padding:8px 12px; background:rgba(39, 174, 96, 0.1); border-radius:6px; display:inline-block; text-align:center; min-width:60px; border:1px solid rgba(39, 174, 96, 0.2);">
+              {{ sol.ph }}
+            </span>
+          {% endif %}
+        </td>
+        <td>
+          <span style="font-size:14px; color:#333; font-weight:600; padding:8px 12px; background:rgba(155, 89, 182, 0.1); border-radius:6px; display:inline-block; text-align:center; min-width:80px;">
+            N:{{ sol.azote|default:"0"|floatformat:1 }}
+          </span>
+        </td>
+        <td>
+          {% if sol.qualite_sol == 'excellente' %}
+            <span style="font-size:13px; color:#27ae60; font-weight:600; padding:8px 12px; background:rgba(39, 174, 96, 0.1); border-radius:12px; display:inline-block; border:1px solid rgba(39, 174, 96, 0.3); min-width:100px; text-align:center;">
+              {{ sol.qualite_sol|title }}
+            </span>
+          {% elif sol.qualite_sol == 'bonne' %}
+            <span style="font-size:13px; color:#2980b9; font-weight:600; padding:8px 12px; background:rgba(52, 152, 219, 0.1); border-radius:12px; display:inline-block; border:1px solid rgba(52, 152, 219, 0.3); min-width:100px; text-align:center;">
+              {{ sol.qualite_sol|title }}
+            </span>
+          {% elif sol.qualite_sol == 'moyenne' %}
+            <span style="font-size:13px; color:#f39c12; font-weight:600; padding:8px 12px; background:rgba(243, 156, 18, 0.1); border-radius:12px; display:inline-block; border:1px solid rgba(243, 156, 18, 0.3); min-width:100px; text-align:center;">
+              {{ sol.qualite_sol|title }}
+            </span>
+          {% elif sol.qualite_sol == 'mauvaise' %}
+            <span style="font-size:13px; color:#e74c3c; font-weight:600; padding:8px 12px; background:rgba(231, 76, 60, 0.1); border-radius:12px; display:inline-block; border:1px solid rgba(231, 76, 60, 0.3); min-width:100px; text-align:center;">
+              {{ sol.qualite_sol|title }}
+            </span>
+          {% else %}
+            <span style="font-size:13px; color:#8e44ad; font-weight:600; padding:8px 12px; background:rgba(142, 68, 173, 0.1); border-radius:12px; display:inline-block; border:1px solid rgba(142, 68, 173, 0.3); min-width:100px; text-align:center;">
+              {{ sol.qualite_sol|title }}
+            </span>
+          {% endif %}
+        </td>
+        <td>
+          <span style="font-size:13px; color:#555; font-weight:500; padding:8px 14px; background:rgba(149, 165, 166, 0.1); border-radius:6px; display:inline-block; border:1px solid rgba(149, 165, 166, 0.3); text-align:center; min-width:110px;">
+            {{ sol.date_analyse|date:"d/m/Y" }}
+          </span>
+        </td>
+        <td style="display:flex; gap:10px; justify-content:center; align-items:center;">
+          <!-- Bouton MODIFIER - CARRÉ JAUNE -->
+          <a href="{% url 'modifier_sol_back' sol.id_analyse %}" 
+             style="background-color:#fab800; border:none; width:48px; height:48px; color:white !important; font-size:24px; display:flex; justify-content:center; align-items:center; border-radius:12px; padding:0; cursor:pointer; transition:background-color 0.3s ease, transform 0.2s ease; text-decoration:none;"
+             data-title="Modifier"
+             onmouseover="this.style.backgroundColor='#d6a200'; this.style.transform='scale(1.1)'"
+             onmouseout="this.style.backgroundColor='#fab800'; this.style.transform='scale(1)'">
+            ✏️
+          </a>
+          
+          <!-- Bouton SUPPRIMER avec modal - CARRÉ ROUGE -->
+          <button type="button" 
+                  style="background-color:#e03e3e; border:none; width:48px; height:48px; color:white !important; font-size:24px; display:flex; justify-content:center; align-items:center; border-radius:12px; padding:0; cursor:pointer; transition:background-color 0.3s ease, transform 0.2s ease;"
+                  data-title="Supprimer"
+                  data-bs-toggle="modal"
+                  data-bs-target="#deleteModal{{ sol.id_analyse }}"
+                  onmouseover="this.style.backgroundColor='#b73131'; this.style.transform='scale(1.1)'"
+                  onmouseout="this.style.backgroundColor='#e03e3e'; this.style.transform='scale(1)'">
+            🗑️
+          </button>
+        </td>
+      </tr>
+      
+      <!-- Modal de suppression -->
+      <div class="modal fade" id="deleteModal{{ sol.id_analyse }}" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header" style="background-color: #fff3cd; border-color: #ffeaa7;">
+              <h5 class="modal-title text-warning">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                Confirmer la suppression
+              </h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+              <div class="text-center mb-4">
+                <p>Vous êtes sur le point de supprimer définitivement l'analyse :</p>
+                <h5 class="card-title">{{ sol.pin_surface }} - {{ sol.total_region }}</h5>
+                <p class="text-danger fw-bold">Cette action est irréversible !</p>
+              </div>
+              
+              <form method="post" action="{% url 'supprimer_sol_back' sol.id_analyse %}" class="text-center">
+                {% csrf_token %}
+                <div class="d-flex justify-content-center gap-3">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    ❌ Annuler
+                  </button>
+                  <button type="submit" class="btn btn-danger">
+                    🗑️ Confirmer la suppression
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+    {% empty %}
+      <tr>
+        <td colspan="8" style="text-align:center; color:#6c757d; font-style:italic; padding:40px !important;">
+          <div style="padding:20px;">
+            <h6 style="color:#6c757d; margin-bottom:15px; font-size:16px;">Aucune analyse enregistrée</h6>
+            <a href="{% url 'ajouter_sol_back' %}" class="btn btn-vert" style="margin-top:10px;">
+              Créer une analyse
+            </a>
+          </div>
+        </td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<!-- STYLE EXACT comme l'ami -->
 <style>
-/* Bouton Ajouter une analyse - Style smooth */
-.btn-add-plantation {
+/* Bouton vert standard - EXACTEMENT COMME L'AMI */
+.btn-vert {
     background-color: rgba(154, 205, 50, 0.1);
-    color: #9ACD32;
-    padding: 12px 24px;
+    color: #9ACD32 !important;
+    padding: 10px 20px;
     border-radius: 10px;
     text-decoration: none;
     font-weight: 500;
-    transition: all 0.3s ease;
     border: 2px solid rgba(154, 205, 50, 0.3);
+    transition: all 0.3s ease;
     display: inline-block;
-    font-size: 15px;
+    font-size: 14px;
 }
 
-.btn-add-plantation:hover {
+.btn-vert:hover {
     background-color: rgba(154, 205, 50, 0.2);
     border-color: rgba(154, 205, 50, 0.5);
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(154, 205, 50, 0.2);
 }
 
-/* Tableau élégant */
+/* Tableau élégant - EXACTEMENT COMME L'AMI */
 .tableau-elegant {
     width: 100%;
     border-collapse: separate;
@@ -127,26 +327,32 @@
     overflow: hidden;
     box-shadow: 0 2px 8px rgba(0,0,0,0.04);
     background: white;
+    table-layout: fixed;
 }
 
 .tableau-elegant th {
     background-color: rgba(154, 205, 50, 0.08);
     color: #2d5016;
-    padding: 16px 12px;
+    padding: 14px 8px;
     text-align: left;
     font-weight: 600;
-    font-size: 14px;
+    font-size: 13px;
     border-bottom: 1px solid rgba(154, 205, 50, 0.2);
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    vertical-align: middle;
 }
 
 .tableau-elegant td {
-    padding: 16px 12px; /* Padding augmenté pour plus d'espace */
+    padding: 12px 8px;
     text-align: left;
     border-bottom: 1px solid #f0f0f0;
-    font-size: 14px;
+    font-size: 13px;
     color: #555;
+    vertical-align: middle;
 }
 
 .tableau-elegant tbody tr {
@@ -164,166 +370,12 @@
     border-bottom: none;
 }
 
-/* Données agrandies pour meilleure lisibilité */
-.data-id {
-    font-size: 15px;
-    color: #333;
-}
-
-.reference-data strong {
-    font-size: 15px;
-    color: #333;
-}
-
-.reference-data small {
-    font-size: 13px;
-}
-
-.surface-data {
-    background: rgba(52, 152, 219, 0.1);
-    color: #2980b9;
-    padding: 8px 12px;
-    border-radius: 6px;
-    font-weight: 600;
-    font-size: 14px;
-    display: inline-block;
-}
-
-.ph-data {
-    display: inline-block;
-    padding: 8px 12px;
-    border-radius: 6px;
-    font-weight: 600;
-    font-size: 14px;
-    min-width: 50px;
-    text-align: center;
-}
-
-.ph-acidic { 
-    background: rgba(243, 156, 18, 0.1); 
-    color: #d35400; 
-    border: 1px solid rgba(243, 156, 18, 0.2);
-}
-.ph-optimal { 
-    background: rgba(39, 174, 96, 0.1); 
-    color: #27ae60; 
-    border: 1px solid rgba(39, 174, 96, 0.2);
-}
-.ph-alkaline { 
-    background: rgba(52, 152, 219, 0.1); 
-    color: #2980b9; 
-    border: 1px solid rgba(52, 152, 219, 0.2);
-}
-
-.azote-data {
-    font-size: 14px;
-    color: #333;
-    font-weight: 600;
-    padding: 8px 12px;
-    background: rgba(155, 89, 182, 0.1);
-    border-radius: 6px;
-    display: inline-block;
-}
-
-.quality-data {
-    padding: 8px 12px;
-    border-radius: 12px;
-    font-weight: 600;
-    font-size: 13px;
-    border: 1px solid;
-    display: inline-block;
-}
-
-.quality-excellente { 
-    background: rgba(39, 174, 96, 0.1); 
-    color: #27ae60; 
-    border-color: rgba(39, 174, 96, 0.3);
-}
-.quality-bonne { 
-    background: rgba(52, 152, 219, 0.1); 
-    color: #2980b9; 
-    border-color: rgba(52, 152, 219, 0.3);
-}
-.quality-moyenne { 
-    background: rgba(243, 156, 18, 0.1); 
-    color: #f39c12; 
-    border-color: rgba(243, 156, 18, 0.3);
-}
-.quality-critique { 
-    background: rgba(231, 76, 60, 0.1); 
-    color: #e74c3c; 
-    border-color: rgba(231, 76, 60, 0.3);
-}
-
-.date-data {
-    font-size: 14px;
-    color: #555;
-    font-weight: 500;
-    padding: 8px 12px;
-    background: rgba(149, 165, 166, 0.1);
-    border-radius: 6px;
-    display: inline-block;
-}
-
-/* Message pas de données */
-.no-data {
-    text-align: center;
-    color: #6c757d;
-    font-style: italic;
-    padding: 40px !important;
-}
-
-.empty-state {
-    padding: 20px;
-}
-
-.empty-state h6 {
-    margin-bottom: 15px;
-    font-size: 16px;
-}
-
-/* Boutons d'action */
-.btn {
-    padding: 10px 14px;
-    border-radius: 8px;
-    text-decoration: none;
-    font-weight: 500;
-    transition: all 0.2s ease;
-    color: white;
-    display: inline-block;
-    font-size: 14px;
+/* Tooltip personnalisé - EXACTEMENT COMME L'AMI */
+button[data-title], a[data-title] {
     position: relative;
 }
 
-.btn-edit {
-    background-color: #ffc107;
-}
-.btn-edit:hover {
-    background-color: #e0a800;
-    transform: scale(1.1);
-}
-
-.btn-delete {
-    background-color: #dc3545;
-}
-.btn-delete:hover {
-    background-color: #c82333;
-    transform: scale(1.1);
-}
-
-.actions-cell {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-    justify-content: center;
-}
-
-/* Tooltip personnalisé - EN HAUT */
-.btn[data-title] {
-    position: relative;
-}
-
-.btn[data-title]:hover::after {
+button[data-title]:hover::after, a[data-title]:hover::after {
     content: attr(data-title);
     position: absolute;
     top: -40px;
@@ -341,7 +393,7 @@
     font-weight: 500;
 }
 
-.btn[data-title]:hover::before {
+button[data-title]:hover::before, a[data-title]:hover::before {
     content: '';
     position: absolute;
     top: -10px;
@@ -353,5 +405,83 @@
     z-index: 1000;
 }
 
+/* Modal styles - EXACTEMENT COMME L'AMI */
+.modal-content {
+    border-radius: 12px;
+    border: none;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+}
+
+.modal-header {
+    border-bottom: 1px solid #dee2e6;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+}
+
+.modal-body {
+    padding: 25px;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    border-color: #dc3545;
+    padding: 10px 20px;
+    font-weight: 500;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.btn-danger:hover {
+    background-color: #c82333;
+    border-color: #bd2130;
+    transform: translateY(-2px);
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    border-color: #6c757d;
+    padding: 10px 20px;
+    font-weight: 500;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+    border-color: #545b62;
+    transform: translateY(-2px);
+}
+
+/* Responsive - EXACTEMENT COMME L'AMI */
+@media (max-width: 768px) {
+    .btn-vert {
+        padding: 8px 12px;
+        font-size: 12px;
+    }
+    
+    input[type="text"] {
+        width: 100% !important;
+        min-width: 100% !important;
+    }
+    
+    select {
+        width: 100% !important;
+        min-width: 100% !important;
+    }
+    
+    .tableau-elegant th,
+    .tableau-elegant td {
+        font-size: 11px;
+        padding: 8px 4px;
+    }
+    
+    /* Boutons carrés plus petits sur mobile */
+    button[style*="width:48px"], a[style*="width:48px"], span[style*="width:48px"] {
+        width: 36px !important;
+        height: 36px !important;
+        font-size: 18px !important;
+    }
+}
 </style>
+
 {% endblock %}

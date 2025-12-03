@@ -1,0 +1,365 @@
+{% extends 'backoffice/base.html' %}
+{% load static %}
+
+{% block title %}Statistiques des Sols - Backoffice{% endblock %}
+
+{% block page_title %}
+<div style="text-align:left; margin-bottom:14px;">
+    <span style="font-size:32px; font-weight:400; color:#9ACD32;">
+        Statistiques des Analyses de Sol
+    </span>
+</div>
+{% endblock %}
+
+{% block content %}
+
+<!-- Conteneur principal SANS CARD -->
+<div style="padding:15px; border-radius:10px; display:flex; flex-direction:column; gap:15px;">
+
+    <!-- Ligne 1 : Bouton Retour -->
+    <div style="display:flex; align-items:center;">
+        <!-- Bouton Retour SEUL sur la première ligne -->
+        <a href="{% url 'liste_sols_back' %}" class="btn btn-vert" style="margin-right:20px;">
+            <i class="fas fa-arrow-left me-2"></i> Retour à la liste
+        </a>
+    </div>
+
+    <!-- Cartes de statistiques -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-bottom: 20px;">
+        <!-- Carte Analyses Total -->
+        <div style="background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.04); border: 1px solid rgba(0,0,0,0.05); display: flex; align-items: center; gap: 15px;">
+            <div style="width: 60px; height: 60px; border-radius: 12px; background: rgba(52, 152, 219, 0.1); display: flex; align-items: center; justify-content: center; font-size: 24px; color: #3498db;">
+                <i class="fas fa-flask"></i>
+            </div>
+            <div>
+                <div style="font-size: 28px; font-weight: 700; color: #2c3e50; margin: 0;">
+                    {{ stats.total_analyses|default:0 }}
+                </div>
+                <div style="color: #7f8c8d; font-size: 14px; margin: 5px 0 0 0;">
+                    Analyses Total
+                </div>
+            </div>
+        </div>
+
+        <!-- Carte pH Moyen -->
+        <div style="background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.04); border: 1px solid rgba(0,0,0,0.05); display: flex; align-items: center; gap: 15px;">
+            <div style="width: 60px; height: 60px; border-radius: 12px; background: rgba(39, 174, 96, 0.1); display: flex; align-items: center; justify-content: center; font-size: 24px; color: #27ae60;">
+                <i class="fas fa-chart-line"></i>
+            </div>
+            <div>
+                <div style="font-size: 28px; font-weight: 700; color: #2c3e50; margin: 0;">
+                    {{ stats.moyenne_ph|floatformat:2|default:"0.00" }}
+                </div>
+                <div style="color: #7f8c8d; font-size: 14px; margin: 5px 0 0 0;">
+                    pH Moyen
+                </div>
+            </div>
+        </div>
+
+        <!-- Carte Azote Moyen -->
+        <div style="background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.04); border: 1px solid rgba(0,0,0,0.05); display: flex; align-items: center; gap: 15px;">
+            <div style="width: 60px; height: 60px; border-radius: 12px; background: rgba(155, 89, 182, 0.1); display: flex; align-items: center; justify-content: center; font-size: 24px; color: #9b59b6;">
+                <i class="fas fa-atom"></i>
+            </div>
+            <div>
+                <div style="font-size: 28px; font-weight: 700; color: #2c3e50; margin: 0;">
+                    {{ stats.moyenne_azote|floatformat:1|default:"0.0" }}
+                </div>
+                <div style="color: #7f8c8d; font-size: 14px; margin: 5px 0 0 0;">
+                    Azote Moyen
+                </div>
+            </div>
+        </div>
+
+        <!-- Carte Meilleur pH -->
+        <div style="background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.04); border: 1px solid rgba(0,0,0,0.05); display: flex; align-items: center; gap: 15px;">
+            <div style="width: 60px; height: 60px; border-radius: 12px; background: rgba(243, 156, 18, 0.1); display: flex; align-items: center; justify-content: center; font-size: 24px; color: #f39c12;">
+                <i class="fas fa-balance-scale"></i>
+            </div>
+            <div>
+                <div style="font-size: 28px; font-weight: 700; color: #2c3e50; margin: 0;">
+                    {{ stats.meilleur_ph|floatformat:2|default:"0.00" }}
+                </div>
+                <div style="color: #7f8c8d; font-size: 14px; margin: 5px 0 0 0;">
+                    Meilleur pH
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Graphiques -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 15px; margin-bottom: 20px;">
+        <!-- Distribution qualité -->
+        <div style="background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.04); border: 1px solid rgba(0,0,0,0.05);">
+            <h5 style="color: #2c3e50; font-weight: 600; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid rgba(154, 205, 50, 0.2); display: flex; align-items: center; gap: 8px;">
+                <i class="fas fa-chart-pie"></i> Distribution de la Qualité
+            </h5>
+            {% if graph_qualite %}
+            <img src="data:image/png;base64,{{ graph_qualite }}" style="width: 100%; height: auto; border-radius: 8px;">
+            {% else %}
+            <div style="text-align: center; padding: 40px 20px; color: #7f8c8d;">
+                <i class="fas fa-chart-bar fa-3x" style="color: #bdc3c7; margin-bottom: 15px;"></i>
+                <p style="margin: 0;">Pas assez de données pour générer le graphique</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Évolution temporelle -->
+        <div style="background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.04); border: 1px solid rgba(0,0,0,0.05);">
+            <h5 style="color: #2c3e50; font-weight: 600; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid rgba(154, 205, 50, 0.2); display: flex; align-items: center; gap: 8px;">
+                <i class="fas fa-chart-line"></i> Évolution du pH
+            </h5>
+            {% if graph_evolution %}
+            <img src="data:image/png;base64,{{ graph_evolution }}" style="width: 100%; height: auto; border-radius: 8px;">
+            {% else %}
+            <div style="text-align: center; padding: 40px 20px; color: #7f8c8d;">
+                <i class="fas fa-chart-line fa-3x" style="color: #bdc3c7; margin-bottom: 15px;"></i>
+                <p style="margin: 0;">Pas assez de données pour générer le graphique</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Corrélation -->
+        <div style="background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.04); border: 1px solid rgba(0,0,0,0.05);">
+            <h5 style="color: #2c3e50; font-weight: 600; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid rgba(154, 205, 50, 0.2); display: flex; align-items: center; gap: 8px;">
+                <i class="fas fa-project-diagram"></i> Corrélation pH vs Azote
+            </h5>
+            {% if graph_correlation %}
+            <img src="data:image/png;base64,{{ graph_correlation }}" style="width: 100%; height: auto; border-radius: 8px;">
+            {% else %}
+            <div style="text-align: center; padding: 40px 20px; color: #7f8c8d;">
+                <i class="fas fa-project-diagram fa-3x" style="color: #bdc3c7; margin-bottom: 15px;"></i>
+                <p style="margin: 0;">Pas assez de données pour générer le graphique</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Répartition pH -->
+        <div style="background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.04); border: 1px solid rgba(0,0,0,0.05);">
+            <h5 style="color: #2c3e50; font-weight: 600; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid rgba(154, 205, 50, 0.2); display: flex; align-items: center; gap: 8px;">
+                <i class="fas fa-chart-bar"></i> Répartition des pH
+            </h5>
+            {% if graph_repartition_ph %}
+            <img src="data:image/png;base64,{{ graph_repartition_ph }}" style="width: 100%; height: auto; border-radius: 8px;">
+            {% else %}
+            <div style="text-align: center; padding: 40px 20px; color: #7f8c8d;">
+                <i class="fas fa-chart-bar fa-3x" style="color: #bdc3c7; margin-bottom: 15px;"></i>
+                <p style="margin: 0;">Pas assez de données pour générer le graphique</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+</div>
+
+<!-- TABLEAU DES DERNIÈRES ANALYSES -->
+<div style="margin-top: 20px;">
+    <h5 style="color: #2c3e50; font-weight: 600; margin-bottom: 15px; display: flex; align-items: center; gap: 8px;">
+        <i class="fas fa-history"></i> Dernières Analyses
+    </h5>
+    
+    <table class="tableau-elegant">
+      <thead>
+        <tr>
+          <th style="width: 80px;">ID</th>
+          <th style="width: 180px;">Type d'analyse</th>
+          <th style="width: 100px;">pH</th>
+          <th style="width: 120px;">Azote (mg/kg)</th>
+          <th style="width: 120px;">Qualité</th>
+          <th style="width: 120px;">Date</th>
+        </tr>
+      </thead>
+      
+      <tbody>
+        {% for sol in sols %}
+          <tr>
+            <td>
+              <span style="font-size:13px; color:#333; font-weight:600; padding:8px 12px; background:rgba(52, 152, 219, 0.1); border-radius:6px; display:inline-block; text-align:center; min-width:50px;">
+                #{{ sol.id_analyse }}
+              </span>
+            </td>
+            <td>
+              <span style="font-size:13px; color:#333; font-weight:500; padding:8px 12px; background:rgba(39, 174, 96, 0.1); border-radius:6px; display:inline-block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100%;">
+                {{ sol.pin_surface }}
+              </span>
+            </td>
+            <td>
+              {% if sol.ph < 6.0 %}
+                <span style="font-size:13px; color:#d35400; font-weight:600; padding:8px 12px; background:rgba(243, 156, 18, 0.1); border-radius:6px; display:inline-block; text-align:center; min-width:50px; border:1px solid rgba(243, 156, 18, 0.2);">
+                  {{ sol.ph }}
+                </span>
+              {% elif sol.ph > 7.5 %}
+                <span style="font-size:13px; color:#2980b9; font-weight:600; padding:8px 12px; background:rgba(52, 152, 219, 0.1); border-radius:6px; display:inline-block; text-align:center; min-width:50px; border:1px solid rgba(52, 152, 219, 0.2);">
+                  {{ sol.ph }}
+                </span>
+              {% else %}
+                <span style="font-size:13px; color:#27ae60; font-weight:600; padding:8px 12px; background:rgba(39, 174, 96, 0.1); border-radius:6px; display:inline-block; text-align:center; min-width:50px; border:1px solid rgba(39, 174, 96, 0.2);">
+                  {{ sol.ph }}
+                </span>
+              {% endif %}
+            </td>
+            <td>
+              <span style="font-size:13px; color:#333; font-weight:600; padding:8px 12px; background:rgba(155, 89, 182, 0.1); border-radius:6px; display:inline-block; text-align:center; min-width:90px;">
+                {{ sol.azote|floatformat:1 }}
+              </span>
+            </td>
+            <td>
+              {% if sol.qualite_sol == 'excellente' %}
+                <span style="font-size:12px; color:#27ae60; font-weight:600; padding:8px 12px; background:rgba(39, 174, 96, 0.1); border-radius:12px; display:inline-block; border:1px solid rgba(39, 174, 96, 0.3); min-width:90px; text-align:center;">
+                  {{ sol.qualite_sol|title }}
+                </span>
+              {% elif sol.qualite_sol == 'bonne' %}
+                <span style="font-size:12px; color:#2980b9; font-weight:600; padding:8px 12px; background:rgba(52, 152, 219, 0.1); border-radius:12px; display:inline-block; border:1px solid rgba(52, 152, 219, 0.3); min-width:90px; text-align:center;">
+                  {{ sol.qualite_sol|title }}
+                </span>
+              {% elif sol.qualite_sol == 'moyenne' %}
+                <span style="font-size:12px; color:#f39c12; font-weight:600; padding:8px 12px; background:rgba(243, 156, 18, 0.1); border-radius:12px; display:inline-block; border:1px solid rgba(243, 156, 18, 0.3); min-width:90px; text-align:center;">
+                  {{ sol.qualite_sol|title }}
+                </span>
+              {% elif sol.qualite_sol == 'mauvaise' %}
+                <span style="font-size:12px; color:#e74c3c; font-weight:600; padding:8px 12px; background:rgba(231, 76, 60, 0.1); border-radius:12px; display:inline-block; border:1px solid rgba(231, 76, 60, 0.3); min-width:90px; text-align:center;">
+                  {{ sol.qualite_sol|title }}
+                </span>
+              {% else %}
+                <span style="font-size:12px; color:#8e44ad; font-weight:600; padding:8px 12px; background:rgba(142, 68, 173, 0.1); border-radius:12px; display:inline-block; border:1px solid rgba(142, 68, 173, 0.3); min-width:90px; text-align:center;">
+                  {{ sol.qualite_sol|title }}
+                </span>
+              {% endif %}
+            </td>
+            <td>
+              <span style="font-size:13px; color:#555; font-weight:500; padding:8px 12px; background:rgba(149, 165, 166, 0.1); border-radius:6px; display:inline-block; border:1px solid rgba(149, 165, 166, 0.3); text-align:center; min-width:100px;">
+                {{ sol.date_analyse|date:"d/m/Y" }}
+              </span>
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="6" style="text-align:center; color:#6c757d; font-style:italic; padding:40px !important;">
+              <div style="padding:20px;">
+                <i class="fas fa-inbox fa-2x mb-3" style="color:#bdc3c7;"></i>
+                <h6 style="color:#6c757d; margin-bottom:15px; font-size:16px;">Aucune analyse disponible</h6>
+              </div>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+</div>
+
+<!-- STYLE EXACT comme l'ami -->
+<style>
+/* Bouton vert standard - EXACTEMENT COMME L'AMI */
+.btn-vert {
+    background-color: rgba(154, 205, 50, 0.1);
+    color: #9ACD32 !important;
+    padding: 10px 20px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 500;
+    border: 2px solid rgba(154, 205, 50, 0.3);
+    transition: all 0.3s ease;
+    display: inline-block;
+    font-size: 14px;
+}
+
+.btn-vert:hover {
+    background-color: rgba(154, 205, 50, 0.2);
+    border-color: rgba(154, 205, 50, 0.5);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(154, 205, 50, 0.2);
+}
+
+/* Tableau élégant - EXACTEMENT COMME L'AMI */
+.tableau-elegant {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin-top: 10px;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    background: white;
+    table-layout: fixed;
+}
+
+.tableau-elegant th {
+    background-color: rgba(154, 205, 50, 0.08);
+    color: #2d5016;
+    padding: 14px 8px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 13px;
+    border-bottom: 1px solid rgba(154, 205, 50, 0.2);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    vertical-align: middle;
+}
+
+.tableau-elegant td {
+    padding: 12px 8px;
+    text-align: left;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 13px;
+    color: #555;
+    vertical-align: middle;
+}
+
+.tableau-elegant tbody tr {
+    background-color: white;
+    transition: all 0.2s ease;
+}
+
+.tableau-elegant tbody tr:hover {
+    background-color: rgba(154, 205, 50, 0.03);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.tableau-elegant tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* Animation pour les cartes de statistiques */
+div[style*="background: white; border-radius: 12px; padding: 20px;"] {
+    transition: all 0.2s ease;
+}
+
+div[style*="background: white; border-radius: 12px; padding: 20px;"]:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+/* Responsive - EXACTEMENT COMME L'AMI */
+@media (max-width: 768px) {
+    .btn-vert {
+        padding: 8px 12px;
+        font-size: 12px;
+    }
+    
+    /* Cartes de statistiques responsive */
+    div[style*="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr))"] {
+        grid-template-columns: 1fr;
+    }
+    
+    div[style*="grid-template-columns: repeat(auto-fit, minmax(400px, 1fr))"] {
+        grid-template-columns: 1fr;
+    }
+    
+    .tableau-elegant th,
+    .tableau-elegant td {
+        font-size: 11px;
+        padding: 8px 4px;
+    }
+    
+    /* Ajustement des largeurs sur mobile */
+    .tableau-elegant th:first-child,
+    .tableau-elegant td:first-child {
+        width: 60px !important;
+    }
+}
+</style>
+
+{% endblock %}

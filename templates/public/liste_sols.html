@@ -143,6 +143,10 @@
         font-size: 1.3rem;
         margin-bottom: 0.5rem;
     }
+    /* Ajoutez cette classe dans votre section CSS */
+.badge-mauvaise { 
+    background: linear-gradient(135deg, #e74c3c, #ec7063); 
+}
 
     .analyse-badge {
         display: inline-block;
@@ -668,7 +672,95 @@
                 margin-bottom: 2rem;
             }
         }
-    </style>
+        
+    
+   /* --- NOTIFICATION BELL --- */
+.notif-wrapper {
+    position: relative;
+    margin-right: 20px;
+}
+
+.notif-btn {
+    background: none;
+    border: none;
+    position: relative;
+    font-size: 22px;
+    cursor: pointer;
+}
+
+/* Bouton de notification */
+.notif-btn i {
+    color: #9ACD32 !important; /* même vert que topbar-green */
+    font-size: 1.3rem;          /* ajustable selon ton design */
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+/* Hover pour effet pro */
+.notif-btn:hover i {
+    color: #7ca82b !important; /* vert légèrement plus foncé au survol */
+}
+
+
+.notif-count {
+    position: absolute;
+    top: -5px;
+    right: -8px;
+    background: #e74c3c;
+    color: white;
+    font-size: 10px;
+    padding: 2px 5px;
+    border-radius: 50%;
+}
+
+/* --- MENU NOTIFICATIONS --- */
+#notifMenu {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 35px; /* juste en dessous de l'icône */
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    width: 300px;
+    max-height: 400px; /* hauteur maximale */
+    overflow-y: auto;  /* scroll vertical si trop de notifications */
+    z-index: 1000;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    padding: 10px;
+}
+
+/* Optionnel : style joli pour la scrollbar */
+#notifMenu::-webkit-scrollbar {
+    width: 6px;
+}
+
+#notifMenu::-webkit-scrollbar-thumb {
+    background-color: #9ACD32; /* même vert que ton thème */
+    border-radius: 3px;
+}
+
+.notif-title {
+    font-weight: bold;
+    margin-bottom: 10px;
+    font-size: 14px;
+}
+
+.notif-item {
+    padding: 10px;
+    background: #fffaf0;
+    border-left: 4px solid  #9ACD32;;
+    border-radius: 5px;
+    margin-bottom: 8px;
+    font-size: 13px;
+}
+
+.notif-empty {
+    font-size: 13px;
+    color: #777;
+    text-align: center;
+}
+</style>
 </head>
 
 <body>
@@ -706,6 +798,36 @@
                 <li class="nav-item"><a href="{% url 'liste_sols_front' %}" class="nav-link active">Analyses Sol</a></li>
             </ul>
         </div>
+        <!-- Icone Notifications -->
+<div class="notif-wrapper">
+    <button id="notifBtn" class="notif-btn">
+        <i class="fas fa-bell"></i>
+        {% if alertes %}
+        <span class="notif-count">{{ alertes|length }}</span>
+        {% endif %}
+    </button>
+
+    <!-- Menu Notifications -->
+    <div id="notifMenu" class="notif-menu">
+        <h6 class="notif-title">Notifications</h6>
+
+        {% if alertes %}
+            {% for item in alertes %}
+            <div class="notif-item">
+                <strong>{{ item.sol.localisation }}</strong>
+                <ul>
+                    {% for m in item.messages %}
+                    <li>{{ m }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endfor %}
+        {% else %}
+        <p class="notif-empty">Aucune notification</p>
+        {% endif %}
+    </div>
+</div>
+
         {% if user.is_authenticated %}
 <div class="profile-dropdown">
     <div class="profile-btn">
@@ -728,22 +850,23 @@
 </div>
 {% endif %}
 
+
     </nav>
     <!-- Navbar End -->
 
     <!-- Page Header -->
-    <div class="container-fluid page-header py-5 mb-5 wow fadeIn" data-wow-delay="0.1s">
-        <div class="container text-center py-5">
-            <h1 class="display-3 text-white mb-4 animated slideInDown">Analyses de Sol</h1>
-            <nav aria-label="breadcrumb animated slideInDown">
-                <ol class="breadcrumb justify-content-center mb-0">
-                    <li class="breadcrumb-item active text-white" aria-current="page">
-                        Découvrez la richesse de votre terre grâce à une analyse de sol précise — la première étape vers une agriculture plus intelligente et durable.
-                    </li>
-                </ol>
-            </nav>
-        </div>
+   <!-- Page Header --> <div class="container-fluid page-header py-5 mb-5 wow fadeIn" data-wow-delay="0.1s">
+     <div class="container text-center py-5"> 
+        <h1 class="display-3 text-white mb-4 animated slideInDown">Analyses de Sol</h1>
+         <nav aria-label="breadcrumb animated slideInDown"> 
+            <ol class="breadcrumb justify-content-center mb-0"> 
+                <li class="breadcrumb-item active text-white" aria-current="page"> Découvrez la richesse de votre terre grâce à une analyse de sol précise — la première étape vers une agriculture plus intelligente et durable. </li>
+             </ol> 
+            </nav> 
+        </div> 
     </div>
+   
+
 
     <!-- Analyses Section -->
     <div class="container-xxl py-5">
@@ -982,6 +1105,23 @@ document.addEventListener('DOMContentLoaded', () => {
 {# {% include 'public/chatbot_ia.html' %} #}
 
 
+...
+<!-- your HTML content -->
 
+<!-- Notification script -->
+<script>
+document.getElementById("notifBtn").addEventListener("click", function () {
+    let menu = document.getElementById("notifMenu");
+    menu.style.display = (menu.style.display === "none" || menu.style.display === "") 
+        ? "block" 
+        : "none";
+});
+
+document.addEventListener("click", function (e) {
+    if (!e.target.closest("#notifBtn") && !e.target.closest("#notifMenu")) {
+        document.getElementById("notifMenu").style.display = "none";
+    }
+});
+</script>
 </body>
 </html>

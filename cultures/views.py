@@ -29,7 +29,7 @@ import json
 from cultures.services_notifications import envoyer_notifications_cultures_pour_aujourdhui
 
 from django.core.files.storage import default_storage
-from ai_engine.plant_health_inference import predict_plant_health
+#from ai_engine.plant_health_inference import predict_plant_health
 
 def dashboard(request):
     nb_fermes = envoyer_notifications_cultures_pour_aujourdhui()

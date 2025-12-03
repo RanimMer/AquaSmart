@@ -12,94 +12,269 @@
 {% endblock %}
 
 {% block content %}
-<div class="card">
-  <div class="card-body">
-    <div style="margin-bottom:20px;">
-      <a href="{% url 'ajouter_culture' %}" class="btn-add-plantation">
-        Ajouter une culture
-      </a>
+
+<!-- Conteneur principal sans fond -->
+<div style="padding:15px; border-radius:10px; display:flex; flex-direction:column; gap:15px;">
+
+    <!-- Ligne supérieure : Ajouter seulement -->
+    <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+        <!-- Bouton Ajouter à gauche -->
+        <a href="{% url 'ajouter_culture' %}" class="btn btn-vert" style="margin-right:20px;">+ Ajouter une culture</a>
     </div>
 
-    {% if messages %}
-      {% for message in messages %}
-      <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
-        {{ message }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-      </div>
-      {% endfor %}
-    {% endif %}
+    <!-- Ligne barre de recherche + boutons Rechercher/Retour + Statistiques/PDF -->
+    <form method="get" action="{% url 'gestion_cultures' %}" style="display:flex; gap:10px; align-items:center; flex-wrap:wrap; width:100%;">
+        <!-- Barre de recherche -->
+        <input type="text" name="q" placeholder="Rechercher par nom de culture..." 
+               value="{{ q|default:'' }}" 
+               style="padding:10px; border:1px solid #9ACD32; border-radius:5px; width:420px;">
 
-    <table class="tableau-elegant">
-      <thead>
-        <tr>
-          <th style="width: 80px;">Image</th>
-          <th style="width: 140px;">Nom</th>
-          <th style="width: 120px;">Type</th>
-          <th style="width: 110px;">Surface (m²)</th>
-          <th style="width: 140px;">Date semis</th>
-          <th style="width: 150px;">Date récolte</th>
-          <th style="width: 130px;">Besoin eau (L/j)</th>
-          <th style="width: 150px;">Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for c in cultures %}
-          <tr>
-            <td>
-              {% if c.image %}
-                <img src="{{ c.image.url }}" alt="{{ c.nom }}" class="table-image">
-              {% else %}
-                <div class="no-image">
-                  <small>Aucune image</small>
-                </div>
-              {% endif %}
-            </td>
-            <td>
-              <span class="culture-name">{{ c.nom }}</span>
-            </td>
-            <td>
-              <span class="type-data">{{ c.get_type_display|default:c.type }}</span>
-            </td>
-            <td>
-              <span class="surface-data">{{ c.surface_m2 }} m²</span>
-            </td>
-            <td>
-              <div class="date-container">
-                <span class="date-semis">{{ c.date_semis }}</span>
-              </div>
-            </td>
-            <td>
-              <div class="date-container">
-                <span class="date-recolte">{{ c.date_recolte_prevue }}</span>
-              </div>
-            </td>
-            <td>
-              <span class="eau-data">{{ c.besoin_base_l_j }} L/j</span>
-            </td>
-            <td class="actions-cell">
-              <a href="{% url 'modifier_culture' c.pk %}" class="btn btn-edit" data-title="Modifier">✏️</a>
-              <a href="{% url 'supprimer_culture' c.pk %}" class="btn btn-delete" data-title="Supprimer">🗑️</a>
-              <a href="{% url 'enregistrer_utilisation_produit' c.pk %}" class="btn btn-info" data-title="Utilisation produit">📋</a>
-            </td>
-          </tr>
-        {% empty %}
-          <tr>
-            <td colspan="8" class="no-data">
-              <div class="empty-state">
-                <h6 class="text-muted">Aucune culture enregistrée</h6>
-                <a href="{% url 'ajouter_culture' %}" class="btn-add-plantation mt-2">
-                  Créer une culture
-                </a>
-              </div>
-            </td>
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
+        <!-- Boutons Rechercher et Retour -->
+        <button type="submit" class="btn btn-vert">Rechercher</button>
+        <a href="{% url 'gestion_cultures' %}" class="btn btn-vert">Retour</a>
+
+        <!-- Boutons Statistiques et PDF alignés à droite -->
+        <div style="display:flex; gap:10px; margin-left:auto;">
+            <a href="{% url 'stats_cultures' %}" class="btn btn-vert">📊 Statistiques</a>
+            <a href="{% url 'export_cultures_pdf' %}" class="btn btn-vert">📄 Exporter PDF</a>
+        </div>
+    </form>
+
 </div>
 
+<!-- TABLEAU DES CULTURES -->
+<table class="tableau-elegant">
+  <thead>
+    <tr>
+      <th style="width: 80px;">Image</th>
+      <th style="width: 140px;">
+        Nom       
+      </th>
+      <th style="width: 120px;">
+        Type
+      </th>
+      <th style="width: 110px;">
+        Surface (m²)
+      </th>
+      <th style="width: 140px;">
+        Date semis
+       
+          <a href="?tri=semis_asc" style="text-decoration:none; color:#9ACD32;">⬆</a>
+          <a href="?tri=semis_desc" style="text-decoration:none; color:#9ACD32;">⬇</a>
+        
+      </th>
+      <th style="width: 150px;">
+        Date récolte
+      </th>
+      <th style="width: 140px;">
+        Besoin eau (L/j)
+          <a href="?tri=besoin_asc" style="text-decoration:none; color:#9ACD32;">⬆</a>
+          <a href="?tri=besoin_desc" style="text-decoration:none; color:#9ACD32;">⬇</a>
+      </th>
+      <th style="width: 150px;">Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for c in cultures %}
+      <tr>
+        <td>
+          {% if c.image %}
+            <img src="{{ c.image.url }}" alt="{{ c.nom }}" class="table-image">
+          {% else %}
+            <div class="no-image">
+              <small>Aucune image</small>
+            </div>
+          {% endif %}
+        </td>
+        <td>
+          <span class="culture-name">{{ c.nom }}</span>
+        </td>
+        <td>
+          <span class="type-data">{{ c.get_type_display|default:c.type }}</span>
+        </td>
+        <td>
+          <span class="surface-data">{{ c.surface_m2 }} m²</span>
+        </td>
+        <td>
+          <div class="date-container">
+            <span class="date-semis">{{ c.date_semis }}</span>
+          </div>
+        </td>
+        <td>
+          <div class="date-container">
+            <span class="date-recolte">{{ c.date_recolte_prevue }}</span>
+          </div>
+        </td>
+        <td>
+          <span class="eau-data">{{ c.besoin_base_l_j }} L/j</span>
+        </td>
+        <td class="actions-cell">
+          <a href="{% url 'modifier_culture' c.pk %}" class="btn btn-edit" data-title="Modifier">✏️</a>
+          
+          <!-- Bouton qui ouvre le modal de suppression -->
+          <button type="button" 
+                  class="btn btn-delete" 
+                  data-title="Supprimer"
+                  data-bs-toggle="modal"
+                  data-bs-target="#deleteModal{{ c.pk }}">
+            🗑️
+          </button>
+          
+          <a href="{% url 'enregistrer_utilisation_produit' c.pk %}" class="btn btn-info" data-title="Utilisation produit">📋</a>
+        </td>
+      </tr>
+    {% empty %}
+      <tr>
+        <td colspan="8" class="no-data">
+          <div class="empty-state">
+            <h6 class="text-muted">Aucune culture enregistrée</h6>
+            <a href="{% url 'ajouter_culture' %}" class="btn-add-plantation mt-2">
+              Créer une culture
+            </a>
+          </div>
+        </td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<!-- Modals de confirmation de suppression pour chaque culture -->
+{% for c in cultures %}
+<div class="modal fade" id="deleteModal{{ c.pk }}" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header" style="background-color: #fff3cd; border-color: #ffeaa7;">
+        <h5 class="modal-title text-warning">
+          <i class="fas fa-exclamation-triangle me-2"></i>
+          Confirmer la suppression
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="text-center mb-4">
+          <p>Vous êtes sur le point de supprimer définitivement la culture :</p>
+              <h5 class="card-title">{{ c.nom }}</h5>
+             
+          
+          <p class="text-danger fw-bold">Cette action est irréversible !</p>
+        </div>
+        
+        <form method="post" action="{% url 'supprimer_culture' c.pk %}" class="text-center">
+          {% csrf_token %}
+          <div class="d-flex justify-content-center gap-3">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+              ❌ Annuler
+            </button>
+            <button type="submit" class="btn btn-danger">
+              🗑️ Confirmer la suppression
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endfor %}
+
 <style>
+/* Zone de notifications */
+.notification-area {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 10000;
+    max-width: 400px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.notification-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    animation: slideIn 0.3s ease-out;
+    max-width: 100%;
+}
+
+.notification-info {
+    background-color: #e8f5e9;
+    border-left: 4px solid #4caf50;
+    color: #2e7d32;
+}
+
+.notification-warning {
+    background-color: #fff3e0;
+    border-left: 4px solid #ff9800;
+    color: #e65100;
+}
+
+.notification-content {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+}
+
+.notification-icon {
+    font-size: 18px;
+}
+
+.notification-text {
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+.notification-close {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: inherit;
+    opacity: 0.7;
+    margin-left: 10px;
+}
+
+.notification-close:hover {
+    opacity: 1;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Boutons de tri dans les en-têtes */
+.sort-buttons {
+    display: inline-flex;
+    flex-direction: column;
+    margin-left: 5px;
+    vertical-align: middle;
+}
+
+.sort-btn {
+    color: #9ACD32;
+    text-decoration: none;
+    font-size: 10px;
+    line-height: 0.8;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+}
+
+.sort-btn:hover {
+    opacity: 1;
+    color: #32CD32;
+}
+
 /* Bouton Ajouter une culture - Style smooth */
 .btn-add-plantation {
     background-color: rgba(154, 205, 50, 0.1);
@@ -147,6 +322,7 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    vertical-align: middle;
 }
 
 .tableau-elegant td {
@@ -236,7 +412,6 @@
     min-width: 60px;
 }
 
-/* Conteneur pour les dates avec séparation */
 .date-container {
     display: flex;
     justify-content: center;
@@ -245,35 +420,34 @@
     padding: 4px 0;
 }
 
-/* Dates bien séparées avec cadres ajustés */
 .date-semis {
     font-size: 13px;
     color: #555;
     font-weight: 500;
-    padding: 8px 14px; /* Padding horizontal augmenté */
+    padding: 8px 14px;
     background: rgba(149, 165, 166, 0.1);
     border-radius: 6px;
     display: inline-block;
     white-space: nowrap;
     border: 1px solid rgba(149, 165, 166, 0.3);
     text-align: center;
-    min-width: 110px; /* Largeur minimale augmentée */
-    box-sizing: border-box; /* Pour inclure padding et border dans la largeur */
+    min-width: 110px;
+    box-sizing: border-box;
 }
 
 .date-recolte {
     font-size: 13px;
     color: #555;
     font-weight: 500;
-    padding: 8px 14px; /* Padding horizontal augmenté */
+    padding: 8px 14px;
     background: rgba(155, 89, 182, 0.1);
     border-radius: 6px;
     display: inline-block;
     white-space: nowrap;
     border: 1px solid rgba(155, 89, 182, 0.3);
     text-align: center;
-    min-width: 110px; /* Largeur minimale augmentée */
-    box-sizing: border-box; /* Pour inclure padding et border dans la largeur */
+    min-width: 110px;
+    box-sizing: border-box;
 }
 
 .eau-data {
@@ -318,25 +492,70 @@
     position: relative;
 }
 
+/* Bouton modifier : carré jaune avec icône blanche */
 .btn-edit {
-    background-color: #ffc107;
+    background-color: #fab800;
+    border: none;
+    width: 48px;
+    height: 48px;
+    color: white !important;
+    font-size: 24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 12px;
+    padding: 0;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    text-decoration: none;
 }
+
 .btn-edit:hover {
-    background-color: #e0a800;
+    background-color: #d6a200;
     transform: scale(1.1);
 }
 
+/* Bouton supprimer : carré rouge avec icône blanche */
 .btn-delete {
-    background-color: #dc3545;
+    background-color: #e03e3e;
+    border: none;
+    width: 48px;
+    height: 48px;
+    color: white !important;
+    font-size: 24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 12px;
+    padding: 0;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    text-decoration: none;
 }
+
 .btn-delete:hover {
-    background-color: #c82333;
+    background-color: #b73131;
     transform: scale(1.1);
 }
 
+/* Bouton info */
 .btn-info {
     background-color: #17a2b8;
+    border: none;
+    width: 48px;
+    height: 48px;
+    color: white !important;
+    font-size: 24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 12px;
+    padding: 0;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    text-decoration: none;
 }
+
 .btn-info:hover {
     background-color: #138496;
     transform: scale(1.1);
@@ -344,9 +563,9 @@
 
 .actions-cell {
     display: flex;
-    gap: 6px;
-    align-items: center;
+    gap: 10px;
     justify-content: center;
+    align-items: center;
 }
 
 /* Tooltip personnalisé - EN HAUT */
@@ -384,5 +603,137 @@
     z-index: 1000;
 }
 
+/* Bouton vert standard */
+.btn-vert {
+    background-color: rgba(154, 205, 50, 0.1);
+    color: #9ACD32 !important;
+    padding: 10px 20px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 500;
+    border: 2px solid rgba(154, 205, 50, 0.3);
+    transition: all 0.3s ease;
+    display: inline-block;
+    font-size: 14px;
+}
+
+.btn-vert:hover {
+    background-color: rgba(154, 205, 50, 0.2);
+    border-color: rgba(154, 205, 50, 0.5);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(154, 205, 50, 0.2);
+}
+
+/* Styles spécifiques pour le modal de suppression */
+.modal-content {
+    border-radius: 12px;
+    border: none;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+}
+
+.modal-header {
+    border-bottom: 1px solid #dee2e6;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+}
+
+.modal-body {
+    padding: 25px;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    border-color: #dc3545;
+    padding: 10px 20px;
+    font-weight: 500;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.btn-danger:hover {
+    background-color: #c82333;
+    border-color: #bd2130;
+    transform: translateY(-2px);
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    border-color: #6c757d;
+    padding: 10px 20px;
+    font-weight: 500;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+    border-color: #545b62;
+    transform: translateY(-2px);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .btn-vert {
+        padding: 8px 12px;
+        font-size: 12px;
+    }
+    
+    input[type="text"] {
+        width: 100% !important;
+        min-width: 100% !important;
+    }
+    
+    .sort-buttons {
+        display: none; /* Cacher les boutons de tri sur mobile */
+    }
+    
+    .tableau-elegant th,
+    .tableau-elegant td {
+        font-size: 11px;
+        padding: 8px 4px;
+    }
+    
+    .btn-edit,
+    .btn-delete,
+    .btn-info {
+        width: 36px;
+        height: 36px;
+        font-size: 18px;
+    }
+    
+    .actions-cell {
+        gap: 5px;
+    }
+}
 </style>
+
+<script>
+window.addEventListener('DOMContentLoaded', () => {
+    const notificationSound = document.getElementById('notification-sound');
+    
+    // Jouer le son de notification si des messages existent
+    if (notificationSound && document.querySelector('.notification-item')) {
+        notificationSound.currentTime = 0;
+        notificationSound.play().catch(e => {
+            console.log("Lecture automatique du son bloquée:", e);
+        });
+    }
+    
+    // Auto-dismiss notifications after 5 seconds
+    const notifications = document.querySelectorAll('.notification-item');
+    notifications.forEach(notification => {
+        setTimeout(() => {
+            if (notification.parentElement) {
+                notification.style.opacity = '0';
+                notification.style.transform = 'translateX(100%)';
+                setTimeout(() => {
+                    if (notification.parentElement) {
+                        notification.parentElement.removeChild(notification);
+                    }
+                }, 300);
+            }
+        }, 5000);
+    });
+});
+</script>
 {% endblock %}

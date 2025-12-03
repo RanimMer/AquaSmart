@@ -1,0 +1,816 @@
+{% load static %}
+
+{% block content %}
+
+<!-- Bouton Retour -->
+<div style="margin-bottom: 20px;">
+  <a href="{% url 'cultures' %}" class="btn-back">
+    ← Retour aux cultures
+  </a>
+</div>
+
+<div class="calendar-container">
+  
+  <!-- En-tête du calendrier -->
+  <div class="calendar-header">
+    <div class="calendar-title">
+      <div class="title-icon">🌱</div>
+      <h1>Calendrier Agricole</h1>
+      <p class="subtitle">Suivi des arrosages et récoltes – {{ month_name }} {{ year }}</p>
+    </div>
+    
+    <div class="calendar-controls">
+      <a href="?year={{ prev_year }}&month={{ prev_month }}" class="nav-btn prev">
+        <span class="nav-arrow">‹</span>
+        <span class="nav-text">Mois précédent</span>
+      </a>
+      
+      <div class="current-month">
+        <div class="month-badge">
+          <span class="month-icon">📅</span>
+          <div class="month-text">
+            <span class="month-name">{{ month_name }}</span>
+            <span class="year">{{ year }}</span>
+          </div>
+        </div>
+      </div>
+      
+      <a href="?year={{ next_year }}&month={{ next_month }}" class="nav-btn next">
+        <span class="nav-text">Mois suivant</span>
+        <span class="nav-arrow">›</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Légende -->
+  <div class="calendar-legend">
+    <div class="legend-title">Légende :</div>
+    <div class="legend-items">
+      <div class="legend-item">
+        <span class="legend-dot irrigation-dot"></span>
+        <span class="legend-label">Arrosage</span>
+      </div>
+      <div class="legend-item">
+        <span class="legend-dot recolte-dot"></span>
+        <span class="legend-label">Récolte</span>
+      </div>
+      <div class="legend-item">
+        <span class="legend-dot today-dot"></span>
+        <span class="legend-label">Aujourd'hui</span>
+      </div>
+      <div class="legend-item">
+        <span class="legend-icon">🌾</span>
+        <span class="legend-label">Jour de récolte</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Calendrier -->
+  <div class="calendar-grid">
+    <!-- En-têtes des jours -->
+    <div class="calendar-weekdays">
+      <div class="weekday">Lundi</div>
+      <div class="weekday">Mardi</div>
+      <div class="weekday">Mercredi</div>
+      <div class="weekday">Jeudi</div>
+      <div class="weekday">Vendredi</div>
+      <div class="weekday">Samedi</div>
+      <div class="weekday">Dimanche</div>
+    </div>
+
+    <!-- Semaines -->
+    {% for week in weeks %}
+    <div class="calendar-week">
+      {% for day in week %}
+      <div class="calendar-day 
+          {% if not day.in_month %}other-month{% endif %}
+          {% if day.status == 'today' %}today{% endif %}
+          {% if day.has_recolte %}has-recolte{% endif %}">
+        
+        <!-- Numéro du jour -->
+        <div class="day-header">
+          <div class="day-number-container">
+            <span class="day-number">{{ day.date.day }}</span>
+            {% if day.status == 'today' %}
+            <span class="today-badge" title="Aujourd'hui">●</span>
+            {% endif %}
+          </div>
+          
+          {% if day.has_recolte %}
+          <div class="recolte-badge" title="Récolte(s) ce jour">
+            <span class="recolte-icon">🌾</span>
+            {% if day.recolte_count > 1 %}
+            <span class="recolte-count">{{ day.recolte_count }}</span>
+            {% endif %}
+          </div>
+          {% endif %}
+        </div>
+
+        <!-- Événements -->
+        {% if day.events %}
+        <div class="day-events">
+          {% for event in day.events %}
+          <div class="event {% if event.event_type == 'recolte' %}event-recolte{% else %}event-irrigation{% endif %}">
+            
+            <div class="event-header">
+              {% if event.event_type == 'recolte' %}
+              <div class="event-icon recolte">🌾</div>
+              <div class="event-title">
+                <span class="crop-name">{{ event.name }}</span>
+                <span class="event-tag recolte-tag">Récolte</span>
+              </div>
+              {% else %}
+              <div class="event-icon irrigation">💧</div>
+              <div class="event-title">
+                <span class="crop-name">{{ event.name }}</span>
+                <span class="event-tag irrigation-tag">Arrosage</span>
+              </div>
+              {% endif %}
+            </div>
+            
+            <div class="event-details">
+              {% if event.event_type == 'recolte' %}
+              <span class="detail-item">
+                <span class="detail-icon">📅</span>
+                {{ event.date_recolte_prevue|date:"d/m" }}
+              </span>
+              {% else %}
+              <span class="detail-item">
+                <span class="detail-icon">💦</span>
+                {{ event.besoin_base_l_j }} L
+              </span>
+              {% if event.frequency_days %}
+              <span class="detail-item">
+                <span class="detail-icon">⏱️</span>
+                {{ event.frequency_days }}j
+              </span>
+              {% endif %}
+              {% endif %}
+            </div>
+            
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- Compteurs -->
+        {% if day.irrigation_count > 0 or day.recolte_count > 0 %}
+        <div class="event-summary">
+          {% if day.irrigation_count > 0 %}
+          <div class="summary-item irrigation-summary">
+            <span class="summary-icon">💧</span>
+            <span class="summary-count">{{ day.irrigation_count }}</span>
+          </div>
+          {% endif %}
+          {% if day.recolte_count > 0 %}
+          <div class="summary-item recolte-summary">
+            <span class="summary-icon">🌾</span>
+            <span class="summary-count">{{ day.recolte_count }}</span>
+          </div>
+          {% endif %}
+        </div>
+        {% endif %}
+
+      </div>
+      {% endfor %}
+    </div>
+    {% endfor %}
+  </div>
+
+</div>
+
+<style>
+/* ===== VARIABLES COULEURS AGRICOLES ===== */
+:root {
+  --green-primary: #2e7d32;
+  --green-secondary: #4caf50;
+  --green-light: #8bc34a;
+  --green-pastel: #c8e6c9;
+  --green-dark: #1b5e20;
+  --green-gradient: linear-gradient(135deg, var(--green-primary), var(--green-secondary));
+  
+  --brown-light: #d7ccc8;
+  --brown-dark: #5d4037;
+  
+  --yellow-harvest: #ffb300;
+  --orange-harvest: #f57c00;
+  
+  --blue-water: #2196f3;
+  --blue-light: #bbdefb;
+  
+  --gray-light: #f5f5f5;
+  --gray-medium: #eeeeee;
+  --gray-dark: #757575;
+  
+  --white: #ffffff;
+  --shadow: rgba(0, 0, 0, 0.08);
+  --shadow-hover: rgba(0, 0, 0, 0.15);
+}
+
+/* ===== BOUTON RETOUR ===== */
+.btn-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background: var(--green-gradient);
+  color: var(--white);
+  text-decoration: none;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 15px;
+  transition: all 0.3s ease;
+  border: none;
+  box-shadow: 0 4px 12px rgba(46, 125, 50, 0.2);
+}
+
+.btn-back:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(46, 125, 50, 0.3);
+  background: linear-gradient(135deg, var(--green-dark), var(--green-primary));
+}
+
+/* ===== CONTENEUR PRINCIPAL ===== */
+.calendar-container {
+  max-width: 1400px;
+  margin: 30px auto;
+  background: var(--white);
+  border-radius: 24px;
+  box-shadow: 0 12px 40px var(--shadow);
+  overflow: hidden;
+  border: 1px solid var(--green-pastel);
+}
+
+/* ===== EN-TÊTE ===== */
+.calendar-header {
+  background: var(--green-gradient);
+  padding: 32px 40px;
+  color: var(--white);
+  position: relative;
+  overflow: hidden;
+}
+
+.calendar-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23000' fill-opacity='0.03' fill-rule='evenodd'/%3E%3C/svg%3E");
+  opacity: 0.1;
+}
+
+.calendar-title {
+  position: relative;
+  z-index: 2;
+  margin-bottom: 20px;
+}
+
+.title-icon {
+  font-size: 48px;
+  margin-bottom: 10px;
+  display: inline-block;
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.calendar-title h1 {
+  font-size: 36px;
+  font-weight: 800;
+  margin: 0 0 8px 0;
+  color: var(--white);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.subtitle {
+  font-size: 16px;
+  opacity: 0.9;
+  margin: 0;
+}
+
+/* ===== CONTROLES ===== */
+.calendar-controls {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.nav-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 24px;
+  background: rgba(255, 255, 255, 0.15);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 12px;
+  color: var(--white);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 15px;
+  transition: all 0.3s ease;
+}
+
+.nav-btn:hover {
+  background: rgba(255, 255, 255, 0.25);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.nav-arrow {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.current-month {
+  text-align: center;
+}
+
+.month-badge {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 12px 24px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+}
+
+.month-icon {
+  font-size: 28px;
+}
+
+.month-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.month-name {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--white);
+}
+
+.year {
+  font-size: 16px;
+  opacity: 0.9;
+  color: var(--white);
+}
+
+/* ===== LÉGENDE ===== */
+.calendar-legend {
+  padding: 20px 40px;
+  background: var(--gray-light);
+  border-bottom: 1px solid var(--gray-medium);
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  flex-wrap: wrap;
+}
+
+.legend-title {
+  font-weight: 600;
+  color: var(--green-dark);
+  font-size: 15px;
+}
+
+.legend-items {
+  display: flex;
+  gap: 30px;
+  flex-wrap: wrap;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.legend-dot {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.irrigation-dot {
+  background: var(--blue-water);
+  box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.2);
+}
+
+.recolte-dot {
+  background: var(--orange-harvest);
+  box-shadow: 0 0 0 3px rgba(245, 124, 0, 0.2);
+}
+
+.today-dot {
+  background: var(--green-secondary);
+  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
+}
+
+.legend-label {
+  font-size: 14px;
+  color: var(--brown-dark);
+  font-weight: 500;
+}
+
+.legend-icon {
+  font-size: 16px;
+}
+
+/* ===== GRILLE CALENDRIER ===== */
+.calendar-grid {
+  background: var(--white);
+}
+
+.calendar-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  background: var(--green-light);
+  border-bottom: 2px solid var(--green-secondary);
+}
+
+.weekday {
+  padding: 18px 10px;
+  text-align: center;
+  color: var(--green-dark);
+  font-weight: 600;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-right: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.weekday:last-child {
+  border-right: none;
+}
+
+.calendar-week {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  border-bottom: 1px solid var(--gray-medium);
+}
+
+.calendar-week:last-child {
+  border-bottom: none;
+}
+
+/* ===== JOUR ===== */
+.calendar-day {
+  min-height: 160px;
+  padding: 15px;
+  border-right: 1px solid var(--gray-medium);
+  background: var(--white);
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.calendar-day:hover {
+  background: var(--gray-light);
+  z-index: 1;
+}
+
+.calendar-day:last-child {
+  border-right: none;
+}
+
+.other-month {
+  background: var(--gray-light);
+  opacity: 0.7;
+}
+
+.calendar-day.today {
+  background: linear-gradient(135deg, var(--green-pastel), rgba(200, 230, 201, 0.5));
+  border: 2px solid var(--green-secondary);
+  margin: -2px -1px -1px -2px;
+  z-index: 2;
+}
+
+.calendar-day.has-recolte {
+  background: linear-gradient(135deg, rgba(255, 243, 224, 0.3), rgba(255, 249, 238, 0.1));
+  border-left: 3px solid var(--orange-harvest);
+}
+
+/* ===== EN-TÊTE DU JOUR ===== */
+.day-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.day-number-container {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.day-number {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--green-dark);
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.other-month .day-number {
+  color: var(--gray-dark);
+  opacity: 0.6;
+}
+
+.today-badge {
+  color: var(--green-secondary);
+  font-size: 12px;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.recolte-badge {
+  background: var(--orange-harvest);
+  color: var(--white);
+  padding: 4px 8px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.recolte-icon {
+  font-size: 14px;
+}
+
+.recolte-count {
+  font-size: 11px;
+}
+
+/* ===== ÉVÉNEMENTS ===== */
+.day-events {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 10px;
+  max-height: 100px;
+  overflow-y: auto;
+  padding-right: 5px;
+}
+
+.day-events::-webkit-scrollbar {
+  width: 5px;
+}
+
+.day-events::-webkit-scrollbar-track {
+  background: var(--gray-medium);
+  border-radius: 10px;
+}
+
+.day-events::-webkit-scrollbar-thumb {
+  background: var(--green-light);
+  border-radius: 10px;
+}
+
+.event {
+  padding: 10px;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+  border: 1px solid transparent;
+}
+
+.event:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px var(--shadow);
+}
+
+.event-irrigation {
+  background: linear-gradient(135deg, var(--blue-light), rgba(187, 222, 251, 0.7));
+  border-left: 4px solid var(--blue-water);
+}
+
+.event-recolte {
+  background: linear-gradient(135deg, rgba(255, 224, 178, 0.7), rgba(255, 236, 179, 0.5));
+  border-left: 4px solid var(--orange-harvest);
+}
+
+.event-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.event-icon {
+  font-size: 18px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 8px;
+}
+
+.event-icon.irrigation {
+  color: var(--blue-water);
+}
+
+.event-icon.recolte {
+  color: var(--orange-harvest);
+}
+
+.event-title {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.crop-name {
+  font-weight: 600;
+  color: var(--green-dark);
+  font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.event-tag {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 10px;
+  display: inline-block;
+  width: fit-content;
+}
+
+.irrigation-tag {
+  background: var(--blue-water);
+  color: var(--white);
+}
+
+.recolte-tag {
+  background: var(--orange-harvest);
+  color: var(--white);
+}
+
+.event-details {
+  display: flex;
+  gap: 10px;
+  font-size: 11px;
+}
+
+.detail-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--brown-dark);
+}
+
+.detail-icon {
+  opacity: 0.7;
+}
+
+/* ===== RÉSUMÉ ===== */
+.event-summary {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  display: flex;
+  gap: 8px;
+}
+
+.summary-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.irrigation-summary {
+  background: rgba(33, 150, 243, 0.1);
+  color: var(--blue-water);
+}
+
+.recolte-summary {
+  background: rgba(255, 179, 0, 0.1);
+  color: var(--orange-harvest);
+}
+
+.summary-icon {
+  font-size: 12px;
+}
+
+.summary-count {
+  font-size: 10px;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 1200px) {
+  .calendar-container {
+    margin: 20px;
+    padding: 0;
+  }
+  
+  .calendar-header {
+    padding: 24px;
+  }
+  
+  .calendar-title h1 {
+    font-size: 28px;
+  }
+  
+  .calendar-controls {
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .nav-btn {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .month-badge {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 768px) {
+  .calendar-day {
+    min-height: 140px;
+    padding: 10px;
+  }
+  
+  .day-number {
+    font-size: 18px;
+  }
+  
+  .weekday {
+    padding: 12px 5px;
+    font-size: 12px;
+  }
+  
+  .calendar-legend {
+    padding: 15px 20px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+  
+  .legend-items {
+    gap: 15px;
+  }
+  
+  .event-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+  }
+  
+  .crop-name {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .calendar-day {
+    min-height: 120px;
+  }
+  
+  .day-events {
+    max-height: 80px;
+  }
+  
+  .event {
+    padding: 6px;
+  }
+  
+  .btn-back {
+    width: 100%;
+    justify-content: center;
+  }
+}
+</style>
+
+{% endblock %}

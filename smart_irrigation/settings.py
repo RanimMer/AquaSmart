@@ -64,11 +64,15 @@ ASGI_APPLICATION = 'smart_irrigation.asgi.application'
 
 CHANNEL_LAYERS = {
     'default': {}}
+
 # Base de données par défaut (on garde sqlite pour le Sprint 1)
 DATABASES = {
     'default': {
-        'BACKEND': 'channels.layers.InMemoryChannelLayer'
-        }
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+        'BACKEND': 'channels.layers.InMemoryChannelLayer',
+        
+    }
 }
 
 AUTH_PASSWORD_VALIDATORS = [
@@ -108,6 +112,7 @@ LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'bo_dashboard'   # ou 'users_list' si tu préfères
 LOGOUT_REDIRECT_URL = 'login'
 
+
 # Pour tests du reset mot de passe en console
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = "smtp.gmail.com"
@@ -117,5 +122,9 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = "aquasmartapp881@gmail.com"
 EMAIL_HOST_PASSWORD = "dbwqnjxmjlinyibb"  # 16 caractères
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+
+
+
 
 

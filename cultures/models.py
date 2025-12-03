@@ -105,3 +105,14 @@ class CultureProduit(models.Model):
 
     def __str__(self):
         return f"{self.culture.nom} - {self.produit.nom_produit}"
+
+class NotificationLog(models.Model):
+    farm = models.ForeignKey(Farm, on_delete=models.CASCADE)
+    culture = models.ForeignKey(Culture, on_delete=models.CASCADE)
+    date = models.DateField()  # jour de notification
+
+    class Meta:
+        unique_together = ('farm', 'culture', 'date')
+
+    def __str__(self):
+        return f"Notification {self.culture.nom} ({self.farm.name}) — {self.date}"

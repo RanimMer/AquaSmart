@@ -12,6 +12,14 @@ urlpatterns = [
         views.enregistrer_utilisation_produit,
         name='enregistrer_utilisation_produit'
     ),
+<<<<<<< HEAD
     
+=======
+    path("cultures/stats/", views.stats_cultures, name="stats_cultures"),
+    path("cultures/export-pdf/", views.export_cultures_pdf, name="export_cultures_pdf"),
+    
+
+
+>>>>>>> origin/IntegrationAvecCultureMetiers
     
 ]

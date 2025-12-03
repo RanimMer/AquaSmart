@@ -19,6 +19,7 @@
   <!-- Icon Fonts -->
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
   <!-- Libraries CSS -->
   <link href="{% static 'lib/animate/animate.min.css' %}" rel="stylesheet">
@@ -105,7 +106,7 @@
 
     /* --- STYLE UNIFIÉ AVEC CULTURES --- */
     .page-header {
-        background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), 
+        background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
                     url('{% static "img/carousel-1.jpg" %}') center center no-repeat;
         background-size: cover;
     }
@@ -394,15 +395,15 @@
             height: auto;
             min-height: 400px;
         }
-        
+       
         .parameter-grid {
             grid-template-columns: 1fr;
         }
-        
+       
         .produit-modal .modal-body {
             padding: 1.5rem;
         }
-        
+       
         .description-content {
             flex-direction: column;
             text-align: center;
@@ -527,6 +528,7 @@
         transition: all 0.3s ease;
     }
     
+   
     .nav-link.active {
         color: #9ACD32 !important;
         font-weight: 700;
@@ -571,7 +573,11 @@
 
   <div class="d-flex justify-content-between align-items-center small">
     <div>
+<<<<<<< HEAD
       
+=======
+     
+>>>>>>> origin/IntegrationAvecCultureMetiers
       <i class="fa fa-envelope me-2"></i> AquaSmart@gmail.com
       <span class="mx-3">|</span>
       <i class="fa fa-phone-alt me-2"></i> +216 26 102 035
@@ -579,7 +585,11 @@
     <div>
       <a href="#" class="text-light me-4"><i class="fab fa-facebook-f"></i></a>
       <a href="#" class="text-light me-4"><i class="fab fa-instagram"></i></a>
+<<<<<<< HEAD
       
+=======
+     
+>>>>>>> origin/IntegrationAvecCultureMetiers
     </div>
   </div>
 </div>
@@ -601,7 +611,11 @@
             <li class="nav-item"><a href="{% url 'serres' %}" class="nav-link">Serres</a></li>
             <li class="nav-item"><a href="{% url 'station_meteo' %}" class="nav-link">Météo</a></li>
             <li class="nav-item"><a href="{% url 'liste_sols_front' %}" class="nav-link">Analyses Sol</a></li>
+<<<<<<< HEAD
             
+=======
+           
+>>>>>>> origin/IntegrationAvecCultureMetiers
         </ul>
 
 
@@ -646,129 +660,182 @@
   </div>
   <!-- Page Header End -->
 
-<!-- 🌾 BARRE DE RECHERCHE CENTRÉE 🌾 -->
-<div class="container">
-  <div class="row justify-content-center">
-    <div class="col-12">
-      <h2 class="search-title">Rechercher nos produits par type :</h2>
-    </div>
-  </div>
-</div>
-
+<!-- 🌾 BARRE DE RECHERCHE PRODUITS AVEC RECONNAISSANCE VOCALE 🌾 -->
 <div class="search-section">
   <div class="search-container">
+
+    <h2 class="search-title">
+      Rechercher un produit par type :
+    </h2>
+
     <form method="get" action="{% url 'produits' %}" class="search-form">
-      <input type="text" name="type_produit" 
-             placeholder="Rechercher les produits que vous voulez..." 
-             value="{{ query_type }}" 
-             class="search-input">
+      <div class="search-box">
+        <!-- Input de recherche -->
+        <input
+          type="text"
+          id="searchInput"
+          name="type_produit"
+          class="search-input"
+          placeholder="Tapez le type d'un produit ou utilisez la reconnaissance vocale..."
+          value="{{ query_type }}"
+        >
 
-      <button type="submit" class="search-btn" style="color:white;">
-    🔍
-</button>
+        <div class="search-buttons">
+          <!-- Bouton recherche -->
+          <button type="submit" class="search-btn" title="Rechercher">
+            <i class="fas fa-search"></i>
+          </button>
 
+          <!-- Bouton vocale -->
+          <button type="button" id="voiceBtn" class="voice-btn" title="Recherche vocale">
+            <i class="fas fa-microphone"></i>
+          </button>
 
-      <a href="{% url 'produits' %}" class="reset-btn">
-        ✖
-      </a>
+          <!-- Reset -->
+          <a href="{% url 'produits' %}" class="reset-btn" title="Réinitialiser">
+            <i class="fas fa-times"></i>
+          </a>
+        </div>
+      </div>
     </form>
+
   </div>
 </div>
 
 
 <style>
+/* Fond vert clair sur toute la largeur */
 .search-section {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    margin: 40px 0;
+    /* Retirer le background vert */
+    background: transparent;
+    padding: 40px 0 20px 0; /* Ajustement des paddings */
+    margin-bottom: 30px;
+    border-bottom: none; /* Retirer la bordure verte */
 }
 
+/* Contenu centré */
 .search-container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    max-width: 600px;
-    gap: 10px;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 20px;
+    text-align: center;
 }
 
-.search-form {
-    display: flex;
-    align-items: center;
-    width: 100%;
-    gap: 10px;
-}
-
-.search-input {
-    flex: 1;
-    min-width: 0;
-    padding: 15px 20px;
-    border: 2px solid #2d8c5a;
-    border-radius: 50px;
-    outline: none;
-    font-size: 16px;
-    background-color: #fff;
-    color: #000;
-    transition: all 0.3s ease;
-}
-
-.search-input:focus {
-    border-color: #9ACD32;
-    box-shadow: 0 0 10px rgba(154, 205, 50, 0.3);
-}
-
-.search-btn {
-    background-color: #9ACD32;
-    color: white;
-    border: none;
-    padding: 15px 25px;
-    border-radius: 50px;
+/* Titre */
+.search-title {
+    color: #1a6b3b;
     font-weight: 600;
-    cursor: pointer;
-    transition: 0.3s;
+    margin-bottom: 20px;
+    font-size: 1.7rem;
+}
+
+/* Boîte arrondie + ombre (comme ton screen) */
+.search-box {
+    width: 100%;
+    position: relative;
+    background: #ffffff;
+    border-radius: 50px;
+    padding: 5px;
+    box-shadow: 0 5px 20px rgba(154, 205, 50, 0.2);
+    border: 2px solid #9ACD32;
+}
+
+/* Champ texte à gauche, sur toute la longueur */
+.search-input {
+    width: 100%;
+    border: none;
+    padding: 15px 180px 15px 25px; /* gros padding à droite pour laisser la place aux boutons */
+    border-radius: 50px;
+    font-size: 1rem;
+    outline: none;
+    background: transparent;
+    color: #000;
+}
+
+.search-input::placeholder {
+    color: #9ACD32;
+    font-weight: 500;
+}
+
+/* Conteneur des 3 boutons à droite, dans l'input */
+.search-buttons {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
     display: flex;
+    gap: 8px;
+}
+
+/* Styles communs aux boutons ronds */
+.search-btn,
+.voice-btn,
+.reset-btn {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    border: none;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 18px;
+    text-decoration: none;
+}
+
+/* Couleurs spécifiques */
+.search-btn {
+    background: #9ACD32;
+    color: #ffffff;
 }
 
 .search-btn:hover {
-    background-color: #7ec01f;
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(154, 205, 50, 0.4);
+    background: #1a6b3b;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(154, 205, 50, 0.4);
+}
+
+.voice-btn {
+    background: #17a2b8;
+    color: #ffffff;
+}
+
+.voice-btn:hover {
+    background: #138496;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(23, 162, 184, 0.4);
 }
 
 .reset-btn {
-    background-color: #9ACD32;
-    color: white;
-    border: none;
-    padding: 15px 25px;
-    border-radius: 50px;
-    font-weight: 600;
-    cursor: pointer;
-    text-decoration: none;
-    transition: 0.3s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    background: #ffffff;
+    color: #9ACD32;
+    border: 2px solid #9ACD32;
 }
 
 .reset-btn:hover {
-    background-color: #7ec01f;
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(154, 205, 50, 0.4);
-    color: white;
-    text-decoration: none;
+    background: #9ACD32;
+    color: #ffffff;
 }
 
-.search-title {
-    font-size: 26px;
-    color: #9ACD32;
-    font-weight: bold;
-    text-align: center;
-    margin-bottom: 20px;
+/* Responsive : sur mobile, un peu plus compact */
+@media (max-width: 768px) {
+    .search-input {
+        padding: 12px 150px 12px 20px;
+        font-size: 0.95rem;
+    }
+
+    .search-title {
+        font-size: 1.4rem;
+    }
 }
+
+/* Animation micro en écoute */
+#voiceBtn.listening {
+    background-color: rgba(23, 162, 184, 0.4) !important;
+    transform: scale(1.1);
+}
+
 </style>
 
 
@@ -934,7 +1001,11 @@
 </nav>
 {% endif %}
 
+<<<<<<< HEAD
   
+=======
+ 
+>>>>>>> origin/IntegrationAvecCultureMetiers
    <!-- Footer Start -->
 <div class="container-fluid footer-custom text-light footer mt-5 py-5">
     <div class="container py-5">
@@ -979,15 +1050,18 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
 document.addEventListener('DOMContentLoaded', () => {
+    // Gestion du dropdown profil
     const dropdowns = document.querySelectorAll('.profile-dropdown');
     dropdowns.forEach(dd => {
         const btn = dd.querySelector('.profile-btn');
-        btn.addEventListener('click', () => {
-            dd.classList.toggle('active');
-        });
+        if (btn) {
+            btn.addEventListener('click', () => {
+                dd.classList.toggle('active');
+            });
+        }
     });
 
-    // fermer si on clique ailleurs
+    // Fermer si on clique ailleurs
     document.addEventListener("click", function(e){
         dropdowns.forEach(dd => {
             if (!dd.contains(e.target)) {
@@ -995,6 +1069,151 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     });
+
+    // === RECONNAISSANCE VOCALE ===
+    const voiceBtn = document.getElementById('voiceBtn');
+    const searchInput = document.getElementById('searchInput');
+
+    // Vérifier que les éléments existent
+    if (!voiceBtn || !searchInput) {
+        console.error("Bouton vocal ou champ de recherche introuvable");
+        return;
+    }
+
+    // Vérifier le support de la reconnaissance vocale
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+   
+    if (!SpeechRecognition) {
+        voiceBtn.disabled = true;
+        voiceBtn.style.opacity = '0.5';
+        voiceBtn.style.cursor = 'not-allowed';
+        voiceBtn.title = "Reconnaissance vocale non supportée dans ce navigateur";
+        console.warn("Reconnaissance vocale non supportée dans ce navigateur");
+        return;
+    }
+
+    // Initialiser la reconnaissance vocale
+    const recognition = new SpeechRecognition();
+    recognition.lang = 'fr-FR';
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+    recognition.continuous = false;
+
+    let isListening = false;
+
+    // Événement au clic sur le bouton vocal
+    voiceBtn.addEventListener('click', (e) => {
+        e.preventDefault(); // Empêcher toute action par défaut
+       
+        if (isListening) {
+            console.log("Arrêt de l'écoute...");
+            recognition.stop();
+            return;
+        }
+
+        console.log("Démarrage de la reconnaissance vocale...");
+       
+        try {
+            recognition.start();
+            isListening = true;
+            voiceBtn.classList.add('listening');
+           
+            // Feedback visuel supplémentaire
+            voiceBtn.innerHTML = '<i class="fas fa-stop"></i>';
+            voiceBtn.style.backgroundColor = '#dc3545';
+           
+            // Message optionnel
+            searchInput.placeholder = "🎤 Parlez maintenant...";
+        } catch (error) {
+            console.error("Erreur lors du démarrage:", error);
+            resetVoiceButton();
+        }
+    });
+
+    // Résultat de la reconnaissance
+    recognition.addEventListener('result', (event) => {
+        console.log("Résultat reçu:", event);
+       
+        let transcript = event.results[0][0].transcript;
+        const confidence = event.results[0][0].confidence;
+       
+        // Nettoyer le texte : retirer ponctuation de fin et espaces
+        transcript = transcript.trim().replace(/[.,!?;:]$/g, '');
+       
+        console.log(`Texte reconnu: "${transcript}" (confiance: ${confidence})`);
+       
+        searchInput.value = transcript;
+       
+        // Soumettre automatiquement le formulaire
+        setTimeout(() => {
+            searchInput.form.submit();
+        }, 500);
+    });
+
+    // Fin de la reconnaissance
+    recognition.addEventListener('end', () => {
+        console.log("Reconnaissance vocale terminée");
+        resetVoiceButton();
+    });
+
+    // Gestion des erreurs
+    recognition.addEventListener('error', (event) => {
+        console.error("Erreur reconnaissance vocale:", event.error);
+       
+        let errorMessage = "Erreur lors de la reconnaissance vocale";
+       
+        switch(event.error) {
+            case 'no-speech':
+                errorMessage = "Aucune parole détectée. Réessayez.";
+                break;
+            case 'audio-capture':
+                errorMessage = "Microphone non détecté ou non autorisé";
+                break;
+            case 'not-allowed':
+                errorMessage = "Autorisation microphone refusée. Vérifiez les paramètres.";
+                break;
+            case 'network':
+                errorMessage = "Erreur réseau. Vérifiez votre connexion.";
+                break;
+        }
+       
+        alert(errorMessage);
+        resetVoiceButton();
+    });
+
+    // Début de la reconnaissance
+    recognition.addEventListener('start', () => {
+        console.log("Écoute en cours...");
+    });
+
+    // Fonction pour réinitialiser le bouton
+    function resetVoiceButton() {
+        isListening = false;
+        voiceBtn.classList.remove('listening');
+        voiceBtn.innerHTML = '<i class="fas fa-microphone"></i>';
+        voiceBtn.style.backgroundColor = '#17a2b8';
+        searchInput.placeholder = "Tapez le nom d'un produit ou utilisez la reconnaissance vocale...";
+    }
+
+    // Test de permission microphone au chargement
+    if (navigator.permissions && navigator.permissions.query) {
+        navigator.permissions.query({ name: 'microphone' })
+            .then(permissionStatus => {
+                console.log("Statut permission microphone:", permissionStatus.state);
+               
+                if (permissionStatus.state === 'denied') {
+                    voiceBtn.style.opacity = '0.5';
+                    voiceBtn.title = "Permission microphone refusée";
+                }
+               
+                permissionStatus.onchange = () => {
+                    console.log("Permission microphone changée:", permissionStatus.state);
+                };
+            })
+            .catch(err => {
+                console.warn("Impossible de vérifier les permissions:", err);
+            });
+    }
 });
 </script>
 {# {% include 'public/chatbot_ia.html' %} #}

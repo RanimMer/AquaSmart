@@ -28,6 +28,7 @@ urlpatterns = [
     path('apropos/', TemplateView.as_view(template_name='public/apropos.html'), name='apropos'),
     path('contact/', TemplateView.as_view(template_name='public/contact.html'), name='contact'),
     path('cultures/', cultures_views.cultures, name='cultures'),
+    path("cultures/calendrier/", cultures_views.calendrier_cultures, name="calendrier"),
     path('produits/', produits_views.produits, name='produits'),
     path('chatbot/', produits_views.chatbot_ia, name='chatbot_ia'),
     path('api/chatbot/', produits_views.chatbot_api, name='chatbot_api'),

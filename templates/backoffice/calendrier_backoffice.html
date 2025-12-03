@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calendrier des Arrosages</title>
+<style>
+body {
+    font-family: "Inter", sans-serif;
+    background: #ffffff;
+    padding: 20px;
+    margin: 0;
+    color: #2a3a20;
+}
+
+/* Container très large */
+.calendar-container {
+    width: 98%;
+    max-width: 1600px;
+    margin: 0 auto;
+    background: #ffffff;
+    border-radius: 15px;
+    padding-bottom: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+}
+
+/* Header vert avec texte blanc */
+.calendar-header {
+    text-align: center;
+    padding: 15px 20px;
+    background: #9ACD32; /* Vert du header */
+    color: #ffffff;
+    border-radius: 15px 15px 0 0;
+    position: relative;
+}
+
+.calendar-header h1 {
+    font-size: 28px;
+    margin: 0;
+    font-weight: 700;
+}
+
+.calendar-header p {
+    font-size: 14px;
+    margin: 5px 0 0 0;
+    opacity: 0.9;
+}
+
+.back-btn {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    padding: 6px 10px;
+    background: #ffffff;
+    color: #2e7d32;
+    font-weight: 600;
+    border-radius: 8px;
+    text-decoration: none;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    transition: 0.3s;
+}
+.back-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+}
+
+/* Grid */
+.week-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 12px;
+    padding: 15px 10px;
+}
+
+/* Day cell */
+.day-cell {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 18px;
+    min-height: 200px;
+    border: 1px solid #e0e0e0;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s, box-shadow 0.3s, background 0.3s;
+}
+.day-cell:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 25px rgba(0,0,0,0.12);
+}
+.day-cell.today {
+    background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+    border: 2px solid #2e7d32;
+}
+
+/* Date header */
+.date-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    font-weight: 700;
+    color: #9ACD32; /* Couleur du header pour le nom du jour et numéro */
+}
+
+.date-badge {
+    background: #ffffff;
+    color: #9ACD32; /* Couleur identique au header */
+    padding: 5px 10px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    border: 1px solid #9ACD32;
+}
+
+/* Activities */
+.activities-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 5px;
+}
+
+.activity-item {
+    padding: 10px 12px;
+    border-radius: 12px;
+    background: #f9f9f9;
+    border-left: 4px solid #9acd32;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    transition: transform 0.25s, box-shadow 0.25s;
+}
+.activity-item:hover {
+    transform: translateX(6px);
+    box-shadow: 0 8px 18px rgba(0,0,0,0.1);
+}
+
+.activity-item.retard { border-left-color:#e53935; }
+.activity-item.aujourdhui { border-left-color:#2e7d32; }
+.activity-item.futur { border-left-color:#1e88e5; }
+.activity-item.deja-arrose { border-left-color:#607d8b; opacity:0.85; }
+
+.plant-name {
+    font-weight: 600;
+    margin-bottom: 3px;
+    color:#2a3a20;
+}
+.plant-details {
+    font-size: 12px;
+    color:#5f5f5f;
+}
+
+/* Badges */
+.badge {
+    display: inline-block;
+    font-size: 11px;
+    padding: 3px 7px;
+    border-radius: 6px;
+    font-weight: 600;
+}
+
+.badge-retard { background:#fde0dc; color:#c62828; }
+.badge-deja { background:#e8f5e9; color:#2e7d32; }
+.badge-futur { background:#e3f2fd; color:#1565c0; }
+
+.time-badge {
+    display:inline-block;
+    font-size:11px;
+    padding:2px 6px;
+    border-radius:5px;
+    font-weight:600;
+    background:#f0f0f0;
+    color:#2e7d32;
+    margin-left:5px;
+}
+
+/* Empty */
+.empty {
+    text-align:center;
+    color:#999;
+    padding: 20px 0;
+    font-size:13px;
+    font-style:italic;
+}
+
+.empty span {
+    font-size:26px;
+    display:block;
+    margin-bottom:5px;
+}
+
+/* Responsive */
+@media (max-width: 1100px) {
+    .week-grid { grid-template-columns: repeat(4, 1fr); }
+}
+@media (max-width: 768px) {
+    .week-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 480px) {
+    .week-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="calendar-container">
+
+    <div class="calendar-header">
+        <a href="{% url 'plantation_list' %}" class="back-btn">← Retour</a>
+        <h1>Calendrier des Arrosages</h1>
+        <p>Du {{ semaine_du }} au {{ semaine_au }}</p>
+    </div>
+
+    <div class="week-grid">
+        {% for jour in jours_semaine %}
+        <div class="day-cell {% if jour.date == aujourdhui %}today{% endif %}">
+
+            <div class="date-header">
+                {{ jour.nom_jour }}
+                <span class="date-badge">{{ jour.date.day }}</span>
+            </div>
+
+            {% if jour.plantations %}
+                <div class="activities-list">
+                    {% for item in jour.plantations %}
+                    <div class="activity-item
+                        {% if item.statut == 'retard' %}retard
+                        {% elif item.statut == 'aujourdhui' %}aujourdhui
+                        {% elif item.statut == 'futur' %}futur
+                        {% endif %}
+                        {% if item.deja_arrose %} deja-arrose{% endif %}">
+
+                        <div class="plant-name">{{ item.plantation.nomCulture }}</div>
+                        <div class="plant-details">
+                            {{ item.plantation.variete }} • {{ item.plantation.nombrePlantes }} plantes
+                        </div>
+
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:5px;">
+                            {% if item.statut == 'retard' %}
+                                <span class="badge badge-retard">⚠️ En retard</span>
+                            {% elif item.deja_arrose %}
+                                <span class="badge badge-deja">✅ Déjà arrosé</span>
+                            {% elif item.statut == 'futur' %}
+                                <span class="badge badge-futur">📅 À venir</span>
+                            {% endif %}
+                            <span class="time-badge">⏰ {{ item.heure }}</span>
+                        </div>
+
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty">
+                    <span>🌱</span>
+                    Aucun arrosage prévu
+                </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+
+</div>
+</body>
+</html>

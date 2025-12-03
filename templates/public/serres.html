@@ -90,14 +90,186 @@
     display: block;
 }
 
-    /* --- STYLE UNIFIÉ AVEC CULTURES --- */
+    /* --- ADAPTATION DU STYLE DE VOTRE AMI (CULTURES) --- */
     .page-header {
         background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), 
                     url('{% static "img/carousel-1.jpg" %}') center center no-repeat;
         background-size: cover;
     }
 
-    /* Cartes de serres harmonisées avec cultures */
+    /* Barre de recherche comme votre ami */
+    .search-section {
+        background:white;
+        padding: 30px 0;
+        margin-bottom: 40px;
+        /*border-bottom: 3px solid #9ACD32; */
+    }
+
+    .search-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 0 20px;
+    }
+
+    .search-title {
+        text-align: center;
+        color: #1a6b3b;
+        font-weight: 600;
+        margin-bottom: 20px;
+        font-size: 1.5rem;
+    }
+
+    .search-box {
+        position: relative;
+        background: white;
+        border-radius: 50px;
+        padding: 5px;
+        box-shadow: 0 5px 20px rgba(154, 205, 50, 0.2);
+        border: 2px solid #9ACD32;
+    }
+
+    .search-input {
+        width: 100%;
+        border: none;
+        padding: 15px 60px 15px 25px;
+        border-radius: 50px;
+        font-size: 1rem;
+        outline: none;
+        background: transparent;
+    }
+
+    .search-input::placeholder {
+        color: #9ACD32;
+        font-weight: 500;
+    }
+
+    .search-buttons {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        display: flex;
+        gap: 5px;
+    }
+
+    .search-btn {
+        background: #9ACD32;
+        color: white;
+        border: none;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .search-btn:hover {
+        background: #1a6b3b;
+        transform: scale(1.1);
+    }
+
+    .voice-btn {
+        background: #17a2b8;
+        color: white;
+        border: none;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .voice-btn:hover {
+        background: #138496;
+        transform: scale(1.1);
+    }
+
+    .voice-btn.listening {
+        background: #dc3545;
+        animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.1); }
+        100% { transform: scale(1); }
+    }
+
+    .voice-status {
+        text-align: center;
+        margin-top: 10px;
+        font-size: 0.9rem;
+        color: #1a6b3b;
+        font-weight: 500;
+        min-height: 20px;
+    }
+
+    .voice-status.active {
+        color: #dc3545;
+        font-weight: 600;
+    }
+
+    /* Bouton Calendrier comme votre ami */
+    .btn-calendar-small {
+        background: #17a2b8;
+        color: white;
+        border: none;
+        padding: 0.7rem 1.3rem;
+        border-radius: 20px;
+        font-size: 0.95rem;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        transition: all 0.3s ease;
+    }
+
+    .btn-calendar-small:hover {
+        background: #138496;
+        color: white;
+        transform: translateY(-2px);
+        text-decoration: none;
+    }
+
+    /* Section Notifications comme votre ami */
+    .calendar-redirect-section {
+        background: linear-gradient(135deg, #f8fff0, #e8f5e8);
+        border-radius: 15px;
+        padding: 2rem;
+        border: 2px solid #9ACD32;
+        box-shadow: 0 10px 30px rgba(154, 205, 50, 0.1);
+        margin-bottom: 2rem;
+    }
+
+    .btn-calendar {
+        background: linear-gradient(135deg, #9ACD32, #7ec01f);
+        color: white;
+        border: none;
+        padding: 0.8rem 2rem;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 1rem;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 15px rgba(154, 205, 50, 0.3);
+    }
+
+    .btn-calendar:hover {
+        background: linear-gradient(135deg, #1a6b3b, #9ACD32);
+        color: white;
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(154, 205, 50, 0.4);
+        text-decoration: none;
+    }
+
+    /* Cartes de serres adaptées au style cultures de votre ami */
     .serre-card {
         background: white;
         border-radius: 10px;
@@ -251,7 +423,7 @@
         box-shadow: 0 3px 6px rgba(154, 205, 50, 0.3);
     }
 
-    /* Modal harmonisé avec cultures */
+    /* Modal comme votre ami */
     .serre-modal .modal-content {
         border-radius: 10px;
         border: none;
@@ -397,6 +569,14 @@
         .serre-modal .modal-body {
             padding: 1.5rem;
         }
+
+        .search-box {
+            border-radius: 25px;
+        }
+
+        .search-input {
+            padding: 12px 50px 12px 20px;
+        }
     }
 
     /* Animations */
@@ -418,34 +598,6 @@
     /* Styles pour la topbar, navbar et footer */
     .topbar-green {
         background-color: #9ACD32 !important;
-    }
-
-    .logout-container {
-        display: flex;
-        align-items: center;
-        margin-right: 40px;
-    }
-
-    .logout-btn {
-        background-color: #ffffff;
-        color: #9ACD32;
-        border: 2px solid #9ACD32;
-        border-radius: 4px;
-        padding: 6px 16px;
-        font-weight: 600;
-        font-size: 0.9rem;
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        transition: all 0.3s ease;
-        cursor: pointer;
-    }
-
-    .logout-btn:hover {
-        background-color: #9ACD32;
-        color: #ffffff;
-        transform: translateY(-1px);
-        box-shadow: 0 3px 6px rgba(154, 205, 50, 0.3);
     }
 
     .footer-custom {
@@ -620,13 +772,67 @@
     </div>
   </div>
 
+<!-- 🌱 BARRE DE RECHERCHE COMME VOTRE AMI (CULTURES) 🌱 -->
+<div class="search-section">
+  <div class="search-container">
+    <h2 class="search-title">Rechercher vos plantations</h2>
+    <div class="search-box">
+      <input type="text" id="searchInput" class="search-input" placeholder="Tapez le nom d'une plantation, variété ou serre...">
+      <div class="search-buttons">
+        <button class="search-btn" id="searchButton" title="Rechercher">
+          <i class="fas fa-search"></i>
+        </button>
+        <button class="voice-btn" id="voiceButton" title="Recherche vocale">
+          <i class="fas fa-microphone"></i>
+        </button>
+        <a href="{% url 'serres' %}" class="search-btn" title="Effacer la recherche" id="clearButton">
+          <i class="fas fa-times"></i>
+        </a>
+      </div>
+    </div>
+    <div class="voice-status" id="voiceStatus"></div>
+
+    <!-- Boutons Calendrier et Notifications COMME VOTRE AMI -->
+    <div class="text-center mt-4">
+      <a href="{% url 'calendrier_semaine_front' %}" class="btn-calendar-small">
+        <i class="fas fa-calendar-alt me-2"></i>
+        Voir le Calendrier
+      </a>
+      
+      <a href="{% url 'notifications_front' %}" class="btn-calendar-small ms-3">
+        🔔 Notifications
+        <span style="background: white; color: #9ACD32; border-radius: 10px; padding: 0.1rem 0.4rem; font-size: 0.75rem; font-weight: 700; margin-left: 0.5rem; border: 1px solid #9ACD32;">
+          ({{ total_notifications_global }})
+        </span>
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- Résultats de recherche -->
+{% if request.GET.q %}
+<div style="text-align: center; margin: 20px 0;">
+  <div style="
+      display: inline-block;
+      background: #e8f5e8;
+      color: #2d5a27;
+      padding: 12px 25px;
+      border-radius: 25px;
+      font-size: 15px;
+      border-left: 4px solid #9ACD32;
+  ">
+    🌟 <strong>{{ plantations|length }} plantation(s)</strong> trouvée(s) pour "<strong>{{ request.GET.q }}</strong>"
+  </div>
+</div>
+{% endif %}
+
   <!-- Liste des plantations -->
   <div class="container-xxl py-5">
     <div class="container">
-        <div class="row g-4">
+        <div class="row g-4" id="serresContainer">
             {% if plantations %}
             {% for p in plantations %}
-            <div class="col-lg-4 col-md-6">
+            <div class="col-lg-4 col-md-6 serre-item" data-name="{{ p.nomCulture|lower }}" data-serre="{{ p.nomSerre|lower }}" data-variete="{{ p.variete|lower }}">
                 <div class="serre-card">
                     <div>
                         <div class="serre-header">
@@ -813,6 +1019,54 @@
         </div>
     </div>
 </div>
+<!-- PAGINATION FRONTOFFICE -->
+{% if page_obj.has_other_pages %}
+<div class="text-center mt-5">
+  <nav aria-label="Page navigation">
+    <ul class="pagination justify-content-center">
+      {% if page_obj.has_previous %}
+      <li class="page-item">
+        <a class="page-link" href="?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}page={{ page_obj.previous_page_number }}" aria-label="Précédent" style="color: #9ACD32; border-color: #9ACD32;">
+          <span aria-hidden="true">&laquo;</span>
+        </a>
+      </li>
+      {% else %}
+      <li class="page-item disabled">
+        <span class="page-link" style="color: #9ACD32; border-color: #9ACD32;">&laquo;</span>
+      </li>
+      {% endif %}
+
+      {% for num in page_obj.paginator.page_range %}
+        {% if page_obj.number == num %}
+          <li class="page-item active">
+            <span class="page-link" style="background-color: #9ACD32; border-color: #9ACD32;">{{ num }}</span>
+          </li>
+        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+          <li class="page-item">
+            <a class="page-link" href="?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}page={{ num }}" style="color: #9ACD32; border-color: #9ACD32;">{{ num }}</a>
+          </li>
+        {% endif %}
+      {% endfor %}
+
+      {% if page_obj.has_next %}
+      <li class="page-item">
+        <a class="page-link" href="?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}page={{ page_obj.next_page_number }}" aria-label="Suivant" style="color: #9ACD32; border-color: #9ACD32;">
+          <span aria-hidden="true">&raquo;</span>
+        </a>
+      </li>
+      {% else %}
+      <li class="page-item disabled">
+        <span class="page-link" style="color: #9ACD32; border-color: #9ACD32;">&raquo;</span>
+      </li>
+      {% endif %}
+    </ul>
+  </nav>
+
+  <div class="text-muted mt-2 small">
+    Page {{ page_obj.number }} sur {{ page_obj.paginator.num_pages }}
+  </div>
+</div>
+{% endif %}
 
    <!-- Footer Start -->
 <div class="container-fluid footer-custom text-light footer mt-5 py-5">
@@ -873,11 +1127,135 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     });
+
+    // Recherche et reconnaissance vocale COMME VOTRE AMI
+    const searchInput = document.getElementById('searchInput');
+    const searchButton = document.getElementById('searchButton');
+    const voiceButton = document.getElementById('voiceButton');
+    const clearButton = document.getElementById('clearButton');
+    const voiceStatus = document.getElementById('voiceStatus');
+    const serreItems = document.querySelectorAll('.serre-item');
+    const serresContainer = document.getElementById('serresContainer');
+
+    let recognition = null;
+    
+    // Vérifier si la reconnaissance vocale est supportée
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+        recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        recognition.continuous = false;
+        recognition.interimResults = false;
+        recognition.lang = 'fr-FR';
+
+        recognition.onstart = function() {
+            voiceButton.classList.add('listening');
+            voiceStatus.textContent = '🎤 Écoute en cours... Parlez maintenant';
+            voiceStatus.classList.add('active');
+        };
+
+        recognition.onresult = function(event) {
+            const transcript = event.results[0][0].transcript;
+            searchInput.value = transcript;
+            voiceStatus.textContent = `✅ Reconnu : "${transcript}"`;
+            performSearch(transcript);
+        };
+
+        recognition.onerror = function(event) {
+            voiceButton.classList.remove('listening');
+            voiceStatus.textContent = '❌ Erreur de reconnaissance vocale';
+            voiceStatus.classList.remove('active');
+        };
+
+        recognition.onend = function() {
+            voiceButton.classList.remove('listening');
+            setTimeout(() => {
+                voiceStatus.textContent = '';
+                voiceStatus.classList.remove('active');
+            }, 3000);
+        };
+
+        voiceButton.addEventListener('click', function() {
+            if (voiceButton.classList.contains('listening')) {
+                recognition.stop();
+            } else {
+                recognition.start();
+            }
+        });
+    } else {
+        voiceButton.style.display = 'none';
+        voiceStatus.textContent = '❌ Reconnaissance vocale non supportée par votre navigateur';
+    }
+
+    // Recherche par texte
+    searchButton.addEventListener('click', function() {
+        performSearch(searchInput.value);
+    });
+
+    searchInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            performSearch(searchInput.value);
+        }
+    });
+
+    // Effacer la recherche
+    clearButton.addEventListener('click', function() {
+        searchInput.value = '';
+        performSearch('');
+    });
+
+    function performSearch(searchTerm) {
+        const term = searchTerm.toLowerCase().trim();
+        let hasResults = false;
+
+        serreItems.forEach(item => {
+            const serreName = item.getAttribute('data-name');
+            const serreNom = item.getAttribute('data-serre');
+            const serreVariete = item.getAttribute('data-variete');
+            
+            const nameMatches = serreName.includes(term);
+            const serreMatches = serreNom.includes(term);
+            const varieteMatches = serreVariete.includes(term);
+            
+            if (nameMatches || serreMatches || varieteMatches || term === '') {
+                item.style.display = 'block';
+                hasResults = true;
+            } else {
+                item.style.display = 'none';
+            }
+        });
+
+        // Afficher un message si aucun résultat
+        const noResults = document.getElementById('noResults');
+        if (noResults) {
+            noResults.remove();
+        }
+
+        if (!hasResults && term !== '') {
+            const noResultsDiv = document.createElement('div');
+            noResultsDiv.id = 'noResults';
+            noResultsDiv.className = 'col-12';
+            noResultsDiv.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-search"></i>
+                    <h4>Aucune plantation trouvée</h4>
+                    <p>Aucune plantation ne correspond à "${searchTerm}"</p>
+                    <button class="btn-details" onclick="clearSearch()">
+                        <i class="fas fa-times"></i>
+                        Effacer la recherche
+                    </button>
+                </div>
+            `;
+            serresContainer.appendChild(noResultsDiv);
+        }
+    }
+
+    // Fonction pour effacer la recherche
+    window.clearSearch = function() {
+        searchInput.value = '';
+        performSearch('');
+    };
 });
 </script>
 {# {% include 'public/chatbot_ia.html' %} #}
-
-
 
 </body>
 </html>

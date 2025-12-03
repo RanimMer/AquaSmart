@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ titre }}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f8fdf0 0%, #e8f5e8 100%);
+            min-height: 100vh;
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 50px rgba(154, 205, 50, 0.15);
+            border: 1px solid #e1f0d3;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 25px;
+            border-bottom: 3px solid #e8f5e8;
+        }
+
+        .header-content h1 {
+            color: #2d5a27;
+            font-size: 2.5em;
+            font-weight: 700;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, #2d5a27, #4a7c45);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header-content .subtitle {
+            color: #666;
+            font-size: 1.1em;
+            font-weight: 400;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .back-btn {
+            background: linear-gradient(135deg, #9ACD32 0%, #8BC34A 100%);
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 6px 20px rgba(154, 205, 50, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(154, 205, 50, 0.4);
+            background: linear-gradient(135deg, #8BC34A 0%, #7CB342 100%);
+        }
+
+        .backoffice-btn {
+            background: linear-gradient(135deg, #607D8B 0%, #455A64 100%);
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 6px 20px rgba(96, 125, 139, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .backoffice-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(96, 125, 139, 0.4);
+            background: linear-gradient(135deg, #546E7A 0%, #37474F 100%);
+        }
+
+        .summary-card {
+            background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
+            color: white;
+            padding: 20px 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(33, 150, 243, 0.25);
+            position: relative;
+            overflow: hidden;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .summary-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.15) 1%, transparent 1%);
+            background-size: 20px 20px;
+            transform: rotate(30deg);
+        }
+
+        .summary-number {
+            font-size: 2.2em;
+            font-weight: 800;
+            display: block;
+            margin-bottom: 5px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .summary-label {
+            font-size: 1em;
+            opacity: 0.95;
+            font-weight: 500;
+        }
+
+        .plantations-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+            gap: 25px;
+        }
+
+        .plantation-card {
+            background: white;
+            padding: 25px;
+            border-radius: 16px;
+            border-left: 5px solid #9ACD32;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .plantation-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, transparent 0%, rgba(154, 205, 50, 0.03) 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .plantation-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+
+        .plantation-card:hover::before {
+            opacity: 1;
+        }
+
+        .plantation-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .plantation-name {
+            font-weight: 800;
+            color: #2d5a27;
+            font-size: 1.3em;
+            line-height: 1.2;
+        }
+
+        .plantation-badge {
+            background: #e8f5e8;
+            color: #2d5a27;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .plantation-details {
+            display: grid;
+            gap: 10px;
+        }
+
+        .detail-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f8f0;
+        }
+
+        .detail-item:last-child {
+            border-bottom: none;
+        }
+
+        .detail-icon {
+            width: 20px;
+            text-align: center;
+            color: #9ACD32;
+            font-weight: bold;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: #2d5a27;
+            min-width: 120px;
+            font-size: 0.9em;
+        }
+
+        .detail-value {
+            color: #666;
+            font-weight: 500;
+        }
+
+        /* CORRECTION DES COULEURS POUR TOUS LES ÉTATS */
+        .status-indicator {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .status-semée { background: #FFEBEE; color: #D32F2F; }
+        .status-croissance { background: #E3F2FD; color: #1976D2; }
+        .status-floraison { background: #FFF3E0; color: #F57C00; }
+        .status-maturité { background: #E8F5E8; color: #2E7D32; }
+        .status-récoltée { background: #F3E5F5; color: #7B1FA2; }
+
+        .empty-state {
+            text-align: center;
+            padding: 80px 40px;
+            color: #666;
+        }
+
+        .empty-icon {
+            font-size: 5em;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+
+        .empty-title {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+            color: #2d5a27;
+            font-weight: 600;
+        }
+
+        .empty-subtitle {
+            font-size: 1em;
+            opacity: 0.8;
+        }
+
+        @media (max-width: 1024px) {
+            .plantations-grid {
+                grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 25px;
+            }
+            
+            .header {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+            
+            .header-content h1 {
+                font-size: 2em;
+            }
+            
+            .button-group {
+                flex-direction: column;
+                width: 100%;
+            }
+            
+            .back-btn, .backoffice-btn {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .plantations-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .summary-card {
+                max-width: 300px;
+                padding: 18px 25px;
+            }
+            
+            .summary-number {
+                font-size: 1.8em;
+            }
+            
+            body {
+                padding: 15px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .plantation-card {
+                padding: 20px;
+            }
+            
+            .plantation-header {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .detail-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+            
+            .detail-label {
+                min-width: auto;
+            }
+            
+            .summary-card {
+                max-width: 250px;
+                padding: 15px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-content">
+                <h1>{{ titre }}</h1>
+                <div class="subtitle">Détails complets des plantations</div>
+            </div>
+            
+            <div class="button-group">
+                <a href="{% url 'statistiques' %}" class="back-btn">
+                    <span>←</span>
+                    Retour aux statistiques
+                </a>
+                <a href="{% url 'plantation_list' %}" class="backoffice-btn">
+                    <span>🌿</span>
+                    Retour aux Serres
+                </a>
+            </div>
+        </div>
+
+        <div class="summary-card">
+            <span class="summary-number">{{ total }}</span>
+            <span class="summary-label">plantation(s) correspondante(s)</span>
+        </div>
+
+        {% if plantations %}
+            <div class="plantations-grid">
+                {% for plantation in plantations %}
+                    <div class="plantation-card">
+                        <div class="plantation-header">
+                            <div class="plantation-name">{{ plantation.nomCulture }}</div>
+                            <div class="plantation-badge">{{ plantation.variete }}</div>
+                        </div>
+                        
+                        <div class="plantation-details">
+                            <div class="detail-item">
+                                <span class="detail-icon">🏠</span>
+                                <span class="detail-label">Serre:</span>
+                                <span class="detail-value">{{ plantation.nomSerre }}</span>
+                            </div>
+                            
+                            <div class="detail-item">
+                                <span class="detail-icon">🌱</span>
+                                <span class="detail-label">Plantes:</span>
+                                <span class="detail-value">{{ plantation.nombrePlantes }}</span>
+                            </div>
+                            
+                            <div class="detail-item">
+                                <span class="detail-icon">📊</span>
+                                <span class="detail-label">État:</span>
+                                <span class="detail-value">
+                                    <!-- CORRECTION ICI : Gestion manuelle des états -->
+                                    <span class="status-indicator 
+                                        {% if plantation.etat == 'Semée' %}status-semée
+                                        {% elif plantation.etat == 'Croissance' %}status-croissance
+                                        {% elif plantation.etat == 'Floraison' %}status-floraison
+                                        {% elif plantation.etat == 'Maturité' %}status-maturité
+                                        {% elif plantation.etat == 'Récoltée' %}status-récoltée
+                                        {% else %}status-semée{% endif %}">
+                                        {{ plantation.etat }}
+                                    </span>
+                                </span>
+                            </div>
+                            
+                            {% if plantation.dateSemis %}
+                            <div class="detail-item">
+                                <span class="detail-icon">📅</span>
+                                <span class="detail-label">Semis:</span>
+                                <span class="detail-value">{{ plantation.dateSemis|date:"d/m/Y" }}</span>
+                            </div>
+                            {% endif %}
+                            
+                            {% if plantation.dateRecoltePrevue %}
+                            <div class="detail-item">
+                                <span class="detail-icon">⏰</span>
+                                <span class="detail-label">Récolte:</span>
+                                <span class="detail-value">{{ plantation.dateRecoltePrevue|date:"d/m/Y" }}</span>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <div class="empty-icon">🌱</div>
+                <h3 class="empty-title">Aucune plantation trouvée</h3>
+                <p class="empty-subtitle">Aucune plantation ne correspond à cette catégorie pour le moment.</p>
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>

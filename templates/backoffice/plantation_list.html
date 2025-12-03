@@ -12,165 +12,339 @@
 {% endblock %}
 
 {% block content %}
-<div class="card">
-  <div class="card-body">
-    <div class="table-responsive-custom">
 
-    <div style="margin-bottom:20px;">
-      <a href="{% url 'plantation_create' %}" class="btn-add-plantation">
-        Ajouter une plantation
-      </a>
+<!-- Conteneur principal SANS CARD -->
+<div style="padding:15px; border-radius:10px; display:flex; flex-direction:column; gap:15px;">
+
+    <!-- Ligne 1 : UNIQUEMENT le bouton Ajouter -->
+    <div style="display:flex; align-items:center;">
+        <!-- Bouton Ajouter SEUL sur la première ligne -->
+        <a href="{% url 'plantation_create' %}" class="btn btn-vert" style="margin-right:20px;">+ Ajouter une plantation</a>
     </div>
 
-    {% if messages %}
-      {% for message in messages %}
-      <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
-        {{ message }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-      </div>
-      {% endfor %}
-    {% endif %}
+    <!-- FORMULAIRE PRINCIPAL - TOUT DEDANS -->
+    <form method="get" action="{% url 'plantation_list' %}" id="mainFilterForm">
+        <!-- Ligne 2 : Barre de recherche + boutons Rechercher/Retour + Calendrier/Stats/Notifications -->
+        <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap; width:100%; margin-bottom:15px;">
+            <!-- Barre de recherche -->
+            <input type="text" name="q" placeholder="Rechercher une plantation, variété, serre..." 
+                   value="{{ request.GET.q|default:'' }}" 
+                   style="padding:10px; border:1px solid #9ACD32; border-radius:5px; width:420px;">
 
-    <table class="tableau-elegant">
-      <thead>
-        <tr>
-          <th style="width: 80px;">Image</th>
-          <th style="width: 70px;">ID</th>
-          <th style="width: 120px;">Serre</th>
-          <th style="width: 120px;">Culture</th>
-          <th style="width: 100px;">Variété</th>
-          <th style="width: 90px;">Plantes</th>
-          <th style="width: 100px;">État</th>
-          <th style="width: 100px;">Semis</th>
-          <th style="width: 100px;">Récolte</th>
-          <th style="width: 120px;">Dernier arrosage</th>
-          <th style="width: 140px;">Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for p in plantations %}
-          <tr>
-            <td>
-              {% if p.image %}
-                <img src="{{ p.image.url }}" alt="{{ p.nomCulture }}" class="table-image">
-              {% else %}
-                <div class="no-image">
-                  <small>Aucune image</small>
-                </div>
-              {% endif %}
-            </td>
-            <td><strong class="data-id">#{{ p.idSerre }}</strong></td>
-            <td>
-              <span class="serre-name">{{ p.nomSerre }}</span>
-            </td>
-            <td>
-              <span class="culture-data">{{ p.nomCulture }}</span>
-            </td>
-            <td>
-              <span class="variete-data">{{ p.variete }}</span>
-            </td>
-            <td>
-              <span class="plantes-data">{{ p.nombrePlantes }}</span>
-            </td>
-            <td>
-              {% if p.etat == 'Semée' %}
-                <span class="badge badge-secondary">{{ p.etat }}</span>
-              {% elif p.etat == 'Croissance' %}
-                <span class="badge badge-info">{{ p.etat }}</span>
-              {% elif p.etat == 'Floraison' %}
-                <span class="badge badge-warning">{{ p.etat }}</span>
-              {% elif p.etat == 'Maturité' %}
-                <span class="badge badge-success">{{ p.etat }}</span>
-              {% elif p.etat == 'Récoltée' %}
-                <span class="badge badge-dark">{{ p.etat }}</span>
-              {% else %}
-                <span class="badge badge-danger">{{ p.etat }}</span>
-              {% endif %}
-            </td>
-            <td>
-              <span class="date-data">{{ p.dateSemis|date:"d/m/Y" }}</span>
-            </td>
-            <td>
-              <span class="date-data">{{ p.dateRecoltePrevue|date:"d/m/Y" }}</span>
-            </td>
-            <td>
-              {% if p.datesIrrigation %}
-                {% with dernier_arrosage=p.datesIrrigation.strip.split|last %}
-                  <span class="arrosage-data">{{ dernier_arrosage|default:"" }}</span>
-                {% endwith %}
-              {% else %}
-                <span class="text-muted">-</span>
-              {% endif %}
-            </td>
-            <td class="actions-cell">
-              <a href="{% url 'plantation_update' p.idSerre %}" class="btn btn-edit" data-title="Modifier">✏️</a>
-              <a href="{% url 'plantation_delete' p.idSerre %}" class="btn btn-delete" data-title="Supprimer">🗑️</a>
-              {% if p.deja_arrose_aujourdhui %}
-                  <span class="btn btn-arrose-disabled" data-title="Déjà arrosée aujourd'hui">✅</span>
-              {% else %}
-                  <a href="{% url 'confirmer_arrosage' p.idSerre %}" class="btn btn-arrose" data-title="Arroser" onclick="return confirm('Confirmer l\\'arrosage de {{ p.nomCulture }} aujourd\\'hui ?')">💧</a>
-              {% endif %}
-            </td>
-          </tr>
-        {% empty %}
-          <tr><td colspan="11" class="no-data">Aucune plantation.</td></tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
-  </div>
+            <!-- Boutons Rechercher et Retour -->
+            <button type="submit" class="btn btn-vert">Rechercher</button>
+            {% if request.GET.q %}
+            <a href="{% url 'plantation_list' %}" class="btn btn-vert">Retour</a>
+            {% endif %}
+            
+
+            <!-- Boutons Calendrier, Statistiques, Notifications alignés à droite -->
+            <div style="display:flex; gap:10px; margin-left:auto;">
+                <a href="{% url 'calendrier_backoffice' %}" class="btn btn-vert">📆 Calendrier</a>
+                <a href="{% url 'statistiques' %}" class="btn btn-vert">📊 Statistiques</a>
+                <a href="{% url 'notifications' %}" class="btn btn-vert position-relative">
+                    🔔 Notifications
+                    {% if total_notifications_global > 0 %}
+                    <span style="position: absolute; top: -8px; right: -8px; background: #dc3545; color: white; border-radius: 50%; width: 20px; height: 20px; font-size: 11px; display: flex; align-items: center; justify-content: center;">
+                        {{ total_notifications_global }}
+                    </span>
+                    {% endif %}
+                </a>
+            </div>
+        </div>
+
+        <!-- Ligne 3 : Les 2 filtres (Tous les états, Toutes les serres) -->
+        <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+            <select name="etat" 
+                    style="padding:10px; border:1px solid #9ACD32; border-radius:5px; background:white; min-width:150px; font-size:14px;"
+                    onchange="this.form.submit()">
+                <option value="">Tous les états</option>
+                <option value="Semée" {% if request.GET.etat == 'Semée' %}selected{% endif %}>Semée</option>
+                <option value="Croissance" {% if request.GET.etat == 'Croissance' %}selected{% endif %}>Croissance</option>
+                <option value="Floraison" {% if request.GET.etat == 'Floraison' %}selected{% endif %}>Floraison</option>
+                <option value="Maturité" {% if request.GET.etat == 'Maturité' %}selected{% endif %}>Maturité</option>
+                <option value="Récoltée" {% if request.GET.etat == 'Récoltée' %}selected{% endif %}>Récoltée</option>
+            </select>
+
+            <select name="serre" 
+                    style="padding:10px; border:1px solid #9ACD32; border-radius:5px; background:white; min-width:150px; font-size:14px;"
+                    onchange="this.form.submit()">
+                <option value="">Toutes les serres</option>
+                {% for serre in serres_uniques %}
+                    <option value="{{ serre }}" {% if request.GET.serre == serre %}selected{% endif %}>{{ serre }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </form>
+
 </div>
 
+<!-- TABLEAU DES PLANTATIONS -->
+<table class="tableau-elegant">
+  <thead>
+    <tr>
+      <th style="width: 80px;">Image</th>
+      <th style="width: 120px;">Serre</th>
+      <th style="width: 100px;">Culture</th>
+      <th style="width: 100px;">Variété</th>
+      <th style="width: 80px;">Plantes</th>
+      <th style="width: 100px;">État</th>
+      <th style="width: 100px;">
+        Date semis
+      </th>
+      <th style="width: 100px;">
+        Date récolte
+      </th>
+      <th style="width: 120px;">
+        Dernier arrosage
+      </th>
+      <th style="width: 150px;">Actions</th>
+    </tr>
+  </thead>
+  
+  <tbody>
+    {% for p in plantations %}
+      <tr>
+        <td>
+          {% if p.image %}
+            <img src="{{ p.image.url }}" alt="{{ p.nomCulture }}" style="width:65px; height:65px; object-fit:cover; border-radius:8px; border:1px solid #f0f0f0;">
+          {% else %}
+            <div style="width:65px; height:65px; background:#f8f9fa; border-radius:8px; display:flex; align-items:center; justify-content:center; color:#6c757d; font-size:10px; border:1px solid #e9ecef;">
+              <small>Aucune image</small>
+            </div>
+          {% endif %}
+        </td>
+        <td>
+          <span style="font-size:14px; color:#333; font-weight:600; padding:6px 10px; background:rgba(52, 152, 219, 0.1); border-radius:6px; display:inline-block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100%;">
+            {{ p.nomSerre }}
+          </span>
+        </td>
+        <td>
+          <span style="font-size:13px; color:#333; font-weight:500; padding:6px 10px; background:rgba(39, 174, 96, 0.1); border-radius:6px; display:inline-block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100%;">
+            {{ p.nomCulture }}
+          </span>
+        </td>
+        <td>
+          <span style="font-size:13px; color:#555; font-weight:500; padding:6px 10px; background:rgba(155, 89, 182, 0.1); border-radius:6px; display:inline-block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100%;">
+            {{ p.variete }}
+          </span>
+        </td>
+        <td>
+          <span style="font-size:13px; color:#333; font-weight:600; padding:6px 10px; background:rgba(243, 156, 18, 0.1); border-radius:6px; display:inline-block; text-align:center; min-width:60px;">
+            {{ p.nombrePlantes }}
+          </span>
+        </td>
+        <td>
+          {% if p.etat == 'Semée' %}
+            <span style="font-size:13px; color:#333; font-weight:500; padding:6px 10px; background:rgba(108, 117, 125, 0.1); border-radius:6px; display:inline-block; white-space:nowrap;">
+              {{ p.etat }}
+            </span>
+          {% elif p.etat == 'Croissance' %}
+            <span style="font-size:13px; color:#333; font-weight:500; padding:6px 10px; background:rgba(23, 162, 184, 0.1); border-radius:6px; display:inline-block; white-space:nowrap;">
+              {{ p.etat }}
+            </span>
+          {% elif p.etat == 'Floraison' %}
+            <span style="font-size:13px; color:#333; font-weight:500; padding:6px 10px; background:rgba(255, 193, 7, 0.1); border-radius:6px; display:inline-block; white-space:nowrap;">
+              {{ p.etat }}
+            </span>
+          {% elif p.etat == 'Maturité' %}
+            <span style="font-size:13px; color:#333; font-weight:500; padding:6px 10px; background:rgba(40, 167, 69, 0.1); border-radius:6px; display:inline-block; white-space:nowrap;">
+              {{ p.etat }}
+            </span>
+          {% elif p.etat == 'Récoltée' %}
+            <span style="font-size:13px; color:#333; font-weight:500; padding:6px 10px; background:rgba(52, 58, 64, 0.1); border-radius:6px; display:inline-block; white-space:nowrap;">
+              {{ p.etat }}
+            </span>
+          {% else %}
+            <span style="font-size:13px; color:#333; font-weight:500; padding:6px 10px; background:rgba(220, 53, 69, 0.1); border-radius:6px; display:inline-block; white-space:nowrap;">
+              {{ p.etat }}
+            </span>
+          {% endif %}
+        </td>
+        <td>
+          <div style="display:flex; justify-content:center; align-items:center; height:100%; padding:4px 0;">
+            <span style="font-size:13px; color:#555; font-weight:500; padding:8px 14px; background:rgba(149, 165, 166, 0.1); border-radius:6px; display:inline-block; white-space:nowrap; border:1px solid rgba(149, 165, 166, 0.3); text-align:center; min-width:110px; box-sizing:border-box;">
+              {{ p.dateSemis|date:"d/m/Y" }}
+            </span>
+          </div>
+        </td>
+        <td>
+          <div style="display:flex; justify-content:center; align-items:center; height:100%; padding:4px 0;">
+            <span style="font-size:13px; color:#555; font-weight:500; padding:8px 14px; background:rgba(155, 89, 182, 0.1); border-radius:6px; display:inline-block; white-space:nowrap; border:1px solid rgba(155, 89, 182, 0.3); text-align:center; min-width:110px; box-sizing:border-box;">
+              {{ p.dateRecoltePrevue|date:"d/m/Y" }}
+            </span>
+          </div>
+        </td>
+        <td>
+          {% if p.datesIrrigation %}
+            {% with dernier_arrosage=p.datesIrrigation.strip.split|last %}
+              <span style="color:#28a745; font-weight:600; font-size:13px; padding:8px 14px; background:rgba(39, 174, 96, 0.1); border-radius:6px; display:inline-block; white-space:nowrap;">
+                {{ dernier_arrosage|default:"" }}
+              </span>
+            {% endwith %}
+          {% else %}
+            <span style="color:#6c757d; font-style:italic;">-</span>
+          {% endif %}
+        </td>
+        <td style="display:flex; gap:10px; justify-content:center; align-items:center;">
+          <!-- Bouton MODIFIER - CARRÉ JAUNE -->
+          <a href="{% url 'plantation_update' p.idSerre %}" 
+             style="background-color:#fab800; border:none; width:48px; height:48px; color:white !important; font-size:24px; display:flex; justify-content:center; align-items:center; border-radius:12px; padding:0; cursor:pointer; transition:background-color 0.3s ease, transform 0.2s ease; text-decoration:none;"
+             data-title="Modifier"
+             onmouseover="this.style.backgroundColor='#d6a200'; this.style.transform='scale(1.1)'"
+             onmouseout="this.style.backgroundColor='#fab800'; this.style.transform='scale(1)'">
+            ✏️
+          </a>
+          
+          <!-- Bouton SUPPRIMER avec modal - CARRÉ ROUGE -->
+          <button type="button" 
+                  style="background-color:#e03e3e; border:none; width:48px; height:48px; color:white !important; font-size:24px; display:flex; justify-content:center; align-items:center; border-radius:12px; padding:0; cursor:pointer; transition:background-color 0.3s ease, transform 0.2s ease;"
+                  data-title="Supprimer"
+                  data-bs-toggle="modal"
+                  data-bs-target="#deleteModal{{ p.idSerre }}"
+                  onmouseover="this.style.backgroundColor='#b73131'; this.style.transform='scale(1.1)'"
+                  onmouseout="this.style.backgroundColor='#e03e3e'; this.style.transform='scale(1)'">
+            🗑️
+          </button>
+          
+          <!-- Bouton ARROSAGE - CARRÉ BLEU -->
+          {% if p.deja_arrose_aujourdhui %}
+            <span style="background-color:#17a2b8; border:none; width:48px; height:48px; color:white !important; font-size:24px; display:flex; justify-content:center; align-items:center; border-radius:12px; padding:0; cursor:default; opacity:0.7;"
+                  data-title="Déjà arrosée aujourd'hui">
+              ✅
+            </span>
+          {% else %}
+            <a href="{% url 'confirmer_arrosage' p.idSerre %}" 
+               style="background-color:#17a2b8; border:none; width:48px; height:48px; color:white !important; font-size:24px; display:flex; justify-content:center; align-items:center; border-radius:12px; padding:0; cursor:pointer; transition:background-color 0.3s ease, transform 0.2s ease; text-decoration:none;"
+               data-title="Arroser"
+               onclick="return confirm('Confirmer l\\'arrosage de {{ p.nomCulture }} aujourd\\'hui ?')"
+               onmouseover="this.style.backgroundColor='#138496'; this.style.transform='scale(1.1)'"
+               onmouseout="this.style.backgroundColor='#17a2b8'; this.style.transform='scale(1)'">
+              💧
+            </a>
+          {% endif %}
+        </td>
+      </tr>
+    {% empty %}
+      <tr>
+        <td colspan="10" style="text-align:center; color:#6c757d; font-style:italic; padding:40px !important;">
+          <div style="padding:20px;">
+            <h6 style="color:#6c757d; margin-bottom:15px; font-size:16px;">Aucune plantation enregistrée</h6>
+            <a href="{% url 'plantation_create' %}" class="btn btn-vert" style="margin-top:10px;">
+              Créer une plantation
+            </a>
+          </div>
+        </td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<!-- PAGINATION -->
+{% if page_obj.has_other_pages %}
+<div style="margin-top: 20px;">
+  <div style="display:flex; justify-content:center;">
+    {% if page_obj.has_previous %}
+    <a href="?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}{% if request.GET.etat %}etat={{ request.GET.etat }}&{% endif %}{% if request.GET.serre %}serre={{ request.GET.serre }}&{% endif %}page={{ page_obj.previous_page_number }}" 
+       style="padding:8px 12px; margin:0 2px; border:1px solid #9ACD32; border-radius:5px; color:#9ACD32; text-decoration:none; transition:all 0.3s ease;">
+      &laquo;
+    </a>
+    {% else %}
+    <span style="padding:8px 12px; margin:0 2px; border:1px solid #9ACD32; border-radius:5px; color:#9ACD32; opacity:0.5;">
+      &laquo;
+    </span>
+    {% endif %}
+
+    {% for num in page_obj.paginator.page_range %}
+      {% if page_obj.number == num %}
+        <span style="padding:8px 12px; margin:0 2px; background-color:#9ACD32; border:1px solid #9ACD32; border-radius:5px; color:white;">
+          {{ num }}
+        </span>
+      {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+        <a href="?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}{% if request.GET.etat %}etat={{ request.GET.etat }}&{% endif %}{% if request.GET.serre %}serre={{ request.GET.serre }}&{% endif %}page={{ num }}" 
+           style="padding:8px 12px; margin:0 2px; border:1px solid #9ACD32; border-radius:5px; color:#9ACD32; text-decoration:none; transition:all 0.3s ease;">
+          {{ num }}
+        </a>
+      {% endif %}
+    {% endfor %}
+
+    {% if page_obj.has_next %}
+    <a href="?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}{% if request.GET.etat %}etat={{ request.GET.etat }}&{% endif %}{% if request.GET.serre %}serre={{ request.GET.serre }}&{% endif %}page={{ page_obj.next_page_number }}" 
+       style="padding:8px 12px; margin:0 2px; border:1px solid #9ACD32; border-radius:5px; color:#9ACD32; text-decoration:none; transition:all 0.3s ease;">
+      &raquo;
+    </a>
+    {% else %}
+    <span style="padding:8px 12px; margin:0 2px; border:1px solid #9ACD32; border-radius:5px; color:#9ACD32; opacity:0.5;">
+      &raquo;
+    </span>
+    {% endif %}
+  </div>
+  <div style="text-align:center; color:#666; font-size:14px; margin-top:10px;">
+    Page {{ page_obj.number }} sur {{ page_obj.paginator.num_pages }}
+  </div>
+</div>
+{% endif %}
+
+<!-- Modals de suppression -->
+{% for p in plantations %}
+<div class="modal fade" id="deleteModal{{ p.idSerre }}" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header" style="background-color: #fff3cd; border-color: #ffeaa7;">
+        <h5 class="modal-title text-warning">
+          <i class="fas fa-exclamation-triangle me-2"></i>
+          Confirmer la suppression
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="text-center mb-4">
+          <p>Vous êtes sur le point de supprimer définitivement la plantation :</p>
+          <h5 class="card-title">{{ p.nomCulture }}</h5>
+          <p class="text-danger fw-bold">Cette action est irréversible !</p>
+        </div>
+        
+        <form method="post" action="{% url 'plantation_delete' p.idSerre %}" class="text-center">
+          {% csrf_token %}
+          <div class="d-flex justify-content-center gap-3">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+              ❌ Annuler
+            </button>
+            <button type="submit" class="btn btn-danger">
+              🗑️ Confirmer la suppression
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endfor %}
+
+<!-- STYLE EXACT comme l'ami -->
 <style>
-  .table-responsive-custom {
-    width: 100%;
-    overflow-x: auto;
-    overflow-y: hidden;
-    padding-bottom: 10px;
-    scrollbar-width: thin; /* Firefox */
-}
-
-/* Style de scrollbar moderne */
-.table-responsive-custom::-webkit-scrollbar {
-    height: 6px;
-}
-
-.table-responsive-custom::-webkit-scrollbar-track {
-    background: #e9ecef;
-    border-radius: 10px;
-}
-
-.table-responsive-custom::-webkit-scrollbar-thumb {
-    background: #9ACD32;
-    border-radius: 10px;
-}
-
-.table-responsive-custom::-webkit-scrollbar-thumb:hover {
-    background: #7cad28;
-}
-
-/* Bouton Ajouter une plantation - Style smooth */
-.btn-add-plantation {
+/* Bouton vert standard - EXACTEMENT COMME L'AMI */
+.btn-vert {
     background-color: rgba(154, 205, 50, 0.1);
-    color: #9ACD32;
-    padding: 12px 24px;
+    color: #9ACD32 !important;
+    padding: 10px 20px;
     border-radius: 10px;
     text-decoration: none;
     font-weight: 500;
-    transition: all 0.3s ease;
     border: 2px solid rgba(154, 205, 50, 0.3);
+    transition: all 0.3s ease;
     display: inline-block;
-    font-size: 15px;
+    font-size: 14px;
 }
 
-.btn-add-plantation:hover {
+.btn-vert:hover {
     background-color: rgba(154, 205, 50, 0.2);
     border-color: rgba(154, 205, 50, 0.5);
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(154, 205, 50, 0.2);
 }
 
-/* Tableau élégant */
+/* Tableau élégant - EXACTEMENT COMME L'AMI */
 .tableau-elegant {
     width: 100%;
     border-collapse: separate;
@@ -180,29 +354,30 @@
     overflow: hidden;
     box-shadow: 0 2px 8px rgba(0,0,0,0.04);
     background: white;
-    table-layout: fixed; /* Pour respecter les largeurs définies */
+    table-layout: fixed;
 }
 
 .tableau-elegant th {
     background-color: rgba(154, 205, 50, 0.08);
     color: #2d5016;
-    padding: 14px 8px; /* Padding réduit */
+    padding: 14px 8px;
     text-align: left;
     font-weight: 600;
-    font-size: 13px; /* Taille réduite */
+    font-size: 13px;
     border-bottom: 1px solid rgba(154, 205, 50, 0.2);
     text-transform: uppercase;
     letter-spacing: 0.5px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    vertical-align: middle;
 }
 
 .tableau-elegant td {
-    padding: 12px 8px; /* Padding réduit */
+    padding: 12px 8px;
     text-align: left;
     border-bottom: 1px solid #f0f0f0;
-    font-size: 13px; /* Taille réduite */
+    font-size: 13px;
     color: #555;
     vertical-align: middle;
 }
@@ -222,192 +397,12 @@
     border-bottom: none;
 }
 
-/* Image du tableau - AGRANDIE */
-.table-image {
-    width: 65px; /* Agrandie */
-    height: 65px; /* Agrandie */
-    object-fit: cover;
-    border-radius: 8px;
-    border: 1px solid #f0f0f0;
-}
-
-.no-image {
-    width: 65px; /* Agrandie */
-    height: 65px; /* Agrandie */
-    background: #f8f9fa;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #6c757d;
-    font-size: 10px; /* Légèrement réduit */
-    border: 1px solid #e9ecef;
-}
-
-/* Données avec taille légèrement réduite */
-.data-id {
-    font-size: 14px; /* Légèrement réduit */
-    color: #333;
-    font-weight: 600;
-}
-
-.serre-name {
-    font-size: 13px; /* Légèrement réduit */
-    color: #333;
-    font-weight: 600;
-    padding: 6px 10px; /* Légèrement réduit */
-    background: rgba(52, 152, 219, 0.1);
-    border-radius: 6px;
-    display: inline-block;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 100%;
-}
-
-.culture-data {
-    font-size: 13px; /* Légèrement réduit */
-    color: #333;
-    font-weight: 500;
-    padding: 6px 10px; /* Légèrement réduit */
-    background: rgba(39, 174, 96, 0.1);
-    border-radius: 6px;
-    display: inline-block;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 100%;
-}
-
-.variete-data {
-    font-size: 13px; /* Légèrement réduit */
-    color: #555;
-    font-weight: 500;
-    padding: 6px 10px; /* Légèrement réduit */
-    background: rgba(155, 89, 182, 0.1);
-    border-radius: 6px;
-    display: inline-block;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 100%;
-}
-
-.plantes-data {
-    font-size: 13px; /* Légèrement réduit */
-    color: #333;
-    font-weight: 600;
-    padding: 6px 10px; /* Légèrement réduit */
-    background: rgba(243, 156, 18, 0.1);
-    border-radius: 6px;
-    display: inline-block;
-    text-align: center;
-    min-width: 35px; /* Légèrement réduit */
-}
-
-.date-data {
-    font-size: 13px; /* Légèrement réduit */
-    color: #555;
-    font-weight: 500;
-    padding: 6px 10px; /* Légèrement réduit */
-    background: rgba(149, 165, 166, 0.1);
-    border-radius: 6px;
-    display: inline-block;
-    white-space: nowrap;
-}
-
-.arrosage-data {
-    color: #28a745;
-    font-weight: 600;
-    font-size: 13px; /* Légèrement réduit */
-    padding: 6px 10px; /* Légèrement réduit */
-    background: rgba(39, 174, 96, 0.1);
-    border-radius: 6px;
-    display: inline-block;
-    white-space: nowrap;
-}
-
-/* Badges élégants */
-.badge {
-    padding: 6px 10px; /* Légèrement réduit */
-    border-radius: 6px;
-    font-size: 11px; /* Légèrement réduit */
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.3px;
-}
-
-.badge-secondary { background-color: #6c757d; color: white; }
-.badge-info { background-color: #17a2b8; color: white; }
-.badge-warning { background-color: #ffc107; color: #212529; }
-.badge-success { background-color: #28a745; color: white; }
-.badge-dark { background-color: #343a40; color: white; }
-.badge-danger { background-color: #dc3545; color: white; }
-
-/* Message pas de données */
-.no-data {
-    text-align: center;
-    color: #6c757d;
-    font-style: italic;
-    padding: 40px !important;
-}
-
-/* Boutons d'action */
-.btn {
-    padding: 8px 12px; /* Légèrement réduit */
-    border-radius: 8px;
-    text-decoration: none;
-    font-weight: 500;
-    transition: all 0.2s ease;
-    color: white;
-    display: inline-block;
-    font-size: 13px; /* Légèrement réduit */
+/* Tooltip personnalisé - EXACTEMENT COMME L'AMI */
+button[data-title], a[data-title] {
     position: relative;
 }
 
-.btn-edit {
-    background-color: #ffc107;
-}
-.btn-edit:hover {
-    background-color: #e0a800;
-    transform: scale(1.1);
-}
-
-.btn-delete {
-    background-color: #dc3545;
-}
-.btn-delete:hover {
-    background-color: #c82333;
-    transform: scale(1.1);
-}
-
-.btn-arrose {
-    background-color: #17a2b8;
-}
-.btn-arrose:hover {
-    background-color: #138496;
-    transform: scale(1.1);
-}
-
-.btn-arrose-disabled {
-    background-color: #6c757d;
-    cursor: not-allowed;
-    opacity: 0.5;
-}
-
-.actions-cell {
-    display: flex;
-    gap: 6px; /* Légèrement réduit */
-    align-items: center;
-    justify-content: center;
-}
-
-/* Tooltip personnalisé - EN HAUT */
-.btn[data-title] {
-    position: relative;
-}
-
-.btn[data-title]:hover::after {
+button[data-title]:hover::after, a[data-title]:hover::after {
     content: attr(data-title);
     position: absolute;
     top: -40px;
@@ -425,7 +420,7 @@
     font-weight: 500;
 }
 
-.btn[data-title]:hover::before {
+button[data-title]:hover::before, a[data-title]:hover::before {
     content: '';
     position: absolute;
     top: -10px;
@@ -437,5 +432,83 @@
     z-index: 1000;
 }
 
+/* Modal styles - EXACTEMENT COMME L'AMI */
+.modal-content {
+    border-radius: 12px;
+    border: none;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+}
+
+.modal-header {
+    border-bottom: 1px solid #dee2e6;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+}
+
+.modal-body {
+    padding: 25px;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    border-color: #dc3545;
+    padding: 10px 20px;
+    font-weight: 500;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.btn-danger:hover {
+    background-color: #c82333;
+    border-color: #bd2130;
+    transform: translateY(-2px);
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    border-color: #6c757d;
+    padding: 10px 20px;
+    font-weight: 500;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+    border-color: #545b62;
+    transform: translateY(-2px);
+}
+
+/* Responsive - EXACTEMENT COMME L'AMI */
+@media (max-width: 768px) {
+    .btn-vert {
+        padding: 8px 12px;
+        font-size: 12px;
+    }
+    
+    input[type="text"] {
+        width: 100% !important;
+        min-width: 100% !important;
+    }
+    
+    select {
+        width: 100% !important;
+        min-width: 100% !important;
+    }
+    
+    .tableau-elegant th,
+    .tableau-elegant td {
+        font-size: 11px;
+        padding: 8px 4px;
+    }
+    
+    /* Boutons carrés plus petits sur mobile */
+    button[style*="width:48px"], a[style*="width:48px"], span[style*="width:48px"] {
+        width: 36px !important;
+        height: 36px !important;
+        font-size: 18px !important;
+    }
+}
 </style>
+
 {% endblock %}

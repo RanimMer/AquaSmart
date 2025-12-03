@@ -6,77 +6,58 @@
 {% block page_title %}🗑️ Confirmer la suppression{% endblock %}
 
 {% block content %}
-<div class="card">
-  <div class="card-body">
-    <div class="text-center">
-      <div class="alert alert-warning">
-        <i class="fas fa-exclamation-triangle fa-2x mb-3 text-warning"></i>
-        <h4 class="alert-heading">⚠️ Confirmer la suppression</h4>
-        <p>Vous êtes sur le point de supprimer définitivement la plantation :</p>
-        
-        <div class="card mb-4" style="background: #f8f9fa;">
-          <div class="card-body">
-            <h5 class="card-title">{{ plantation.nomCulture }} ({{ plantation.variete }})</h5>
-            <p class="card-text mb-1"><strong>Serre:</strong> {{ plantation.nomSerre }}</p>
-            <p class="card-text mb-1"><strong>Nombre de plantes:</strong> {{ plantation.nombrePlantes }}</p>
-            <p class="card-text mb-1"><strong>État:</strong> {{ plantation.etat }}</p>
-            <p class="card-text mb-1"><strong>Date semis:</strong> {{ plantation.dateSemis|date:"d/m/Y" }}</p>
-            <p class="card-text mb-1"><strong>Date récolte:</strong> {{ plantation.dateRecoltePrevue|date:"d/m/Y" }}</p>
-          </div>
-        </div>
+<!-- Modal de confirmation suppression -->
+<div class="modal-overlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; z-index: 1000;">
+  <div class="modal-content modal-green-border" style="background: white; border-radius: 12px; padding: 2rem; max-width: 400px; width: 90%; border: 2px solid #9ACD32; box-shadow: 0 4px 20px rgba(0,0,0,0.3);">
+    <h5 style="color: #856404; margin-bottom: 1rem; text-align: center;">
+      ⚠️ Confirmer la suppression
+    </h5>
+    
+    <p style="text-align: center; color: #666; margin-bottom: 1rem;">
+      Vous êtes sur le point de supprimer définitivement la plantation :
+    </p>
+    
+    <p class="fw-bold text-center" style="color: #2d5a27; font-size: 1.1rem; margin-bottom: 1.5rem;">
+      {{ plantation.nomCulture }}
+    </p>
 
-        <p class="text-danger fw-bold">Cette action est irréversible !</p>
+    <div class="d-flex justify-content-center gap-3">
+      <!-- Bouton Annuler -->
+      <a href="{% url 'plantation_list' %}" class="btn btn-green-outline" style="color: #9ACD32; border: 2px solid #9ACD32; padding: 0.5rem 1.5rem; border-radius: 6px; text-decoration: none; font-weight: 500; transition: all 0.3s;">
+        ❌ Annuler
+      </a>
 
-        <form method="post">
-          {% csrf_token %}
-          <div class="d-flex justify-content-center gap-3">
-            <a href="{% url 'plantation_list' %}" class="btn btn-cancel">
-              ❌ Annuler
-            </a>
-            <button type="submit" class="btn btn-delete">
-              🗑️ Confirmer la suppression
-            </button>
-          </div>
-        </form>
-      </div>
+      <!-- Bouton Valider -->
+      <form method="post" style="display: inline;">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-green-outline" style="color: #9ACD32; border: 2px solid #9ACD32; padding: 0.5rem 1.5rem; border-radius: 6px; font-weight: 500; transition: all 0.3s;">
+          ✅ Valider
+        </button>
+      </form>
     </div>
   </div>
 </div>
 
 <style>
-.alert-warning {
-  background-color: #fff3cd;
-  border-color: #ffeaa7;
-  color: #856404;
+.btn-green-outline:hover {
+  background-color: #9ACD32;
+  color: white !important;
+  transform: translateY(-1px);
 }
 
-.btn-delete {
-  background-color: #dc3545;
-  color: white;
-  padding: 10px 20px;
-  border-radius: 8px;
-  text-decoration: none;
-  font-weight: 500;
-  transition: 0.3s;
-  border: none;
+.modal-green-border {
+  animation: modalAppear 0.3s ease-out;
 }
 
-.btn-delete:hover {
-  background-color: #c82333;
-}
-
-.btn-cancel {
-  background-color: #6c757d;
-  color: white;
-  padding: 10px 20px;
-  border-radius: 8px;
-  text-decoration: none;
-  font-weight: 500;
-  transition: 0.3s;
-}
-
-.btn-cancel:hover {
-  background-color: #545b62;
+@keyframes modalAppear {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
 }
 </style>
 {% endblock %}

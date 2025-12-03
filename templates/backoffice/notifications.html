@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Notifications - AquaSmart</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<style>
+:root {
+    --vert-principal: #9ACD32;
+    --vert-secondaire: #8BC34A;
+    --vert-fonce: #2d5a27;
+    --blanc: #ffffff;
+    --gris-clair: #f8f9fa;
+    --shadow-card: rgba(154, 205, 50, 0.2);
+}
+
+body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: #f0f4f0;
+    min-height: 100vh;
+    padding-bottom: 3rem;
+}
+
+.navbar-aquasmart {
+    background: linear-gradient(135deg, var(--vert-principal), var(--vert-secondaire));
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.navbar-aquasmart .navbar-brand,
+.navbar-aquasmart .navbar-text {
+    color: white;
+    font-weight: 600;
+}
+
+.notification-container {
+    max-width: 950px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+.header-section {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.header-section h1 {
+    color: var(--vert-fonce);
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.header-section p {
+    color: #4a4a4a;
+    font-size: 1rem;
+}
+
+.notification-card {
+    background: rgba(255,255,255,0.85);
+    backdrop-filter: blur(8px);
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 8px 24px var(--shadow-card);
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.notification-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 36px var(--shadow-card);
+}
+
+.notification-card .badge-priority {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    font-size: 0.75rem;
+    padding: 0.5rem 0.8rem;
+    border-radius: 50px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.notification-card.critique .badge-priority { background: #dc3545; color: white; }
+.notification-card.haute .badge-priority { background: #fd7e14; color: white; }
+.notification-card.moyenne .badge-priority { background: #ffc107; color: #333; }
+.notification-card.conseil .badge-priority { background: var(--vert-principal); color: white; }
+.notification-card.info .badge-priority { background: #17a2b8; color: white; }
+
+.notification-card .icon-circle {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: var(--vert-principal);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    margin-right: 1rem;
+    flex-shrink: 0;
+    transition: transform 0.3s;
+}
+
+.notification-card:hover .icon-circle {
+    transform: scale(1.1) rotate(10deg);
+}
+
+.notification-content {
+    display: flex;
+    align-items: flex-start;
+}
+
+.notification-text {
+    flex: 1;
+}
+
+.notification-text h5 {
+    margin: 0;
+    font-weight: 600;
+    color: var(--vert-fonce);
+}
+
+.notification-text p {
+    margin: 0.3rem 0 0;
+    color: #555;
+    font-size: 0.9rem;
+}
+
+.notification-meta {
+    margin-top: 0.7rem;
+    font-size: 0.8rem;
+    color: #666;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+.notification-meta .time-badge {
+    background: var(--gris-clair);
+    padding: 2px 6px;
+    border-radius: 6px;
+    font-weight: 600;
+    color: var(--vert-fonce);
+}
+
+.actions-container {
+    margin-top: 1rem;
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.btn-aqua {
+    background: var(--vert-principal);
+    color: white;
+    border-radius: 10px;
+    padding: 0.5rem 1rem;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.btn-aqua:hover {
+    background: var(--vert-secondaire);
+    transform: translateY(-2px);
+}
+
+.btn-aqua-outline {
+    border: 2px solid var(--vert-principal);
+    color: var(--vert-principal);
+    background: transparent;
+    border-radius: 10px;
+    padding: 0.5rem 1rem;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.btn-aqua-outline:hover {
+    background: var(--vert-principal);
+    color: white;
+}
+
+.conseil-box {
+    background: rgba(154,205,50,0.15);
+    border-left: 4px solid var(--vert-principal);
+    border-radius: 10px;
+    padding: 0.8rem 1rem;
+    margin-top: 0.8rem;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 3rem 2rem;
+    color: #666;
+}
+.empty-state i {
+    font-size: 3rem;
+    color: var(--vert-principal);
+}
+</style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark navbar-aquasmart">
+    <div class="container">
+        <a class="navbar-brand fw-bold" href="{% url 'plantation_list' %}">
+            <i class="fas fa-arrow-left me-2"></i><i class="fas fa-leaf me-2"></i>AquaSmart
+        </a>
+        <div class="navbar-text fw-bold">
+            <i class="fas fa-bell me-2"></i>Notifications
+        </div>
+    </div>
+</nav>
+
+<div class="notification-container">
+    <div class="header-section">
+        <h1><i class="fas fa-bell text-success me-2"></i>Mes Notifications</h1>
+        <p>Alertes et conseils pour vos plantations</p>
+    </div>
+
+    {% if notifications %}
+        {% for notif in notifications %}
+        <div class="notification-card {{ notif.priorite }}" id="notif-{{ notif.id }}">
+            <span class="badge-priority">{{ notif.priorite|upper }}</span>
+            <div class="notification-content">
+                <div class="icon-circle">
+                    {% if notif.type == 'arrosage' %}<i class="fas fa-tint"></i>{% elif notif.type == 'changement_etat' %}<i class="fas fa-seedling"></i>{% else %}<i class="fas fa-info-circle"></i>{% endif %}
+                </div>
+                <div class="notification-text">
+                    <h5>{{ notif.message }}</h5>
+                    {% if notif.conseil %}
+                    <div class="conseil-box">
+                        <p class="mb-0">{{ notif.conseil }}</p>
+                    </div>
+                    {% endif %}
+                    <div class="notification-meta">
+                        <span class="time-badge"><i class="fas fa-clock me-1"></i> {{ notif.date_creation }}</span>
+                        {% if notif.jours_retard %}<span class="time-badge">{{ notif.jours_retard }} jour{{ notif.jours_retard|pluralize }}</span>{% endif %}
+                    </div>
+                    <div class="actions-container">
+                        {% if notif.type == 'changement_etat' %}
+                        <button class="btn btn-aqua" onclick="garderConseil('{{ notif.id }}')"><i class="fas fa-save me-1"></i>Garder</button>
+                        <button class="btn btn-aqua-outline" onclick="ignorerNotification('{{ notif.id }}')"><i class="fas fa-times me-1"></i>Ignorer</button>
+                        {% endif %}
+                        {% if notif.type == 'arrosage' %}
+                        <a href="{% url 'confirmer_arrosage' notif.plantation.idSerre %}?next={% url 'notifications' %}" class="btn btn-aqua-outline"><i class="fas fa-tint me-1"></i>Arroser</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="empty-state">
+            <i class="fas fa-check-circle"></i>
+            <h4>Tout est sous contrôle !</h4>
+            <p>Aucune notification pour le moment.</p>
+            <a href="{% url 'plantation_list' %}" class="btn btn-aqua mt-2">Retour aux plantations</a>
+        </div>
+    {% endif %}
+</div>
+
+<script>
+function garderConseil(id) {
+    const card = document.getElementById('notif-' + id);
+    const bouton = card.querySelector('.btn-aqua');
+    bouton.innerHTML = '<i class="fas fa-check me-1"></i>Gardé';
+    bouton.disabled = true;
+    bouton.classList.remove('btn-aqua');
+    bouton.classList.add('btn-success');
+    const ignorerBtn = card.querySelector('.btn-aqua-outline');
+    if(ignorerBtn) ignorerBtn.style.display = 'none';
+    console.log("💾 Conseil gardé:", id);
+}
+
+function ignorerNotification(id) {
+    const card = document.getElementById('notif-' + id);
+    card.style.opacity = 0;
+    card.style.transform = 'translateX(100px)';
+    card.style.transition = 'all 0.4s ease';
+    
+    // ⚡ APPEL AU SERVEUR POUR SUPPRIMER RÉELLEMENT LA NOTIFICATION
+    fetch(`/serre/notifications/supprimer/${id}/`, {
+        method: 'GET',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+        }
+    })
+    .then(response => {
+        if (response.ok) {
+            console.log("✅ Notification supprimée du serveur:", id);
+            // Suppression visuelle après confirmation serveur
+            setTimeout(() => {
+                card.remove();
+                // Recharger pour mettre à jour le compteur global
+                setTimeout(() => {
+                    window.location.reload();
+                }, 500);
+            }, 400);
+        } else {
+            throw new Error('Erreur serveur');
+        }
+    })
+    .catch(error => {
+        console.log("❌ Erreur suppression:", error);
+        // Suppression visuelle même en cas d'erreur
+        setTimeout(() => {
+            card.remove();
+        }, 400);
+    });
+}
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

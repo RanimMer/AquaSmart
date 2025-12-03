@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statistiques des Plantations</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8fdf0;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(154, 205, 50, 0.1);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e8f5e8;
+        }
+
+        .header h1 {
+            color: #2d5a27;
+            font-size: 2.2em;
+            margin-bottom: 0;
+        }
+
+        .back-btn {
+            background: linear-gradient(135deg, #9ACD32 0%, #8BC34A 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(154, 205, 50, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(154, 205, 50, 0.4);
+        }
+
+        .total-indicator {
+            display: inline-block;
+            background: #9ACD32;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 1em;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            border: 1px solid #e1f0d3;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .stat-card h2 {
+            color: #2d5a27;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+        }
+
+        .chart-container {
+            height: 300px;
+            position: relative;
+            margin-bottom: 10px;
+        }
+
+        /* SUPPRIMER LA SECTION LEGENDE PUISQU'ON AFFICHE DIRECTEMENT SUR LE CAMEMBERT */
+
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 25px;
+            }
+            
+            .container {
+                padding: 20px;
+            }
+            
+            .header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            
+            .chart-container {
+                height: 250px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 Statistiques Des Plantations</h1>
+            <a href="{% url 'plantation_list' %}" class="back-btn">
+                <span>←</span>
+                Retour aux Plantations
+            </a>
+        </div>
+
+        <div style="text-align: center; margin-bottom: 20px;">
+            <div class="total-indicator">
+                {{ total_plantations }} plantations
+            </div>
+        </div>
+        
+        <div class="stats-grid">
+            <!-- Camembert État -->
+            <div class="stat-card">
+                <h2>📈 Par État</h2>
+                <div class="chart-container">
+                    <canvas id="chartEtat"></canvas>
+                </div>
+            </div>
+            
+            <!-- Camembert Type -->
+            <div class="stat-card">
+                <h2>🌿 Par Type</h2>
+                <div class="chart-container">
+                    <canvas id="chartType"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Données depuis Django
+        const statsEtat = {{ stats_etat|safe }};
+        const statsType = {{ stats_type|safe }};
+        
+        // Vos couleurs exactes
+        const paletteEtat = ['#FF6B6B', '#4ECDC4', '#FFD166', '#06D6A0', '#118AB2'];
+        const paletteType = ['#F8BBD0', '#D1C4E9', '#B39DDB', '#90CAF9', '#80DEEA', '#80CBC4', '#FFCCBC', '#BCAAA4'];
+        
+        // Fonction pour formater les labels avec pourcentages
+        function getLabelsWithPercentages(data) {
+            return Object.keys(data).map(key => {
+                const item = data[key];
+                return `${key}\n${item.pourcentage}%`;
+            });
+        }
+
+        // Fonctions pour rediriger vers la page détaillée
+        function showPlantationsByEtat(etat) {
+            window.location.href = `/serre/statistiques/details/etat/${encodeURIComponent(etat)}/`;
+        }
+
+        function showPlantationsByType(type) {
+            window.location.href = `/serre/statistiques/details/type/${encodeURIComponent(type)}/`;
+        }
+
+        // Camembert État
+        if (Object.keys(statsEtat).length > 0) {
+            const ctxEtat = document.getElementById('chartEtat').getContext('2d');
+            new Chart(ctxEtat, {
+                type: 'pie',
+                data: {
+                    labels: getLabelsWithPercentages(statsEtat),
+                    datasets: [{
+                        data: Object.values(statsEtat).map(s => s.count),
+                        backgroundColor: paletteEtat,
+                        borderWidth: 2,
+                        borderColor: 'white'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'right',
+                            labels: {
+                                usePointStyle: true,
+                                padding: 15,
+                                font: {
+                                    size: 11,
+                                    weight: '600'
+                                },
+                                color: '#2d5a27'
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label.split('\n')[0];
+                                    const data = statsEtat[label];
+                                    return `${label}: ${data.count} plantation(s) (${data.pourcentage}%)`;
+                                }
+                            }
+                        }
+                    },
+                    onClick: (evt, elements) => {
+                        if (elements.length > 0) {
+                            const index = elements[0].index;
+                            const etat = Object.keys(statsEtat)[index];
+                            showPlantationsByEtat(etat);
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Camembert Type
+        if (Object.keys(statsType).length > 0) {
+            const ctxType = document.getElementById('chartType').getContext('2d');
+            new Chart(ctxType, {
+                type: 'pie',
+                data: {
+                    labels: getLabelsWithPercentages(statsType),
+                    datasets: [{
+                        data: Object.values(statsType).map(s => s.count),
+                        backgroundColor: paletteType,
+                        borderWidth: 2,
+                        borderColor: 'white'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'right',
+                            labels: {
+                                usePointStyle: true,
+                                padding: 15,
+                                font: {
+                                    size: 11,
+                                    weight: '600'
+                                },
+                                color: '#2d5a27'
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label.split('\n')[0];
+                                    const data = statsType[label];
+                                    return `${label}: ${data.count} plantation(s) (${data.pourcentage}%)`;
+                                }
+                            }
+                        }
+                    },
+                    onClick: (evt, elements) => {
+                        if (elements.length > 0) {
+                            const index = elements[0].index;
+                            const type = Object.keys(statsType)[index];
+                            showPlantationsByType(type);
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>

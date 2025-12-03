@@ -13,6 +13,7 @@ from serre import views as serre_views
 from users import views as users_views
 import matplotlib.pyplot as plt
 from users.forms import LoginWithCaptchaForm
+from serre.views import calendrier_backoffice
 
 
 
@@ -47,6 +48,8 @@ urlpatterns = [
     path('backoffice/', include('sols.urls')),
     path('backoffice/', include('station_meteo.urls')),
     path('serre/', include('serre.urls')),
+    path('plantations/calendrier/', serre_views.calendrier_backoffice, name='calendrier_backoffice'),
+
 
     # ✅ URLs du module Station Météo (front + back déjà définis dans l'app)
     #path('', include('station_meteo.urls')),

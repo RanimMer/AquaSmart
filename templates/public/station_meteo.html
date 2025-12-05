@@ -702,6 +702,177 @@
                 margin-bottom: 2rem;
             }
         }
+        /* Styles pour la section ESP32 */
+.esp32-realtime-section {
+    background: rgba(154, 205, 50, 0.05);
+    border-radius: 10px;
+    padding: 1.5rem;
+    border: 1px solid rgba(154, 205, 50, 0.3);
+}
+
+.realtime-controls {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.sensor-card {
+    background: white;
+    border-radius: 8px;
+    padding: 1.25rem;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+    border-top: 4px solid;
+    height: 100%;
+    transition: all 0.3s ease;
+}
+
+.sensor-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+}
+
+.temperature-card {
+    border-top-color: #ff6b6b;
+    background: linear-gradient(135deg, #ffffff 0%, #fff5f5 100%);
+}
+
+.light-card {
+    border-top-color: #f39c12;
+    background: linear-gradient(135deg, #ffffff 0%, #fffaf0 100%);
+}
+
+.humidity-card {
+    border-top-color: #3498db;
+    background: linear-gradient(135deg, #ffffff 0%, #f5fbff 100%);
+}
+
+.sensor-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.sensor-header i {
+    font-size: 1.5rem;
+    margin-right: 0.75rem;
+}
+
+.sensor-header h6 {
+    flex-grow: 1;
+    margin: 0;
+    color: #1a6b3b;
+    font-weight: 600;
+}
+
+.sensor-id {
+    font-size: 0.7rem;
+    background: #f8f9fa;
+    padding: 0.2rem 0.5rem;
+    border-radius: 10px;
+    color: #666;
+}
+
+.sensor-value {
+    display: flex;
+    align-items: baseline;
+    margin-bottom: 0.75rem;
+}
+
+.sensor-value .value {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: #333;
+    flex-grow: 1;
+}
+
+.sensor-value .unit {
+    font-size: 1rem;
+    color: #666;
+    font-weight: 500;
+}
+
+.sensor-status {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.status-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #ccc;
+}
+
+.status-dot.connected {
+    background: #2ecc71;
+    animation: pulse 1.5s infinite;
+}
+
+.status-dot.warning {
+    background: #f39c12;
+}
+
+.status-dot.error {
+    background: #e74c3c;
+}
+
+.sensor-range {
+    font-size: 0.8rem;
+    color: #666;
+}
+
+.sensor-range .progress {
+    margin-top: 0.25rem;
+    background-color: #e9ecef;
+}
+
+.data-logs {
+    margin-top: 1.5rem;
+    background: white;
+    border-radius: 8px;
+    padding: 1rem;
+}
+
+.logs-container {
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.logs-container table {
+    font-size: 0.85rem;
+    margin-bottom: 0;
+}
+
+.logs-container thead th {
+    background: #f8f9fa;
+    position: sticky;
+    top: 0;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.logs-container tbody tr:nth-child(even) {
+    background-color: #f8f9fa;
+}
+
+/* Animation pour le point de statut */
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
+/* Animation pour les nouvelles valeurs */
+@keyframes highlight {
+    0% { background-color: rgba(154, 205, 50, 0.3); }
+    100% { background-color: transparent; }
+}
+
+.highlight {
+    animation: highlight 1s ease;
+}
     </style>
 </head>
 
@@ -888,7 +1059,134 @@
                                     </ul>
                                 </div>
                             </div>
+                            
+                <!-- NOUVELLE SECTION : Données ESP32 en temps réel -->
+                <div class="esp32-realtime-section mt-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="section-title mb-0">
+                            <i class="fas fa-microchip"></i>
+                            Données ESP32 en temps réel
+                        </h6>
+                        <div class="realtime-controls">
+                            <span class="badge bg-success me-2" id="esp32Status{{ station.id_station }}">
+                                <i class="fas fa-satellite-dish"></i> ESP32 Connecté
+                            </span>
+                            <small class="text-muted me-3" id="esp32UpdateTime{{ station.id_station }}">
+                                MAJ: <span id="esp32Timestamp{{ station.id_station }}">--:--:--</span>
+                            </small>
+                            <button class="btn btn-sm btn-outline-primary" onclick="startESP32Stream('{{ station.id_station }}')">
+                                <i class="fas fa-play"></i> Démarrer le flux
+                            </button>
+                            <button class="btn btn-sm btn-outline-secondary ms-2" onclick="stopESP32Stream('{{ station.id_station }}')">
+                                <i class="fas fa-stop"></i> Arrêter
+                            </button>
+                        </div>
+                    </div>
 
+                    <div class="row g-3" id="esp32DataContainer{{ station.id_station }}">
+                        <!-- Température -->
+                        <div class="col-md-4">
+                            <div class="sensor-card temperature-card">
+                                <div class="sensor-header">
+                                    <i class="fas fa-thermometer-half"></i>
+                                    <h6>Température</h6>
+                                    <span class="sensor-id">ESP32-TEMP</span>
+                                </div>
+                                <div class="sensor-value">
+                                    <span class="value" id="tempValue{{ station.id_station }}">--</span>
+                                    <span class="unit">°C</span>
+                                </div>
+                                <div class="sensor-status">
+                                    <span class="status-dot" id="tempStatus{{ station.id_station }}"></span>
+                                    <small id="tempStatusText{{ station.id_station }}">En attente...</small>
+                                </div>
+                                <div class="sensor-range">
+                                    <small>Plage: 0°C - 50°C</small>
+                                    <div class="progress" style="height: 5px;">
+                                        <div id="tempProgress{{ station.id_station }}" class="progress-bar bg-danger" style="width: 0%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Luminosité -->
+                        <div class="col-md-4">
+                            <div class="sensor-card light-card">
+                                <div class="sensor-header">
+                                    <i class="fas fa-sun"></i>
+                                    <h6>Luminosité</h6>
+                                    <span class="sensor-id">ESP32-LUX</span>
+                                </div>
+                                <div class="sensor-value">
+                                    <span class="value" id="lightValue{{ station.id_station }}">--</span>
+                                    <span class="unit">lux</span>
+                                </div>
+                                <div class="sensor-status">
+                                    <span class="status-dot" id="lightStatus{{ station.id_station }}"></span>
+                                    <small id="lightStatusText{{ station.id_station }}">En attente...</small>
+                                </div>
+                                <div class="sensor-range">
+                                    <small>Plage: 0 - 1000 lux</small>
+                                    <div class="progress" style="height: 5px;">
+                                        <div id="lightProgress{{ station.id_station }}" class="progress-bar bg-warning" style="width: 0%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Humidité -->
+                        <div class="col-md-4">
+                            <div class="sensor-card humidity-card">
+                                <div class="sensor-header">
+                                    <i class="fas fa-tint"></i>
+                                    <h6>Humidité</h6>
+                                    <span class="sensor-id">ESP32-HUM</span>
+                                </div>
+                                <div class="sensor-value">
+                                    <span class="value" id="humidityValue{{ station.id_station }}">--</span>
+                                    <span class="unit">%</span>
+                                </div>
+                                <div class="sensor-status">
+                                    <span class="status-dot" id="humidityStatus{{ station.id_station }}"></span>
+                                    <small id="humidityStatusText{{ station.id_station }}">En attente...</small>
+                                </div>
+                                <div class="sensor-range">
+                                    <small>Plage: 0% - 100%</small>
+                                    <div class="progress" style="height: 5px;">
+                                        <div id="humidityProgress{{ station.id_station }}" class="progress-bar bg-info" style="width: 0%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Logs de données -->
+                    <div class="data-logs mt-4">
+                        <h6 class="section-title">
+                            <i class="fas fa-history"></i>
+                            Historique des lectures
+                        </h6>
+                        <div class="logs-container">
+                            <div class="table-responsive">
+                                <table class="table table-sm table-hover" id="esp32Logs{{ station.id_station }}">
+                                    <thead>
+                                        <tr>
+                                            <th>Heure</th>
+                                            <th>Température</th>
+                                            <th>Luminosité</th>
+                                            <th>Humidité</th>
+                                            <th>État</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Les logs seront ajoutés dynamiquement -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- FIN NOUVELLE SECTION -->
                             <!-- Section Capteurs -->
                             <div class="capteurs-section">
                                 <h6 class="section-title">
@@ -1037,6 +1335,429 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 });
+</script>
+<script>
+// Variables globales pour gérer les flux ESP32
+const esp32Streams = {};
+const stationBaseValues = {}; // Stocke les valeurs de base par station
+
+// Valeurs ambiantes réalistes (pour la Tunisie par exemple)
+const AMBIENT_VALUES = {
+    temperature: { base: 22, min: 18, max: 26, variation: 1.5 }, // Base 22°C ±1.5°C
+    luminosity: { base: 450, min: 300, max: 600, variation: 80 }, // Base 450 lux ±80 lux
+    humidity: { base: 55, min: 40, max: 70, variation: 8 } // Base 55% ±8%
+};
+
+// Simuler des données ESP32 réalistes avec variations graduelles
+function simulateESP32Data(stationId) {
+    // Initialiser les valeurs de base pour cette station si elles n'existent pas
+    if (!stationBaseValues[stationId]) {
+        stationBaseValues[stationId] = {
+            temperature: AMBIENT_VALUES.temperature.base + (Math.random() * 4 - 2), // Légère variation initiale
+            luminosity: AMBIENT_VALUES.luminosity.base + (Math.random() * 100 - 50),
+            humidity: AMBIENT_VALUES.humidity.base + (Math.random() * 10 - 5),
+            lastUpdate: Date.now()
+        };
+    }
+    
+    const stationData = stationBaseValues[stationId];
+    const timeDiff = (Date.now() - stationData.lastUpdate) / 1000; // Différence en secondes
+    const variationFactor = Math.min(timeDiff / 60, 1); // Facteur de variation basé sur le temps
+    
+    // Calculer des variations réalistes
+    const getRealisticVariation = (current, base, min, max, variation, variationFactor) => {
+        // Tendance à revenir vers la valeur de base
+        const returnToBase = (base - current) * 0.05 * variationFactor;
+        
+        // Petite variation aléatoire
+        const randomVariation = (Math.random() * 2 - 1) * variation * variationFactor;
+        
+        // Variation diurne (simule le cycle jour/nuit)
+        const now = new Date();
+        const hour = now.getHours();
+        let diurnalVariation = 0;
+        
+        if (base === AMBIENT_VALUES.temperature.base) {
+            // Pour la température : plus chaude le jour, plus fraîche la nuit
+            diurnalVariation = Math.sin((hour - 14) * Math.PI / 12) * 3 * variationFactor;
+        } else if (base === AMBIENT_VALUES.luminosity.base) {
+            // Pour la luminosité : jour = haut, nuit = bas
+            if (hour >= 6 && hour <= 18) {
+                diurnalVariation = 200 * Math.sin((hour - 6) * Math.PI / 12) * variationFactor;
+            } else {
+                diurnalVariation = -200 * variationFactor;
+            }
+        } else if (base === AMBIENT_VALUES.humidity.base) {
+            // Pour l'humidité : généralement plus élevée la nuit
+            diurnalVariation = Math.sin((hour - 2) * Math.PI / 12) * 10 * variationFactor;
+        }
+        
+        // Appliquer toutes les variations
+        let newValue = current + returnToBase + randomVariation + diurnalVariation;
+        
+        // Limiter aux bornes raisonnables
+        newValue = Math.max(min, Math.min(max, newValue));
+        
+        return newValue;
+    };
+    
+    // Calculer les nouvelles valeurs
+    const newTemperature = getRealisticVariation(
+        stationData.temperature,
+        AMBIENT_VALUES.temperature.base,
+        AMBIENT_VALUES.temperature.min,
+        AMBIENT_VALUES.temperature.max,
+        AMBIENT_VALUES.temperature.variation,
+        variationFactor
+    );
+    
+    const newLuminosity = getRealisticVariation(
+        stationData.luminosity,
+        AMBIENT_VALUES.luminosity.base,
+        AMBIENT_VALUES.luminosity.min,
+        AMBIENT_VALUES.luminosity.max,
+        AMBIENT_VALUES.luminosity.variation,
+        variationFactor
+    );
+    
+    const newHumidity = getRealisticVariation(
+        stationData.humidity,
+        AMBIENT_VALUES.humidity.base,
+        AMBIENT_VALUES.humidity.min,
+        AMBIENT_VALUES.humidity.max,
+        AMBIENT_VALUES.humidity.variation,
+        variationFactor
+    );
+    
+    // Mettre à jour les valeurs stockées
+    stationData.temperature = newTemperature;
+    stationData.luminosity = newLuminosity;
+    stationData.humidity = newHumidity;
+    stationData.lastUpdate = Date.now();
+    
+    return {
+        temperature: newTemperature.toFixed(1),
+        luminosity: Math.max(0, Math.round(newLuminosity)),
+        humidity: Math.max(0, Math.min(100, newHumidity.toFixed(1)))
+    };
+}
+
+// Fonction pour démarrer le flux ESP32
+function startESP32Stream(stationId) {
+    // Vérifier si le flux est déjà en cours
+    if (esp32Streams[stationId]) {
+        showNotification(`Flux ESP32 déjà actif pour la station ${stationId}`, 'warning');
+        return;
+    }
+
+    // Réinitialiser les valeurs de base pour cette station
+    stationBaseValues[stationId] = null;
+
+    // Mettre à jour le statut
+    const statusBadge = document.getElementById(`esp32Status${stationId}`);
+    statusBadge.className = 'badge bg-success me-2';
+    statusBadge.innerHTML = '<i class="fas fa-sync-alt fa-spin"></i> Lecture en cours...';
+
+    // Activer les indicateurs de statut
+    document.getElementById(`tempStatus${stationId}`).className = 'status-dot connected';
+    document.getElementById(`lightStatus${stationId}`).className = 'status-dot connected';
+    document.getElementById(`humidityStatus${stationId}`).className = 'status-dot connected';
+
+    // Démarrer l'intervalle de mise à jour
+    esp32Streams[stationId] = setInterval(() => {
+        updateESP32Data(stationId);
+    }, 3000); // Mise à jour toutes les 3 secondes (plus réaliste)
+
+    // Première mise à jour immédiate
+    updateESP32Data(stationId);
+
+    showNotification(`Flux ESP32 démarré pour la station ${stationId} - Données réalistes activées`, 'success');
+}
+
+// Fonction pour arrêter le flux ESP32
+function stopESP32Stream(stationId) {
+    if (esp32Streams[stationId]) {
+        clearInterval(esp32Streams[stationId]);
+        delete esp32Streams[stationId];
+        
+        // Mettre à jour le statut
+        const statusBadge = document.getElementById(`esp32Status${stationId}`);
+        statusBadge.className = 'badge bg-secondary me-2';
+        statusBadge.innerHTML = '<i class="fas fa-satellite-dish"></i> ESP32 Arrêté';
+
+        // Désactiver les indicateurs
+        document.getElementById(`tempStatus${stationId}`).className = 'status-dot';
+        document.getElementById(`lightStatus${stationId}`).className = 'status-dot';
+        document.getElementById(`humidityStatus${stationId}`).className = 'status-dot';
+
+        // Mettre à jour les textes de statut
+        document.getElementById(`tempStatusText${stationId}`).textContent = 'Flux arrêté';
+        document.getElementById(`lightStatusText${stationId}`).textContent = 'Flux arrêté';
+        document.getElementById(`humidityStatusText${stationId}`).textContent = 'Flux arrêté';
+
+        // Conserver les valeurs de base pour reprendre plus tard
+        // (elles ne sont pas supprimées pour garder la continuité)
+
+        showNotification(`Flux ESP32 arrêté pour la station ${stationId}`, 'info');
+    }
+}
+
+// Fonction pour mettre à jour les données ESP32
+function updateESP32Data(stationId) {
+    // Simuler des données réalistes
+    const data = simulateESP32Data(stationId);
+    const timestamp = new Date().toLocaleTimeString('fr-FR', {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+    });
+
+    // Mettre à jour l'heure
+    document.getElementById(`esp32Timestamp${stationId}`).textContent = timestamp;
+
+    // Mettre à jour la température
+    const tempElement = document.getElementById(`tempValue${stationId}`);
+    const currentTemp = parseFloat(tempElement.textContent) || 0;
+    const newTemp = parseFloat(data.temperature);
+    
+    // Animation seulement si changement significatif
+    if (Math.abs(currentTemp - newTemp) > 0.1) {
+        tempElement.textContent = data.temperature;
+        tempElement.classList.add('highlight');
+        setTimeout(() => tempElement.classList.remove('highlight'), 1000);
+    } else {
+        tempElement.textContent = data.temperature;
+    }
+    
+    // Barre de progression température (15-35°C pour plus de réalisme)
+    const tempMin = 15, tempMax = 35;
+    const tempProgress = ((newTemp - tempMin) / (tempMax - tempMin)) * 100;
+    document.getElementById(`tempProgress${stationId}`).style.width = `${Math.max(0, Math.min(100, tempProgress))}%`;
+    
+    // Statut température
+    const tempStatus = getTemperatureStatus(data.temperature);
+    document.getElementById(`tempStatus${stationId}`).className = `status-dot ${tempStatus.status}`;
+    document.getElementById(`tempStatusText${stationId}`).textContent = tempStatus.text;
+
+    // Mettre à jour la luminosité
+    const lightElement = document.getElementById(`lightValue${stationId}`);
+    const currentLight = parseInt(lightElement.textContent) || 0;
+    const newLight = parseInt(data.luminosity);
+    
+    if (Math.abs(currentLight - newLight) > 10) {
+        lightElement.textContent = data.luminosity;
+        lightElement.classList.add('highlight');
+        setTimeout(() => lightElement.classList.remove('highlight'), 1000);
+    } else {
+        lightElement.textContent = data.luminosity;
+    }
+    
+    // Barre de progression luminosité (0-1000 lux)
+    const lightProgress = (newLight / 1000) * 100;
+    document.getElementById(`lightProgress${stationId}`).style.width = `${Math.max(0, Math.min(100, lightProgress))}%`;
+    
+    // Statut luminosité
+    const lightStatus = getLightStatus(data.luminosity);
+    document.getElementById(`lightStatus${stationId}`).className = `status-dot ${lightStatus.status}`;
+    document.getElementById(`lightStatusText${stationId}`).textContent = lightStatus.text;
+
+    // Mettre à jour l'humidité
+    const humidityElement = document.getElementById(`humidityValue${stationId}`);
+    const currentHumidity = parseFloat(humidityElement.textContent) || 0;
+    const newHumidity = parseFloat(data.humidity);
+    
+    if (Math.abs(currentHumidity - newHumidity) > 0.5) {
+        humidityElement.textContent = data.humidity;
+        humidityElement.classList.add('highlight');
+        setTimeout(() => humidityElement.classList.remove('highlight'), 1000);
+    } else {
+        humidityElement.textContent = data.humidity;
+    }
+    
+    // Barre de progression humidité (0-100%)
+    const humidityProgress = newHumidity;
+    document.getElementById(`humidityProgress${stationId}`).style.width = `${Math.max(0, Math.min(100, humidityProgress))}%`;
+    
+    // Statut humidité
+    const humidityStatus = getHumidityStatus(data.humidity);
+    document.getElementById(`humidityStatus${stationId}`).className = `status-dot ${humidityStatus.status}`;
+    document.getElementById(`humidityStatusText${stationId}`).textContent = humidityStatus.text;
+
+    // Ajouter aux logs (seulement si changement significatif)
+    if (Math.abs(currentTemp - newTemp) > 0.3 || Math.abs(currentLight - newLight) > 50 || Math.abs(currentHumidity - newHumidity) > 2) {
+        addToLogs(stationId, data, timestamp, {
+            temp: tempStatus,
+            light: lightStatus,
+            humidity: humidityStatus
+        });
+    }
+}
+
+// Fonctions d'analyse des données (optimisées pour des valeurs réalistes)
+function getTemperatureStatus(temp) {
+    temp = parseFloat(temp);
+    if (temp < 15) return { status: 'warning', text: 'Frais' };
+    if (temp > 32) return { status: 'warning', text: 'Chaud' };
+    if (temp >= 20 && temp <= 26) return { status: 'connected', text: 'Confortable' };
+    return { status: 'connected', text: 'Normal' };
+}
+
+function getLightStatus(lux) {
+    lux = parseInt(lux);
+    if (lux < 50) return { status: 'warning', text: 'Sombre' };
+    if (lux > 700) return { status: 'warning', text: 'Très lumineux' };
+    if (lux >= 200 && lux <= 500) return { status: 'connected', text: 'Bonne luminosité' };
+    return { status: 'connected', text: 'Normal' };
+}
+
+function getHumidityStatus(humidity) {
+    humidity = parseFloat(humidity);
+    if (humidity < 35) return { status: 'warning', text: 'Sec' };
+    if (humidity > 75) return { status: 'warning', text: 'Humide' };
+    if (humidity >= 45 && humidity <= 65) return { status: 'connected', text: 'Confortable' };
+    return { status: 'connected', text: 'Normal' };
+}
+
+// Fonction pour ajouter une entrée aux logs
+function addToLogs(stationId, data, time, statuses) {
+    const logsTable = document.querySelector(`#esp32Logs${stationId} tbody`);
+    
+    // Formater l'heure avec millisecondes pour plus de précision
+    const preciseTime = new Date().toLocaleTimeString('fr-FR', {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        fractionalSecondDigits: 2
+    });
+    
+    // Créer une nouvelle ligne
+    const row = document.createElement('tr');
+    row.innerHTML = `
+        <td><small>${preciseTime}</small></td>
+        <td><span class="badge ${parseFloat(data.temperature) >= 20 && parseFloat(data.temperature) <= 26 ? 'bg-success' : 'bg-light text-dark'}">${data.temperature}°C</span></td>
+        <td><span class="badge ${parseInt(data.luminosity) >= 200 && parseInt(data.luminosity) <= 500 ? 'bg-success' : 'bg-light text-dark'}">${data.luminosity} lux</span></td>
+        <td><span class="badge ${parseFloat(data.humidity) >= 45 && parseFloat(data.humidity) <= 65 ? 'bg-success' : 'bg-light text-dark'}">${data.humidity}%</span></td>
+        <td>
+            <span class="badge ${statuses.temp.status === 'connected' ? 'bg-success' : 'bg-warning'}">
+                ${statuses.temp.text}
+            </span>
+        </td>
+    `;
+    
+    // Ajouter au début du tableau
+    logsTable.insertBefore(row, logsTable.firstChild);
+    
+    // Limiter à 15 entrées maximum
+    if (logsTable.children.length > 15) {
+        logsTable.removeChild(logsTable.lastChild);
+    }
+}
+
+// Fonction pour afficher une notification
+function showNotification(message, type = 'info') {
+    // Créer l'élément de notification
+    const notification = document.createElement('div');
+    notification.className = `notification ${type}`;
+    notification.innerHTML = `
+        <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'warning' ? 'exclamation-triangle' : 'info-circle'}"></i>
+        <span>${message}</span>
+        <button onclick="this.parentElement.remove()">&times;</button>
+    `;
+    
+    // Ajouter au document
+    document.body.appendChild(notification);
+    
+    // Animation d'entrée
+    setTimeout(() => notification.classList.add('show'), 10);
+    
+    // Supprimer après 3 secondes
+    setTimeout(() => {
+        notification.classList.remove('show');
+        setTimeout(() => notification.remove(), 300);
+    }, 3000);
+}
+
+// Arrêter tous les flux quand la modal se ferme
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.station-modal').forEach(modal => {
+        modal.addEventListener('hidden.bs.modal', function() {
+            const stationId = this.id.replace('stationModal', '');
+            if (esp32Streams[stationId]) {
+                stopESP32Stream(stationId);
+            }
+        });
+        
+        // Réinitialiser les données quand la modal s'ouvre
+        modal.addEventListener('show.bs.modal', function() {
+            const stationId = this.id.replace('stationModal', '');
+            stationBaseValues[stationId] = null;
+        });
+    });
+});
+
+// Styles pour les notifications
+const notificationStyles = document.createElement('style');
+notificationStyles.textContent = `
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: white;
+    border-radius: 8px;
+    padding: 1rem 1.5rem;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 9999;
+    transform: translateX(120%);
+    transition: transform 0.3s ease;
+    border-left: 4px solid #9ACD32;
+    min-width: 300px;
+}
+
+.notification.show {
+    transform: translateX(0);
+}
+
+.notification.success {
+    border-left-color: #2ecc71;
+}
+
+.notification.warning {
+    border-left-color: #f39c12;
+}
+
+.notification.info {
+    border-left-color: #3498db;
+}
+
+.notification i {
+    font-size: 1.2rem;
+}
+
+.notification.success i {
+    color: #2ecc71;
+}
+
+.notification.warning i {
+    color: #f39c12;
+}
+
+.notification.info i {
+    color: #3498db;
+}
+
+.notification button {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #666;
+    margin-left: 10px;
+}
+`;
+document.head.appendChild(notificationStyles);
 </script>
 {# {% include 'public/chatbot_ia.html' %} #}
 

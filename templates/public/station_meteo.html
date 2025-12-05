@@ -873,6 +873,243 @@
 .highlight {
     animation: highlight 1s ease;
 }
+/* === NOUVEAU DESIGN PRÉVISIONS MÉTÉO === */
+.weather-header {
+    background: linear-gradient(135deg, #1a6b3b, #2d8c5a);
+    color: white;
+    border-radius: 10px 10px 0 0;
+    padding: 1.5rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.weather-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+    background-size: 20px 20px;
+    opacity: 0.3;
+}
+
+.current-weather-card {
+    background: white;
+    border-radius: 15px;
+    padding: 1.5rem;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+    margin-top: -40px;
+    position: relative;
+    z-index: 10;
+    border: 1px solid rgba(154, 205, 50, 0.2);
+}
+
+.weather-main-info {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    margin-bottom: 1.5rem;
+}
+
+.weather-icon-large {
+    font-size: 4.5rem;
+    color: #f39c12;
+    background: rgba(243, 156, 18, 0.1);
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.weather-temp-large {
+    font-size: 4rem;
+    font-weight: 700;
+    color: #1a6b3b;
+    line-height: 1;
+}
+
+.weather-temp-large sup {
+    font-size: 2rem;
+    font-weight: 600;
+}
+
+.weather-condition {
+    font-size: 1.2rem;
+    color: #666;
+    text-transform: capitalize;
+    margin-top: 0.5rem;
+}
+
+.weather-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.weather-stat {
+    text-align: center;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    border: 1px solid #e9ecef;
+}
+
+.weather-stat:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    border-color: #9ACD32;
+}
+
+.stat-icon {
+    font-size: 1.5rem;
+    color: #9ACD32;
+    margin-bottom: 0.5rem;
+}
+
+.stat-value {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #1a6b3b;
+    display: block;
+}
+
+.stat-label {
+    font-size: 0.85rem;
+    color: #666;
+    margin-top: 0.25rem;
+}
+
+/* Forecast cards */
+.forecast-cards {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.forecast-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.25rem;
+    text-align: center;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+    border: 1px solid #e9ecef;
+    transition: all 0.3s ease;
+}
+
+.forecast-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(154, 205, 50, 0.1);
+    border-color: #9ACD32;
+}
+
+.forecast-day {
+    font-weight: 600;
+    color: #1a6b3b;
+    margin-bottom: 0.75rem;
+    font-size: 0.95rem;
+}
+
+.forecast-date {
+    font-size: 0.85rem;
+    color: #666;
+    margin-bottom: 1rem;
+}
+
+.forecast-icon {
+    font-size: 2.5rem;
+    color: #3498db;
+    margin-bottom: 0.75rem;
+}
+
+.forecast-temp {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 0.5rem;
+}
+
+.forecast-desc {
+    font-size: 0.85rem;
+    color: #666;
+    text-transform: capitalize;
+}
+
+.forecast-details {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #f0f0f0;
+    font-size: 0.8rem;
+}
+
+.forecast-minmax {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: center;
+    margin-top: 0.5rem;
+}
+
+.min-temp {
+    color: #3498db;
+}
+
+.max-temp {
+    color: #e74c3c;
+}
+
+/* Footer */
+.weather-footer {
+    text-align: center;
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid #e9ecef;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.weather-footer i {
+    color: #9ACD32;
+    margin-right: 0.5rem;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+    .weather-stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .forecast-cards {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .weather-main-info {
+        flex-direction: column;
+        text-align: center;
+        gap: 1rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .forecast-cards {
+        grid-template-columns: 1fr;
+    }
+    
+    .weather-stats-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .current-weather-card {
+        padding: 1rem;
+    }
+}
     </style>
 </head>
 
@@ -1245,6 +1482,54 @@
                                 {% if not station.id_sol and not station.id_capteur_pluie and not station.id_capteur_luminosite_humidite and not station.id_capteur_vent %}
                                 <p class="text-muted text-center mb-0">Aucun capteur associé à cette station.</p>
                                 {% endif %}
+                            </div>
+                        </div>
+                                                <!-- Ajoutez cette section APRÈS la section ESP32 dans le modal -->
+                                            <div class="forecast-section mt-4">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h6 class="section-title mb-0">
+                                <i class="fas fa-cloud-sun-rain"></i>
+                                Prévisions Météo
+                            </h6>
+                            <div class="forecast-controls">
+                                <select id="citySelect{{ station.id_station }}" class="form-select form-select-sm" style="width: auto;">
+                                    <option value="Tunis" selected>Tunis</option>
+                                    <option value="Sfax">Sfax</option>
+                                    <option value="Sousse">Sousse</option>
+                                    <option value="Gabes">Gabès</option>
+                                    <option value="Bizerte">Bizerte</option>
+                                    <option value="Seliana">Seliana</option>
+                                    <option value="Nabeul">Nabeul</option>
+                                </select>
+                                <button class="btn btn-sm btn-success ms-2" onclick="loadWeatherForecast('{{ station.id_station }}')">
+                                    <i class="fas fa-sync-alt"></i> Actualiser
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="weather-loading text-center py-5" id="weatherLoading{{ station.id_station }}" style="display: none;">
+                            <div class="spinner-border text-success" style="width: 3rem; height: 3rem;" role="status">
+                                <span class="visually-hidden">Chargement...</span>
+                            </div>
+                            <p class="mt-3 text-muted">Chargement des prévisions météo...</p>
+                        </div>
+
+                        <div class="weather-error alert alert-danger mt-3" id="weatherError{{ station.id_station }}" style="display: none;">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <span id="errorMessage"></span>
+                        </div>
+
+                        <div class="weather-container" id="weatherContainer{{ station.id_station }}">
+                            <!-- Les prévisions seront chargées ici -->
+                        </div>
+                    </div>
+                                                <div class="weather-container" id="weatherContainer{{ station.id_station }}">
+                                <!-- Les prévisions seront chargées ici -->
+                            </div>
+
+                            <div class="weather-error alert alert-danger mt-3" id="weatherError{{ station.id_station }}" style="display: none;">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                Impossible de charger les prévisions météo
                             </div>
                         </div>
                         <div class="modal-footer">
@@ -1758,6 +2043,440 @@ notificationStyles.textContent = `
 }
 `;
 document.head.appendChild(notificationStyles);
+
+// Fonction pour charger les prévisions météo
+async function loadWeatherForecast(stationId) {
+    const container = document.getElementById(`weatherContainer${stationId}`);
+    const loading = document.getElementById(`weatherLoading${stationId}`);
+    const error = document.getElementById(`weatherError${stationId}`);
+    const citySelect = document.getElementById(`citySelect${stationId}`);
+    
+    const city = citySelect.value;
+    
+    // Afficher le loader
+    loading.style.display = 'block';
+    error.style.display = 'none';
+    container.innerHTML = '';
+    
+    try {
+        // Utiliser OpenWeatherMap API (version gratuite)
+        // NOTE : Vous devrez créer un compte et obtenir une clé API gratuite
+        const apiKey = '3855082ce9334936cd853f5eb4bf61e7'; // À remplacer avec votre clé
+        const url = `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${apiKey}&units=metric&lang=fr&cnt=5`;
+        
+        const response = await fetch(url);
+        
+        if (!response.ok) {
+            throw new Error('Erreur API');
+        }
+        
+        const data = await response.json();
+        
+        // Afficher les données
+        displayWeatherForecast(stationId, data, city);
+        
+    } catch (error) {
+        // En cas d'erreur, afficher des données de démo
+        displayDemoForecast(stationId, city);
+        console.log('Mode démo activé (erreur API)');
+    } finally {
+        loading.style.display = 'none';
+    }
+}
+
+// Fonction pour afficher les prévisions réelles
+function displayWeatherForecast(stationId, data, city) {
+    const container = document.getElementById(`weatherContainer${stationId}`);
+    
+    let html = `
+        <div class="current-weather">
+            <h6 class="text-white mb-3"><i class="fas fa-map-marker-alt"></i> ${city}</h6>
+            <div class="weather-icon">
+                ${getWeatherIcon(data.list[0].weather[0].main)}
+            </div>
+            <div class="weather-temp">${Math.round(data.list[0].main.temp)}°C</div>
+            <div class="weather-desc text-capitalize">${data.list[0].weather[0].description}</div>
+            <div class="weather-details mt-3">
+                <div class="weather-detail">
+                    <i class="fas fa-temperature-high"></i>
+                    <span>${Math.round(data.list[0].main.temp_max)}°C</span>
+                </div>
+                <div class="weather-detail">
+                    <i class="fas fa-temperature-low"></i>
+                    <span>${Math.round(data.list[0].main.temp_min)}°C</span>
+                </div>
+                <div class="weather-detail">
+                    <i class="fas fa-wind"></i>
+                    <span>${data.list[0].wind.speed} m/s</span>
+                </div>
+                <div class="weather-detail">
+                    <i class="fas fa-tint"></i>
+                    <span>${data.list[0].main.humidity}%</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row g-2">
+    `;
+    
+    // Prévisions pour les 4 prochains jours (en prenant un point par jour)
+    for (let i = 1; i < 5 && i < data.list.length; i++) {
+        const forecast = data.list[i];
+        const date = new Date(forecast.dt * 1000);
+        const dayName = date.toLocaleDateString('fr-FR', { weekday: 'short' });
+        const dayNum = date.getDate();
+        
+        html += `
+            <div class="col-md-3">
+                <div class="weather-card">
+                    <div class="weather-date">
+                        ${dayName} ${dayNum}
+                    </div>
+                    <div class="weather-icon">
+                        ${getWeatherIcon(forecast.weather[0].main)}
+                    </div>
+                    <div class="weather-temp">${Math.round(forecast.main.temp)}°C</div>
+                    <div class="weather-desc text-capitalize">${forecast.weather[0].description}</div>
+                    <div class="weather-details">
+                        <div class="weather-detail">
+                            <i class="fas fa-temperature-high"></i>
+                            <small>${Math.round(forecast.main.temp_max)}°</small>
+                        </div>
+                        <div class="weather-detail">
+                            <i class="fas fa-tint"></i>
+                            <small>${forecast.main.humidity}%</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+    
+    html += '</div>';
+    container.innerHTML = html;
+}
+
+// Fonction pour charger les prévisions météo
+async function loadWeatherForecast(stationId) {
+    const container = document.getElementById(`weatherContainer${stationId}`);
+    const loading = document.getElementById(`weatherLoading${stationId}`);
+    const error = document.getElementById(`weatherError${stationId}`);
+    const citySelect = document.getElementById(`citySelect${stationId}`);
+    
+    const city = citySelect.value;
+    
+    // Afficher le loader
+    loading.style.display = 'block';
+    error.style.display = 'none';
+    container.innerHTML = '';
+    
+    try {
+        // UTILISEZ VOTRE CLÉ API ICI - données réelles
+        const apiKey = '3855082ce9334936cd853f5eb4bf61e7';
+        const url = `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${apiKey}&units=metric&lang=fr&cnt=40`;
+        
+        const response = await fetch(url);
+        
+        if (!response.ok) {
+            throw new Error(`Erreur ${response.status}: ${response.statusText}`);
+        }
+        
+        const data = await response.json();
+        
+        // Vérifier si la ville est trouvée
+        if (data.cod !== "200") {
+            throw new Error(data.message || 'Ville non trouvée');
+        }
+        
+        // Afficher les données réelles
+        displayRealWeatherForecast(stationId, data, city);
+        
+    } catch (err) {
+        console.error('Erreur météo:', err);
+        // Afficher une erreur propre
+        error.style.display = 'block';
+        error.innerHTML = `
+            <i class="fas fa-exclamation-triangle"></i>
+            <strong>Erreur de chargement:</strong> ${err.message || 'Impossible de charger les données météo'}
+            <br><small>Vérifiez votre connexion internet ou la ville sélectionnée</small>
+        `;
+    } finally {
+        loading.style.display = 'none';
+    }
+}
+
+// Fonction pour charger les prévisions météo
+async function loadWeatherForecast(stationId) {
+    const container = document.getElementById(`weatherContainer${stationId}`);
+    const loading = document.getElementById(`weatherLoading${stationId}`);
+    const error = document.getElementById(`weatherError${stationId}`);
+    const citySelect = document.getElementById(`citySelect${stationId}`);
+    
+    const city = citySelect.value;
+    
+    // Afficher le loader
+    loading.style.display = 'block';
+    error.style.display = 'none';
+    container.innerHTML = '';
+    
+    try {
+        const apiKey = '3855082ce9334936cd853f5eb4bf61e7';
+        const url = `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${apiKey}&units=metric&lang=fr`;
+        
+        const response = await fetch(url);
+        
+        if (!response.ok) {
+            throw new Error(`Erreur ${response.status}: ${response.statusText}`);
+        }
+        
+        const data = await response.json();
+        
+        // Vérifier si la ville est trouvée
+        if (data.cod !== "200") {
+            throw new Error(data.message || 'Ville non trouvée');
+        }
+        
+        // Afficher les données avec le nouveau design
+        displayModernWeatherForecast(stationId, data, city);
+        
+    } catch (err) {
+        console.error('Erreur météo:', err);
+        error.style.display = 'block';
+        document.getElementById('errorMessage').textContent = 
+            `Impossible de charger les données pour ${city}. ${err.message}`;
+    } finally {
+        loading.style.display = 'none';
+    }
+}
+
+// Fonction pour afficher avec le nouveau design moderne
+function displayModernWeatherForecast(stationId, data, city) {
+    const container = document.getElementById(`weatherContainer${stationId}`);
+    
+    // Formater la date
+    const now = new Date();
+    const today = now.toLocaleDateString('fr-FR', { 
+        weekday: 'long', 
+        day: 'numeric', 
+        month: 'long',
+        year: 'numeric'
+    });
+    
+    // Données actuelles
+    const current = data.list[0];
+    
+    let html = `
+        <!-- En-tête avec la ville et date -->
+        <div class="weather-header">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h5 class="mb-1">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <strong>${city}</strong>
+                    </h5>
+                    <p class="mb-0 opacity-75">${today}</p>
+                </div>
+                <div class="text-end">
+                    <small>Mis à jour à ${now.toLocaleTimeString('fr-FR', {hour: '2-digit', minute:'2-digit'})}</small>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Carte principale météo actuelle -->
+        <div class="current-weather-card">
+            <div class="weather-main-info">
+                <div class="weather-icon-large">
+                    ${getModernWeatherIcon(current.weather[0].main)}
+                </div>
+                <div>
+                    <div class="weather-temp-large">
+                        ${Math.round(current.main.temp)}<sup>°C</sup>
+                    </div>
+                    <div class="weather-condition">
+                        ${current.weather[0].description}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Statistiques détaillées -->
+            <div class="weather-stats-grid">
+                <div class="weather-stat">
+                    <div class="stat-icon">
+                        <i class="fas fa-temperature-high"></i>
+                    </div>
+                    <span class="stat-value">${Math.round(current.main.temp_max)}°C</span>
+                    <span class="stat-label">Température max</span>
+                </div>
+                
+                <div class="weather-stat">
+                    <div class="stat-icon">
+                        <i class="fas fa-temperature-low"></i>
+                    </div>
+                    <span class="stat-value">${Math.round(current.main.temp_min)}°C</span>
+                    <span class="stat-label">Température min</span>
+                </div>
+                
+                <div class="weather-stat">
+                    <div class="stat-icon">
+                        <i class="fas fa-wind"></i>
+                    </div>
+                    <span class="stat-value">${Math.round(current.wind.speed * 3.6)}</span>
+                    <span class="stat-label">Vent (km/h)</span>
+                </div>
+                
+                <div class="weather-stat">
+                    <div class="stat-icon">
+                        <i class="fas fa-tint"></i>
+                    </div>
+                    <span class="stat-value">${current.main.humidity}%</span>
+                    <span class="stat-label">Humidité</span>
+                </div>
+            </div>
+            
+            <!-- Pression et visibilité -->
+            <div class="row mt-4">
+                <div class="col-md-6">
+                    <div class="d-flex align-items-center p-3 bg-light rounded">
+                        <div class="me-3">
+                            <i class="fas fa-weight-hanging fa-2x" style="color: #9ACD32;"></i>
+                        </div>
+                        <div>
+                            <small class="text-muted">Pression atmosphérique</small>
+                            <div class="h5 mb-0">${current.main.pressure} hPa</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="d-flex align-items-center p-3 bg-light rounded">
+                        <div class="me-3">
+                            <i class="fas fa-eye fa-2x" style="color: #9ACD32;"></i>
+                        </div>
+                        <div>
+                            <small class="text-muted">Visibilité</small>
+                            <div class="h5 mb-0">${(current.visibility / 1000).toFixed(1)} km</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Prévisions sur 4 jours -->
+        <h6 class="mt-5 mb-3" style="color: #1a6b3b; border-bottom: 2px solid #9ACD32; padding-bottom: 10px;">
+            <i class="fas fa-calendar-alt me-2"></i>Prévisions sur 4 jours
+        </h6>
+        
+        <div class="forecast-cards">
+    `;
+    
+    // Trouver les prévisions pour les 4 prochains jours vers midi
+    const dailyForecasts = {};
+    
+    data.list.forEach(forecast => {
+        const forecastTime = new Date(forecast.dt * 1000);
+        const dateKey = forecastTime.toDateString();
+        
+        // Prendre la prévision la plus proche de midi (12h)
+        if (forecastTime.getHours() >= 11 && forecastTime.getHours() <= 14) {
+            if (!dailyForecasts[dateKey]) {
+                dailyForecasts[dateKey] = forecast;
+            }
+        }
+    });
+    
+    // Prendre les 4 prochains jours (exclure aujourd'hui)
+    const forecastDates = Object.keys(dailyForecasts);
+    let dayCount = 0;
+    
+    forecastDates.forEach((dateKey, index) => {
+        if (index > 0 && dayCount < 4) {
+            const forecast = dailyForecasts[dateKey];
+            const forecastDate = new Date(dateKey);
+            
+            const dayName = forecastDate.toLocaleDateString('fr-FR', { weekday: 'short' });
+            const dayNum = forecastDate.getDate();
+            const monthName = forecastDate.toLocaleDateString('fr-FR', { month: 'short' });
+            
+            html += `
+                <div class="forecast-card">
+                    <div class="forecast-day">${dayName}</div>
+                    <div class="forecast-date">${dayNum} ${monthName}</div>
+                    <div class="forecast-icon">
+                        ${getModernWeatherIcon(forecast.weather[0].main)}
+                    </div>
+                    <div class="forecast-temp">${Math.round(forecast.main.temp)}°C</div>
+                    <div class="forecast-desc">${forecast.weather[0].description}</div>
+                    
+                    <div class="forecast-minmax mt-2">
+                        <div class="max-temp">
+                            <i class="fas fa-arrow-up"></i> ${Math.round(forecast.main.temp_max)}°
+                        </div>
+                        <div class="min-temp">
+                            <i class="fas fa-arrow-down"></i> ${Math.round(forecast.main.temp_min)}°
+                        </div>
+                    </div>
+                    
+                    <div class="forecast-details">
+                        <div>
+                            <small><i class="fas fa-tint"></i> ${forecast.main.humidity}%</small>
+                        </div>
+                        <div>
+                            <small><i class="fas fa-wind"></i> ${Math.round(forecast.wind.speed * 3.6)} km/h</small>
+                        </div>
+                    </div>
+                </div>
+            `;
+            dayCount++;
+        }
+    });
+    
+    html += `
+        </div>
+        
+        <!-- Footer -->
+        <div class="weather-footer">
+            <p class="mb-2">
+                <i class="fas fa-database"></i>
+                Données fournies par OpenWeatherMap
+                <span class="badge bg-success ms-2">
+                    <i class="fas fa-bolt"></i> Temps réel
+                </span>
+            </p>
+            <small class="text-muted">
+                Prévisions basées sur des modèles météorologiques - Les données peuvent varier
+            </small>
+        </div>
+    `;
+    
+    container.innerHTML = html;
+}
+
+// Fonction pour obtenir les icônes modernes
+function getModernWeatherIcon(condition) {
+    const icons = {
+        'Clear': '<i class="fas fa-sun"></i>',
+        'Clouds': '<i class="fas fa-cloud"></i>',
+        'Rain': '<i class="fas fa-cloud-rain"></i>',
+        'Drizzle': '<i class="fas fa-cloud-rain"></i>',
+        'Thunderstorm': '<i class="fas fa-bolt"></i>',
+        'Snow': '<i class="fas fa-snowflake"></i>',
+        'Mist': '<i class="fas fa-smog"></i>',
+        'Fog': '<i class="fas fa-smog"></i>'
+    };
+    return icons[condition] || '<i class="fas fa-sun"></i>';
+}
+
+// Charger automatiquement les prévisions quand la modal s'ouvre
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.station-modal').forEach(modal => {
+        modal.addEventListener('show.bs.modal', function() {
+            const stationId = this.id.replace('stationModal', '');
+            // Petit délai pour laisser la modal s'afficher
+            setTimeout(() => {
+                loadWeatherForecast(stationId);
+            }, 300);
+        });
+    });
+});
 </script>
 {# {% include 'public/chatbot_ia.html' %} #}
 
